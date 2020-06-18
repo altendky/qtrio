@@ -2,9 +2,16 @@ name: CI
 
 on:
   push:
-    branches-ignore:
-      - "dependabot/*"
+    branches:
+      - master
+    tags:
+      - v*
   pull_request:
+    branches:
+      - "*"
+  schedule:
+    # Daily at 05:47
+    - cron: '47 5 * * *'
 
 env:
   PACKAGE_NAME: 'qtrio'
