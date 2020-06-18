@@ -1,0 +1,9 @@
+[run]
+branch=True
+source=qtrio
+
+[report]
+precision = 1
+exclude_lines =
+  pragma: no cover
+  abc.abstractmethod
