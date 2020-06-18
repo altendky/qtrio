@@ -54,7 +54,7 @@ else
     mkdir empty || true
     cd empty
 
-    INSTALLDIR=$(python -c "import os, trio; print(os.path.dirname(trio.__file__))")
+    INSTALLDIR=$(python -c "import os, ${PACKAGE_NAME}; print(os.path.dirname(${PACKAGE_NAME}.__file__))")
     cp ../setup.cfg $INSTALLDIR
     if pytest -W error -r a --junitxml=../test-results.xml --run-slow ${INSTALLDIR} --cov="$INSTALLDIR" --cov-config=../.coveragerc --verbose; then
         PASSED=true

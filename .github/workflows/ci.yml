@@ -6,6 +6,9 @@ on:
       - "dependabot/*"
   pull_request:
 
+env:
+  PACKAGE_NAME=qtrio
+
 jobs:
   Windows:
     name: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_library }})'
