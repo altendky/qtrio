@@ -79,6 +79,7 @@ jobs:
     name: 'Ubuntu (${{ matrix.python }}, ${{ matrix.qt_library }})'
     timeout-minutes: 10
     runs-on: 'ubuntu-latest'
+    container: 'docker://python:${{ matrix.python }}-buster'
     strategy:
       fail-fast: false
       matrix:
@@ -93,8 +94,8 @@ jobs:
           python-version: '${{ matrix.python }}'
       - name: Install Qt5 dependencies
         run: |
-          sudo apt-get update --yes
-          sudo apt-get install --yes libgl1
+          apt-get update --yes
+          apt-get install --yes libgl1
       - name: Run tests
         run: ./ci.sh
         env:
