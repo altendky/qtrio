@@ -78,6 +78,7 @@ jobs:
       fail-fast: false
       matrix:
         python: ['3.6', '3.7', '3.8']
+        qt_library: ['PyQt5']
     steps:
       - name: Checkout
         uses: actions/checkout@v2
