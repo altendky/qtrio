@@ -71,7 +71,7 @@ jobs:
           INSTALL_EXTRAS: '[${{ matrix.qt_library }}]'
 
   macOS:
-    name: 'macOS (${{ matrix.python }})'
+    name: 'macOS (${{ matrix.python }}, ${{matrix.qt_library}})'
     timeout-minutes: 10
     runs-on: 'macos-latest'
     strategy:
