@@ -1,0 +1,145 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - v*
+  pull_request:
+    branches:
+      - "*"
+  schedule:
+    # Daily at 05:47
+    - cron: '47 5 * * *'
+
+env:
+  PACKAGE_NAME: 'qtrio'
+
+jobs:
+  Checks:
+    name: '${{ matrix.name }}'
+    timeout-minutes: 10
+    runs-on: 'ubuntu-latest'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - python: '3.8'
+            check_docs: '1'
+            name: 'Check docs'
+          - python: '3.8'
+            check_formatting: '1'
+            name: 'Check formatting'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup python
+        uses: actions/setup-python@v1
+        with:
+          python-version: '${{ matrix.python }}'
+      - name: Run tests
+        run: ./ci.sh
+        env:
+          CHECK_DOCS: '${{ matrix.check_docs }}'
+          CHECK_FORMATTING: '${{ matrix.check_formatting }}'
+          # Should match 'name:' up above
+          JOB_NAME: '${{ matrix.name }}'
+          # TODO: needs some Qt library but I'm not clear the implications of
+          #       choosing one over the other
+          INSTALL_EXTRAS: '[PyQt5]'
+
+  Windows:
+    name: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_library }})'
+    timeout-minutes: 20
+    runs-on: 'windows-latest'
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.6', '3.7', '3.8']
+        arch: ['x86', 'x64']
+        qt_library: ['PyQt5']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup python
+        uses: actions/setup-python@v1
+        with:
+          python-version: '${{ matrix.python }}'
+          architecture: '${{ matrix.arch }}'
+      - name: Run tests
+        run: ./ci.sh
+        shell: bash
+        env:
+          # Should match 'name:' up above
+          JOB_NAME: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_library }})'
+          INSTALL_EXTRAS: '[${{ matrix.qt_library }}]'
+
+  Ubuntu:
+    name: 'Ubuntu (${{ matrix.python }}, ${{ matrix.qt_library }})'
+    timeout-minutes: 10
+    runs-on: 'ubuntu-latest'
+    container: 'docker://python:${{ matrix.python }}-buster'
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.6', '3.7', '3.8']
+        qt_library: ['PyQt5']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup python
+        uses: actions/setup-python@v1
+        with:
+          python-version: '${{ matrix.python }}'
+      - name: Install Qt5 dependencies
+        run: |
+          apt-get update --yes
+          apt-get install --yes libgl1
+      - name: Install Linux test dependencies
+        run: |
+          apt-get update --yes
+          apt-get install --yes libgl1-mesa-dev xvfb x11-utils libdbus-1-3 libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xfixes0
+      - name: Run tests
+        run: ./ci.sh
+        env:
+          # Should match 'name:' up above
+          JOB_NAME: 'Ubuntu (${{ matrix.python }}, ${{ matrix.qt_library }})'
+          INSTALL_EXTRAS: '[${{ matrix.qt_library }}]'
+
+  macOS:
+    name: 'macOS (${{ matrix.python }}, ${{matrix.qt_library}})'
+    timeout-minutes: 10
+    runs-on: 'macos-latest'
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.6', '3.7', '3.8']
+        qt_library: ['PyQt5']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup python
+        uses: actions/setup-python@v1
+        with:
+          python-version: '${{ matrix.python }}'
+      - name: Run tests
+        run: ./ci.sh
+        env:
+          # Should match 'name:' up above
+          JOB_NAME: 'macOS (${{ matrix.python }}, ${{matrix.qt_library}})'
+          INSTALL_EXTRAS: '[${{ matrix.qt_library }}]'
+
+  all:
+    name: All
+    runs-on: ubuntu-latest
+    needs:
+      - Checks
+      - Windows
+      - Ubuntu
+      - macOS
+    steps:
+      - name: This
+        shell: python
+        run: |
+          import this
