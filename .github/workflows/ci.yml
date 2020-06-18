@@ -10,6 +10,36 @@ env:
   PACKAGE_NAME: 'qtrio'
 
 jobs:
+  Checks:
+    name: '${{ matrix.name }}'
+    timeout-minutes: 10
+    runs-on: 'ubuntu-latest'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - python: '3.8'
+            check_docs: '1'
+            name: 'Check docs'
+          - python: '3.8'
+            check_formatting: '1'
+            name: 'Check formatting'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup python
+        uses: actions/setup-python@v1
+        with:
+          python-version: '${{ matrix.python }}'
+      - name: Run tests
+        run: ./ci.sh
+        env:
+          CHECK_DOCS: '${{ matrix.check_docs }}'
+          CHECK_FORMATTING: '${{ matrix.check_formatting }}'
+          # Should match 'name:' up above
+          JOB_NAME: '${{ matrix.name }}'
+          INSTALL_EXTRAS: '[${{ matrix.qt_library }}]'
+
   Windows:
     name: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_library }})'
     timeout-minutes: 20
@@ -44,16 +74,7 @@ jobs:
       fail-fast: false
       matrix:
         python: ['3.6', '3.7', '3.8']
-        check_docs: ['0']
-        check_formatting: ['0']
         qt_library: ['PyQt5']
-        include:
-          - python: '3.8'
-            check_docs: '1'
-            extra_name: ', check docs'
-          - python: '3.8'
-            check_formatting: '1'
-            extra_name: ', check formatting'
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -64,8 +85,6 @@ jobs:
       - name: Run tests
         run: ./ci.sh
         env:
-          CHECK_DOCS: '${{ matrix.check_docs }}'
-          CHECK_FORMATTING: '${{ matrix.check_formatting }}'
           # Should match 'name:' up above
           JOB_NAME: 'Ubuntu (${{ matrix.python }}, ${{ matrix.qt_library }})'
           INSTALL_EXTRAS: '[${{ matrix.qt_library }}]'
@@ -97,6 +116,7 @@ jobs:
     name: All
     runs-on: ubuntu-latest
     needs:
+      - Checks
       - Windows
       - Ubuntu
       - macOS
