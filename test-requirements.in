@@ -4,3 +4,7 @@ pytest
 pytest-cov
 pytest-qt
 pytest-xvfb
+
+# https://github.com/jazzband/pip-tools/issues/563
+# Just include everything without markers.  For example, xvfb is only really needed on
+# Linux.
