@@ -45,7 +45,9 @@ jobs:
           CHECK_FORMATTING: '${{ matrix.check_formatting }}'
           # Should match 'name:' up above
           JOB_NAME: '${{ matrix.name }}'
-          INSTALL_EXTRAS: ''
+          # TODO: needs some Qt library but I'm not clear the implications of
+          #       choosing one over the other
+          INSTALL_EXTRAS: '[PyQt5]'
 
   Windows:
     name: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_library }})'
