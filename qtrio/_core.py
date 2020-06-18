@@ -1,8 +1,8 @@
-import contextlib
 import sys
 import traceback
 import typing
 
+import async_generator
 import attr
 import outcome
 import PyQt5.QtCore
@@ -207,7 +207,7 @@ def signal_event(signal: PyQt5.QtCore.pyqtBoundSignal) -> trio.Event:
     return event
 
 
-@contextlib.asynccontextmanager
+@async_generator.asynccontextmanager
 async def signal_event_manager(signal: PyQt5.QtCore.pyqtBoundSignal):
     event = signal_event(signal)
     yield event
