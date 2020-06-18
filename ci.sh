@@ -56,10 +56,6 @@ else
 
     INSTALLDIR=$(python -c "import os, ${PACKAGE_NAME}; print(os.path.dirname(${PACKAGE_NAME}.__file__))")
     cp ../setup.cfg $INSTALLDIR
-
-    # Diagnostic...
-    ldd $(python -c 'import PyQt5; import os.path; print(os.path.join(os.path.dirname(PyQt5.__file__), "Qt", "plugins", "platforms", "libqxcb.so"))')
-
     if pytest -W error -r a --junitxml=../test-results.xml ${INSTALLDIR} --cov="$INSTALLDIR" --cov-config=../.coveragerc --verbose --capture=no --no-qt-log; then
         PASSED=true
     else
