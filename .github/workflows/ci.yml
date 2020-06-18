@@ -93,8 +93,8 @@ jobs:
           python-version: '${{ matrix.python }}'
       - name: Install Qt5 dependencies
         run: |
-          apt-get update --yes
-          apt-get install --yes libgl1
+          sudo apt-get update --yes
+          sudo apt-get install --yes libgl1
       - name: Run tests
         run: ./ci.sh
         env:
