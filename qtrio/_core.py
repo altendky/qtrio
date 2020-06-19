@@ -1,3 +1,5 @@
+import contextlib
+import functools
 import sys
 import traceback
 import typing
@@ -54,6 +56,70 @@ async def wait_signal(signal: SignalInstance) -> typing.Any:
         signal.disconnect(connection)
 
     return result
+
+
+@attr.s(auto_attribs=True, frozen=True, slots=True)
+class Emission:
+    """Stores the emission of a signal including the emitted arguments.  Can be
+    compared against a signal instance to check the source.
+
+    Note:
+        Each time you access a signal such as `a_qobject.some_signal` you get a
+        different signal instance object so the `signal` attribute generally will not
+        be the same object.  A signal instance is a `QtCore.SignalInstance` in PySide2
+        or `QtCore.pyqtBoundSignal` in PyQt5.
+
+    Attributes:
+        signal: An instance of the original signal.
+        args: A tuple of the arguments emitted by the signal.
+    """
+
+    signal: SignalInstance
+    args: typing.Tuple[typing.Any, ...]
+
+    def is_from(self, signal: SignalInstance) -> bool:
+        """Check if this emission came from `signal`.
+
+        Args:
+            signal: The signal instance to check for being the source.
+        """
+
+        # TODO: `repr()` here seems really bad.
+        return (
+                self.signal.signal == signal.signal
+                and repr(self.signal) == repr(signal)
+        )
+
+
+async def emissions(
+        signals: typing.Collection[SignalInstance],
+):
+    """Enable iteration over the emissions of the `signals`.
+
+    Args:
+        signals: A collection of signals from which :class:`Emission`s will be yielded
+    """
+
+    # Infinite buffer because I don't think there's any use in storing the emission
+    # info in a `slot()` stack frame rather than in the memory channel.  Perhaps in the
+    # future we can implement a limit beyond which events are thrown away to avoid
+    # infinite queueing.
+    send_channel, receive_channel = trio.open_memory_channel(max_buffer_size=math.inf)
+
+    async def slot(signal, *args):
+        await send_channel.send(Emission(signal=signal, args=args))
+
+    async with trio.open_nursery() as nursery:
+        with contextlib.ExitStack() as stack:
+            for signal in signals:
+                stack.enter_context(
+                    qtrio._qt.connection(
+                        signal, functools.partial(nursery.start_soon, slot, signal)
+                    ),
+                )
+
+            async for emission in receive_channel:
+                yield emission
 
 
 @attr.s(auto_attribs=True, frozen=True, slots=True)

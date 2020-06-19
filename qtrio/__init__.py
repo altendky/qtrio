@@ -4,6 +4,7 @@ from ._version import __version__
 
 from ._core import (
     wait_signal,
+    emissions,
     Outcomes,
     run,
     Runner,
