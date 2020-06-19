@@ -6,6 +6,10 @@ class NoOutcomesError(QTrioException):
     pass
 
 
+class RegisterEventTypeError(QTrioException):
+    pass
+
+
 class ReturnCodeError(QTrioException):
     pass
 
