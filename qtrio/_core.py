@@ -85,15 +85,10 @@ class Emission:
         """
 
         # TODO: `repr()` here seems really bad.
-        return (
-                self.signal.signal == signal.signal
-                and repr(self.signal) == repr(signal)
-        )
+        return self.signal.signal == signal.signal and repr(self.signal) == repr(signal)
 
 
-async def emissions(
-        signals: typing.Collection[SignalInstance],
-):
+async def emissions(signals: typing.Collection[SignalInstance],):
     """Enable iteration over the emissions of the `signals`.
 
     Args:
