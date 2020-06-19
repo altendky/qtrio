@@ -233,9 +233,9 @@ class Runner:
         self.application.postEvent(self.reenter, event)
 
     async def trio_main(
-            self,
-            async_fn: typing.Callable[[], typing.Awaitable[None]],
-            args: typing.Tuple[typing.Any, ...],
+        self,
+        async_fn: typing.Callable[[], typing.Awaitable[None]],
+        args: typing.Tuple[typing.Any, ...],
     ) -> None:
         """Will be run as the main async function by the Trio guest.  It creates a
         cancellation scope to be cancelled when `QtGui.QGuiApplication.lastWindowClosed`
