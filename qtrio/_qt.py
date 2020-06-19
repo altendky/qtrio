@@ -1,6 +1,6 @@
 import contextlib
 
-from PyQt5 import QtCore
+from qtpy import QtCore
 
 
 def identifier_path(it):
@@ -67,4 +67,10 @@ def connection(signal, slot):
     try:
         yield this_connection
     finally:
-        signal.disconnect(this_connection)
+        import qtpy
+        if qtpy.API in qtpy.PYQT5_API:
+            signal.disconnect(this_connection)
+        else:
+            # PySide2 presently returns a bool rather than a QMetaObject.Connection
+            # https://bugreports.qt.io/browse/PYSIDE-1334
+            signal.disconnect(slot)

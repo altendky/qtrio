@@ -54,7 +54,7 @@ def test_run_returns_value(testdir):
 def test_qt_quit_cancels_trio(testdir):
     test_file = r"""
     import outcome
-    import PyQt5.QtCore
+    from qtpy import QtCore
     import trio
 
     import qtrio
@@ -62,9 +62,9 @@ def test_qt_quit_cancels_trio(testdir):
 
     def test():
         async def main():
-            PyQt5.QtCore.QTimer.singleShot(
+            QtCore.QTimer.singleShot(
                 100,
-                PyQt5.QtCore.QCoreApplication.instance().lastWindowClosed.emit,
+                QtCore.QCoreApplication.instance().lastWindowClosed.emit,
             )
 
             while True:
