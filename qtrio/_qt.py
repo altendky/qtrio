@@ -68,6 +68,7 @@ def connection(signal, slot):
         yield this_connection
     finally:
         import qtpy
+
         if qtpy.API in qtpy.PYQT5_API:
             signal.disconnect(this_connection)
         else:

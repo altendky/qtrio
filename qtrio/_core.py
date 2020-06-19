@@ -16,7 +16,8 @@ import qtrio._qt
 
 # https://github.com/spyder-ide/qtpy/pull/214
 import qtpy
-if qtpy.API in qtpy.PYQT5_API and not hasattr(QtCore, 'SignalInstance'):
+
+if qtpy.API in qtpy.PYQT5_API and not hasattr(QtCore, "SignalInstance"):
     SignalInstance = QtCore.pyqtBoundSignal
 else:
     SignalInstance = QtCore.SignalInstance
@@ -154,9 +155,7 @@ class Runner:
 
     def run(
         self,
-        async_fn: typing.Callable[
-            [QtWidgets.QApplication], typing.Awaitable[None],
-        ],
+        async_fn: typing.Callable[[QtWidgets.QApplication], typing.Awaitable[None],],
         *args,
         execute_application: bool = True,
     ):
