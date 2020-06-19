@@ -5,29 +5,39 @@ import typing
 import async_generator
 import attr
 import outcome
-import PyQt5.QtCore
-import PyQt5.QtGui
-import PyQt5.QtWidgets
+from qtpy import QtCore
+from qtpy import QtGui
+from qtpy import QtWidgets
 import trio
 
 import qtrio
 import qtrio._qt
 
 
-REENTER_EVENT = PyQt5.QtCore.QEvent.Type(PyQt5.QtCore.QEvent.registerEventType(),)
+# https://github.com/spyder-ide/qtpy/pull/214
+import qtpy
+
+if qtpy.API in qtpy.PYQT5_API and not hasattr(QtCore, "SignalInstance"):
+    SignalInstance = QtCore.pyqtBoundSignal
+else:
+    SignalInstance = QtCore.SignalInstance
+del qtpy
 
 
-class ReenterEvent(PyQt5.QtCore.QEvent):
+REENTER_EVENT = QtCore.QEvent.Type(QtCore.QEvent.registerEventType(),)
+
+
+class ReenterEvent(QtCore.QEvent):
     pass
 
 
-class Reenter(PyQt5.QtCore.QObject):
-    def event(self, event: PyQt5.QtCore.QEvent) -> bool:
+class Reenter(QtCore.QObject):
+    def event(self, event: QtCore.QEvent) -> bool:
         event.fn()
         return False
 
 
-async def wait_signal(signal: PyQt5.QtCore.pyqtBoundSignal) -> typing.Any:
+async def wait_signal(signal: SignalInstance) -> typing.Any:
     event = trio.Event()
     result = None
 
@@ -129,8 +139,8 @@ class Runner:
             this callback.
     """
 
-    application: PyQt5.QtGui.QGuiApplication = attr.ib(
-        factory=lambda: PyQt5.QtWidgets.QApplication(sys.argv),
+    application: QtGui.QGuiApplication = attr.ib(
+        factory=lambda: QtWidgets.QApplication(sys.argv),
     )
     quit_application: bool = True
 
@@ -145,9 +155,7 @@ class Runner:
 
     def run(
         self,
-        async_fn: typing.Callable[
-            [PyQt5.QtWidgets.QApplication], typing.Awaitable[None],
-        ],
+        async_fn: typing.Callable[[QtWidgets.QApplication], typing.Awaitable[None],],
         *args,
         execute_application: bool = True,
     ):
@@ -160,7 +168,7 @@ class Runner:
         )
 
         if execute_application:
-            return_code = self.application.exec()
+            return_code = self.application.exec_()
 
             self.outcomes = attr.evolve(
                 self.outcomes, qt=outcome_from_application_return_code(return_code),
@@ -196,7 +204,7 @@ class Runner:
             self.application.quit()
 
 
-def signal_event(signal: PyQt5.QtCore.pyqtBoundSignal) -> trio.Event:
+def signal_event(signal: SignalInstance) -> trio.Event:
     # TODO: does this leave these pairs laying around uncollectable?
     event = trio.Event()
 
@@ -208,7 +216,7 @@ def signal_event(signal: PyQt5.QtCore.pyqtBoundSignal) -> trio.Event:
 
 
 @async_generator.asynccontextmanager
-async def signal_event_manager(signal: PyQt5.QtCore.pyqtBoundSignal):
+async def signal_event_manager(signal: SignalInstance):
     event = signal_event(signal)
     yield event
     await event.wait()
