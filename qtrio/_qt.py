@@ -27,6 +27,7 @@ class Signal:
     `QtCore.Signal` uses the Python descriptor protocol to intercept the attribute
     access, so does this so it can 'redirect' to the signal on the other object.
     """
+
     attribute_name = None
 
     def __init__(self, *args, **kwargs):
