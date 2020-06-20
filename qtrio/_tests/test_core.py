@@ -404,7 +404,7 @@ def test_outcome_from_application_return_code_error():
 
 
 def test_failed_hosted_trio_prints_exception(testdir):
-    """wait_signal() waits for the signal."""
+    """Except is printed when main Trio function raises."""
     test_file = r"""
     from qtpy import QtCore
     import qtrio

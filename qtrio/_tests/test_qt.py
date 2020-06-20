@@ -5,6 +5,8 @@ import qtrio._qt
 
 
 def test_signal_emits(qtbot):
+    """qtrio._core.Signal emits."""
+
     class NotQObject:
         signal = qtrio._qt.Signal()
 
@@ -15,6 +17,8 @@ def test_signal_emits(qtbot):
 
 
 def test_signal_emits_value(qtbot):
+    """qtrio._core.Signal emits a value."""
+
     class NotQObject:
         signal = qtrio._qt.Signal(int)
 
@@ -34,6 +38,8 @@ def test_signal_emits_value(qtbot):
 
 
 def test_accessing_signal_on_class_results_in_our_signal():
+    """qtrio._core.Signal instance accessible via class attribute."""
+
     class NotQObject:
         signal = qtrio._qt.Signal(int)
 
@@ -41,6 +47,8 @@ def test_accessing_signal_on_class_results_in_our_signal():
 
 
 def test_our_signal_object_method_returns_qobject():
+    """qtrio._core.Signal instance provides access to signal-hosting QObject."""
+
     class NotQObject:
         signal = qtrio._qt.Signal(int)
 
@@ -50,6 +58,8 @@ def test_our_signal_object_method_returns_qobject():
 
 
 def test_connection_connects(qtbot):
+    """qtrio._core.connection connects signal inside managed context."""
+
     class MyQObject(QtCore.QObject):
         signal = QtCore.Signal(int)
 
@@ -69,6 +79,8 @@ def test_connection_connects(qtbot):
 
 
 def test_connection_disconnects(qtbot):
+    """qtrio._core.connection disconnects signal when exiting managed context."""
+
     class MyQObject(QtCore.QObject):
         signal = QtCore.Signal(int)
 
@@ -88,6 +100,8 @@ def test_connection_disconnects(qtbot):
 
 
 def test_connection_yield_can_be_disconnected(qtbot):
+    """qtrio._core.connection result can be used to disconnect the signal early."""
+
     class MyQObject(QtCore.QObject):
         signal = QtCore.Signal(int)
 
@@ -107,6 +121,8 @@ def test_connection_yield_can_be_disconnected(qtbot):
 
 
 def test_failed_connection_raises():
+    """qtrio._core.connection raises TypeError on failure to connect."""
+
     class MyQObject(QtCore.QObject):
         signal = QtCore.Signal()
 
