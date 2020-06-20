@@ -115,4 +115,4 @@ def test_failed_connection_raises():
     # TODO: get more specific about the exception
     with pytest.raises(Exception):
         with qtrio._qt.connection(instance, 2):
-            pass
+            pass    # pragma: no cover
