@@ -4,13 +4,15 @@ import qtrio._core
 
 
 def test_reenter_event_triggers_in_main_thread(qapp):
+    """Reenter events posted in another thread result in the function being run in the
+    main thread.
+    """
     result = []
 
     reenter = qtrio._core.Reenter()
 
     def post():
-        event = qtrio._core.ReenterEvent(qtrio._core.REENTER_EVENT)
-        event.fn = handler
+        event = qtrio._core.create_reenter_event(fn=handler)
         qapp.postEvent(reenter, event)
 
     def handler():
@@ -29,6 +31,8 @@ timeout = 10
 
 
 def test_run_returns_value(testdir):
+    """:func:`qtrio.run()` returns the result of the passed async function."""
+
     test_file = r"""
     import outcome
 
@@ -52,6 +56,8 @@ def test_run_returns_value(testdir):
 
 
 def test_qt_quit_cancels_trio(testdir):
+    """When the Qt application exits the main Trio function is cancelled."""
+
     test_file = r"""
     import outcome
     from qtpy import QtCore
@@ -81,6 +87,8 @@ def test_qt_quit_cancels_trio(testdir):
 
 
 def test_run_runs_in_main_thread(testdir):
+    """The async function run by :func:`qtrio.run` is executed in the Qt host thread."""
+
     test_file = r"""
     import threading
 
@@ -102,6 +110,9 @@ def test_run_runs_in_main_thread(testdir):
 
 
 def test_runner_runs_in_main_thread(testdir):
+    """A directly used :class:`qtrio.Runner` runs the async function in the Qt host
+    thread.
+    """
     test_file = r"""
     import threading
 
@@ -124,6 +135,9 @@ def test_runner_runs_in_main_thread(testdir):
 
 
 def test_done_callback_runs_in_main_thread(testdir):
+    """The done callback run by the Trio guest when finished is run in the Qt host
+    thread.
+    """
     test_file = r"""
     import threading
 
@@ -150,6 +164,7 @@ def test_done_callback_runs_in_main_thread(testdir):
 
 
 def test_done_callback_gets_outcomes(testdir):
+    """The done callback is passed the outcomes with the Trio entry filled."""
     test_file = r"""
     import outcome
 
