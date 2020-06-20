@@ -73,14 +73,13 @@ def connection(signal, slot):
     try:
         yield this_connection
     finally:
-        if this_connection is not None:
-            if qtpy.PYSIDE2:
-                expected_exception = RuntimeError
-            else:
-                expected_exception = TypeError
+        if qtpy.PYSIDE2:
+            expected_exception = RuntimeError
+        else:
+            expected_exception = TypeError
 
-            try:
-                # can we precheck and avoid the exception?
-                signal.disconnect(this_connection)
-            except expected_exception:
-                pass
+        try:
+            # can we precheck and avoid the exception?
+            signal.disconnect(this_connection)
+        except expected_exception:
+            pass
