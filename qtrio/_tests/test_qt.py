@@ -32,6 +32,22 @@ def test_signal_emits_value(qtbot):
     assert result == 13
 
 
+def test_accessing_signal_on_class_results_in_our_signal():
+    class NotQObject:
+        signal = qtrio._qt.Signal(int)
+
+    assert isinstance(NotQObject.signal, qtrio._qt.Signal)
+
+
+def test_our_signal_object_method_returns_qobject():
+    class NotQObject:
+        signal = qtrio._qt.Signal(int)
+
+    instance = NotQObject()
+
+    assert isinstance(NotQObject.signal.object(instance=instance), QtCore.QObject)
+
+
 def test_connection_connects(qtbot):
     class MyQObject(QtCore.QObject):
         signal = QtCore.Signal(int)

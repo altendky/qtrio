@@ -31,6 +31,11 @@ class Signal:
         if instance is None:
             return self
 
+        o = self.object(instance=instance)
+
+        return o.signal
+
+    def object(self, instance):
         d = getattr(instance, self.attribute_name, None)
 
         if d is None:
@@ -42,11 +47,7 @@ class Signal:
             o = self.object_cls()
             d[self.object_cls] = o
 
-        signal = o.signal
-        return signal
-
-    def object(self, instance):
-        return getattr(instance, self.attribute_name)[self.object_cls]
+        return o
 
 
 Signal.attribute_name = qtrio._python.identifier_path(Signal)

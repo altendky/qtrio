@@ -1,15 +1,17 @@
-import pytest
-import trio
-
-import qtrio
-
-
-@pytest.mark.xfail(reason="this is supposed to fail", strict=True)
-@qtrio.host
-async def test_times_out(request):
+def test_wait_signal_returns_the_value(testdir):
     """The overrunning test is timed out."""
 
-    await trio.sleep(10)
+    test_file = r"""
+    import qtrio
+
+    @qtrio.host
+    async def test_times_out(request):
+        await trio.sleep(10)
+    """
+    testdir.makepyfile(test_file)
+
+    result = testdir.runpytest_subprocess(timeout=10)
+    result.assert_outcomes(failed=1)
 
 
 # TODO: test that the timeout case doesn't leave trio active...  like

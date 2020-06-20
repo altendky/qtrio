@@ -398,3 +398,25 @@ def test_outcome_from_application_return_code_error():
     result = qtrio._core.outcome_from_application_return_code(return_code=-1)
 
     assert result == outcome.Error(qtrio.ReturnCodeError(-1))
+
+
+def test_failed_hosted_trio_prints_exception(testdir):
+    """wait_signal() waits for the signal."""
+    test_file = r"""
+    from qtpy import QtCore
+    import qtrio
+
+
+    class UniqueLocalException(Exception):
+        pass
+
+
+    @qtrio.host
+    async def test(request):
+        raise UniqueLocalException()
+    """
+    testdir.makepyfile(test_file)
+
+    result = testdir.runpytest_subprocess(timeout=timeout)
+    result.assert_outcomes(failed=1)
+    result.stdout.re_match_lines(lines2=['--- Error(UniqueLocalException())'])
