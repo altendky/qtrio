@@ -1,4 +1,7 @@
+"""Tools to help working with QTrio in pytest."""
+
 import functools
+import typing
 
 import outcome
 import pytest
@@ -6,7 +9,21 @@ import pytest
 import qtrio
 
 
-def host(test_function):
+def host(test_function: typing.Callable[..., typing.Awaitable[None]]):
+    """
+    Decorate your tests that you want run with a Trio guest and a Qt Host.
+
+    Note:
+        Presently the test is required to specify the `request` fixture so this
+        decorator can intercept and use it.
+
+    Warning:
+        The interface for specifying tests to run with in this way will likely change a
+        lot.  Try to keep up.
+
+    Args:
+        test_function: The pytest function to be tested.
+    """
     timeout = 3000
 
     @pytest.mark.usefixtures("qapp", "qtbot")

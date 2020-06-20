@@ -1,3 +1,10 @@
+"""The module holding the core features of QTrio.
+
+Attributes:
+    REENTER_EVENT_HINT: The registered event type hint for our reenter events.
+    REENTER_EVENT: The QtCore.QEvent.Type enumerator for our reenter events.
+"""
+
 import contextlib
 import functools
 import sys
@@ -26,24 +33,48 @@ else:
 del qtpy
 
 
-REENTER_EVENT = QtCore.QEvent.Type(QtCore.QEvent.registerEventType(),)
+REENTER_EVENT_HINT: int = QtCore.QEvent.registerEventType()
+if REENTER_EVENT_HINT == -1:
+    message = (
+        "Failed to register the event hint, either no available hints remain or the"
+        + " program is shutting down."
+    )
+    raise qtrio.RegisterEventTypeError(message)
+
+REENTER_EVENT: QtCore.QEvent.Type = QtCore.QEvent.Type(REENTER_EVENT_HINT)
 
 
-class ReenterEvent(QtCore.QEvent):
-    pass
+def create_reenter_event(fn):
+    """Create a proper `QtCore.QEvent` for reentering into the Qt host loop."""
+    event = QtCore.QEvent(REENTER_EVENT)
+    event.fn = fn
+    return event
 
 
 class Reenter(QtCore.QObject):
+    """A `QtCore.QObject` for handling reenter events."""
+
     def event(self, event: QtCore.QEvent) -> bool:
+        """Qt calls this when the object receives an event."""
         event.fn()
         return False
 
 
-async def wait_signal(signal: SignalInstance) -> typing.Any:
+async def wait_signal(signal: SignalInstance) -> typing.Tuple[typing.Any, ...]:
+    """Block for the next emission of `signal` and return the emitted arguments.
+
+    Args:
+        signal: The signal instance to wait for emission of.
+    """
     event = trio.Event()
     result = None
 
     def slot(*args):
+        """Receive and store the emitted arguments and set the event so we can continue.
+
+        Args:
+            args: The arguments emitted from the signal.
+        """
         nonlocal result
         result = args
         event.set()
@@ -216,10 +247,24 @@ class Runner:
 
     def run(
         self,
-        async_fn: typing.Callable[[QtWidgets.QApplication], typing.Awaitable[None],],
+        async_fn: typing.Callable[[], typing.Awaitable[None]],
         *args,
         execute_application: bool = True,
-    ):
+    ) -> outcome.Outcome:
+        """Start the guest loop executing `async_fn`.
+
+        Args:
+            async_fn: The async function to be run in the Qt host loop by the Trio
+                guest.
+            args: Arguments to pass when calling `async_fn`.
+            execute_application: If True, the Qt application will be executed and this
+                call will block until it finishes.
+
+        Returns:
+            If `execute_application` is true, an :class:`Outcomes` containing outcomes
+            from the Qt application and `async_fn` will be returned.  Otherwise, an
+            empty :class:`Outcomes`.
+        """
         trio.lowlevel.start_guest_run(
             self.trio_main,
             async_fn,
@@ -237,19 +282,47 @@ class Runner:
 
         return self.outcomes
 
-    def run_sync_soon_threadsafe(self, fn):
-        event = ReenterEvent(REENTER_EVENT)
-        event.fn = fn
+    def run_sync_soon_threadsafe(self, fn: typing.Callable[[], typing.Any]) -> None:
+        """Helper for the Trio guest to execute a sync function in the Qt host
+        thread when called from the Trio guest thread.  This call will not block waiting
+        for completion of `fn` nor will it return the result of calling `fn`.
+
+        Args:
+            fn: A no parameter callable.
+        """
+        event = create_reenter_event(fn=fn)
         self.application.postEvent(self.reenter, event)
 
-    async def trio_main(self, async_fn, args):
+    async def trio_main(
+        self,
+        async_fn: typing.Callable[[], typing.Awaitable[None]],
+        args: typing.Tuple[typing.Any, ...],
+    ) -> None:
+        """Will be run as the main async function by the Trio guest.  It creates a
+        cancellation scope to be cancelled when `QtGui.QGuiApplication.lastWindowClosed`
+        is emitted.  Within this scope the application's `async_fn` will be run and
+        passed `args`.
+
+        Args:
+            async_fn: The application's main async function to be run by Trio in the Qt
+                host's thread.
+            args: Positional arguments to be passed to `async_fn`
+        """
         with trio.CancelScope() as self.cancel_scope:
             with qtrio._qt.connection(
                 signal=self.application.lastWindowClosed, slot=self.cancel_scope.cancel,
             ):
                 return await async_fn(*args)
 
-    def trio_done(self, run_outcome):
+    def trio_done(self, run_outcome: outcome.Outcome) -> None:
+        """Will be called after the Trio guest run has finished.  This allows collection
+        of the :class:`outcome.Outcome` and execution of any application provided done
+        callback.  Finally, if `quit_application` was set when creating the instance
+        then the Qt application will be requested to quit().
+
+        Actions such as outputting error information or unwrapping the outcomes need
+        to be further considered.
+        """
         self.outcomes = attr.evolve(self.outcomes, trio=run_outcome)
 
         # TODO: should stuff be reported here?  configurable by caller?
@@ -266,10 +339,24 @@ class Runner:
 
 
 def signal_event(signal: SignalInstance) -> trio.Event:
+    """Create a :class:`trio.Event` which will be set when the signal is emitted.
+
+    Note:
+        The arguments emitted through the signal are not captured.
+
+    Warning:
+        This may just be a vestige of early exploration and may be removed.
+
+    Args:
+        signal: A signal instance to be connected to the returned :class:`trio.Event`.
+
+    Returns:
+        A :class:`trio.Event` that will be set when the signal is emitted.
+    """
     # TODO: does this leave these pairs laying around uncollectable?
     event = trio.Event()
 
-    def event_set(*args, **kwargs):
+    def event_set(*args):
         event.set()
 
     signal.connect(event_set)
@@ -277,7 +364,15 @@ def signal_event(signal: SignalInstance) -> trio.Event:
 
 
 @async_generator.asynccontextmanager
-async def signal_event_manager(signal: SignalInstance):
+async def signal_event_manager(signal: SignalInstance) -> None:
+    """A context manager that will block on exit until the signal is emitted.
+
+    Warning:
+        This may just be a vestige of early exploration and may be removed.
+
+    Args:
+         signal: The signal to wait for when exiting.
+    """
     event = signal_event(signal)
     yield event
     await event.wait()
