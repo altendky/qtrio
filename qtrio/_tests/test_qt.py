@@ -1,4 +1,5 @@
 from qtpy import QtCore
+import pytest
 
 import qtrio._qt
 
@@ -103,3 +104,15 @@ def test_connection_yield_can_be_disconnected(qtbot):
         instance.signal.emit(2)
 
     assert results == [1]
+
+
+def test_failed_connection_raises():
+    class MyQObject(QtCore.QObject):
+        signal = QtCore.Signal()
+
+    instance = MyQObject()
+
+    # TODO: get more specific about the exception
+    with pytest.raises(Exception):
+        with qtrio._qt.connection(instance, 2):
+            pass

@@ -68,10 +68,10 @@ def connection(signal, slot):
     if qtpy.PYSIDE2:
         # PySide2 presently returns a bool rather than a QMetaObject.Connection
         # https://bugreports.qt.io/browse/PYSIDE-1334
-        if this_connection:
-            this_connection = slot
-        else:
-            this_connection = None
+        if not this_connection:
+            raise Exception()
+
+        this_connection = slot
 
     try:
         yield this_connection
