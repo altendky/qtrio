@@ -1,13 +1,32 @@
+"""This module provides general Qt related utilities that are not Trio specific."""
+
 import contextlib
 
 from qtpy import QtCore
 
 
 def identifier_path(it):
+    """Generate an identifier based on an object's module and qualified name.  This can
+    be useful such as for adding attributes to existing objects while minimizing odds
+    of collisions and maximizing traceability of the related party.
+
+    Args:
+        it: The object to generate the identifer from.
+    """
     return "__" + "_".join(it.__module__.split(".") + [it.__qualname__])
 
 
 class Signal:
+    """This is a (nearly) drop-in replacement for QtCore.Signal.  The useful difference
+    is that it does not require inheriting from `QtCore.QObject`.  The not-quite part is
+    that it will be a bit more complicated to change thread affinity of the relevant
+    `QtCore.QObject`.  If you need this, maybe just inherit.
+
+    This signal gets around the normally required inheritance by creating
+    `QtCore.QObject` instances behind the scenes to host the real signals.  Just as
+    `QtCore.Signal` uses the Python descriptor protocol to intercept the attribute
+    access, so does this so it can 'redirect' to the signal on the other object.
+    """
     attribute_name = None
 
     def __init__(self, *args, **kwargs):
@@ -41,28 +60,14 @@ class Signal:
 Signal.attribute_name = identifier_path(Signal)
 
 
-class Connections:
-    def __init__(self, signal, slot=None, slots=(), connect=True):
-        self.signal = signal
-        self.slots = slots
-
-        if slot is not None:
-            self.slots = (slot,) + self.slots
-
-        if connect:
-            self.connect()
-
-    def connect(self):
-        for slot in self.slots:
-            self.signal.connect(slot)
-
-    def disconnect(self):
-        for slot in self.slots:
-            self.signal.disconnect(slot)
-
-
 @contextlib.contextmanager
 def connection(signal, slot):
+    """Connect a signal and slot for the duration of the context manager.
+
+    Args:
+        signal: The signal to connect.
+        slot: The callable to connect the signal to.
+    """
     this_connection = signal.connect(slot)
     try:
         yield this_connection
