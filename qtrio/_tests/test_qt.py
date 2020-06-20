@@ -113,6 +113,6 @@ def test_failed_connection_raises():
     instance = MyQObject()
 
     # TODO: get more specific about the exception
-    with pytest.raises(Exception):
-        with qtrio._qt.connection(instance, 2):
+    with pytest.raises(TypeError):
+        with qtrio._qt.connection(instance.signal, 2):
             pass  # pragma: no cover
