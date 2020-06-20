@@ -27,7 +27,7 @@ def test_reenter_event_triggers_in_main_thread(qapp):
     assert result == [threading.get_ident()]
 
 
-timeout = 3
+timeout = 10
 
 
 def test_run_returns_value(testdir):
