@@ -77,12 +77,8 @@ async def wait_signal(signal: SignalInstance) -> typing.Tuple[typing.Any, ...]:
         result = args
         event.set()
 
-    connection = signal.connect(slot)
-
-    try:
+    with qtrio._qt.connection(signal, slot):
         await event.wait()
-    finally:
-        signal.disconnect(connection)
 
     return result
 

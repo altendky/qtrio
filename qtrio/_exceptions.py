@@ -23,7 +23,11 @@ class RegisterEventTypeError(QTrioException):
 class ReturnCodeError(QTrioException):
     """Wraps a QApplication return code as an exception."""
 
-    pass
+    def __eq__(self, other):
+        return (
+            isinstance(other, type(self))
+            and self.args == other.args
+        )
 
 
 class UserCancelledError(QTrioException):
