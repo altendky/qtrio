@@ -103,4 +103,3 @@ def test_connection_yield_can_be_disconnected(qtbot):
         instance.signal.emit(2)
 
     assert results == [1]
-

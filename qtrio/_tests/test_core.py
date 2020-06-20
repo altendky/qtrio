@@ -315,6 +315,7 @@ def test_outcomes_unwrap_returns_trio_value_over_qt_value():
 
 def test_outcomes_unwrap_raises_trio_error_over_qt_none():
     """Unwrapping an Outcomes prioritizes a Trio error over a Qt None."""
+
     class LocalUniqueException(Exception):
         pass
 
@@ -325,12 +326,12 @@ def test_outcomes_unwrap_raises_trio_error_over_qt_none():
 
 def test_outcomes_unwrap_raises_trio_error_over_qt_value():
     """Unwrapping an Outcomes prioritizes a Trio error over a Qt value."""
+
     class LocalUniqueException(Exception):
         pass
 
     this_outcome = qtrio.Outcomes(
-        qt=outcome.Value(9),
-        trio=outcome.Error(LocalUniqueException()),
+        qt=outcome.Value(9), trio=outcome.Error(LocalUniqueException()),
     )
 
     with pytest.raises(LocalUniqueException):
@@ -339,6 +340,7 @@ def test_outcomes_unwrap_raises_trio_error_over_qt_value():
 
 def test_outcomes_unwrap_raises_trio_error_over_qt_error():
     """Unwrapping an Outcomes prioritizes a Trio error over a Qt error."""
+
     class LocalUniqueException(Exception):
         pass
 
@@ -364,6 +366,7 @@ def test_outcomes_unwrap_returns_qt_value_over_trio_none():
 
 def test_outcomes_unwrap_raises_qt_error_over_trio_none():
     """Unwrapping an Outcomes prioritizes a Qt error over a Trio None."""
+
     class LocalUniqueException(Exception):
         pass
 
@@ -374,12 +377,12 @@ def test_outcomes_unwrap_raises_qt_error_over_trio_none():
 
 def test_outcomes_unwrap_raises_qt_error_over_trio_value():
     """Unwrapping an Outcomes prioritizes a Qt error over a Trio value."""
+
     class LocalUniqueException(Exception):
         pass
 
     this_outcome = qtrio.Outcomes(
-        qt=outcome.Error(LocalUniqueException()),
-        trio=outcome.Value(8),
+        qt=outcome.Error(LocalUniqueException()), trio=outcome.Value(8),
     )
 
     with pytest.raises(LocalUniqueException):
@@ -419,4 +422,4 @@ def test_failed_hosted_trio_prints_exception(testdir):
 
     result = testdir.runpytest_subprocess(timeout=timeout)
     result.assert_outcomes(failed=1)
-    result.stdout.re_match_lines(lines2=['--- Error(UniqueLocalException())'])
+    result.stdout.re_match_lines(lines2=["--- Error(UniqueLocalException())"])

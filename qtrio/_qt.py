@@ -64,6 +64,7 @@ def connection(signal, slot):
     this_connection = signal.connect(slot)
 
     import qtpy
+
     if qtpy.PYSIDE2:
         # PySide2 presently returns a bool rather than a QMetaObject.Connection
         # https://bugreports.qt.io/browse/PYSIDE-1334
