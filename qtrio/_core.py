@@ -77,12 +77,8 @@ async def wait_signal(signal: SignalInstance) -> typing.Tuple[typing.Any, ...]:
         result = args
         event.set()
 
-    connection = signal.connect(slot)
-
-    try:
+    with qtrio._qt.connection(signal, slot):
         await event.wait()
-    finally:
-        signal.disconnect(connection)
 
     return result
 
@@ -275,43 +271,3 @@ class Runner:
 
         if self.quit_application:
             self.application.quit()
-
-
-def signal_event(signal: SignalInstance) -> trio.Event:
-    """Create a :class:`trio.Event` which will be set when the signal is emitted.
-
-    Note:
-        The arguments emitted through the signal are not captured.
-
-    Warning:
-        This may just be a vestige of early exploration and may be removed.
-
-    Args:
-        signal: A signal instance to be connected to the returned :class:`trio.Event`.
-
-    Returns:
-        A :class:`trio.Event` that will be set when the signal is emitted.
-    """
-    # TODO: does this leave these pairs laying around uncollectable?
-    event = trio.Event()
-
-    def event_set(*args):
-        event.set()
-
-    signal.connect(event_set)
-    return event
-
-
-@async_generator.asynccontextmanager
-async def signal_event_manager(signal: SignalInstance) -> None:
-    """A context manager that will block on exit until the signal is emitted.
-
-    Warning:
-        This may just be a vestige of early exploration and may be removed.
-
-    Args:
-         signal: The signal to wait for when exiting.
-    """
-    event = signal_event(signal)
-    yield event
-    await event.wait()
