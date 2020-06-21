@@ -17,4 +17,5 @@ from ._core import (
     Runner,
 )
 
+from ._qt import connection
 from ._pytest import host
