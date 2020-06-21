@@ -158,7 +158,7 @@ class Runner:
 
     Args:
 
-        application: The Qt application object to run as the host.  I not set before
+        application: The Qt application object to run as the host.  If not set before
             calling :meth:`run` the application will be created as
             `QtWidgets.QApplication(sys.argv[1:])` and
             `.setQuitOnLastWindowClosed(False)` will be called on it to allow the
