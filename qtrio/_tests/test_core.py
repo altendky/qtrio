@@ -57,6 +57,31 @@ def test_run_returns_value(testdir):
     result.assert_outcomes(passed=1)
 
 
+def test_run_passes_args(testdir):
+    """:func:`qtrio.run()` passes *args to async function."""
+
+    test_file = r"""
+    import outcome
+
+    import qtrio
+
+    def test():
+        result = []
+        
+        async def main(arg1, arg2):
+            result.append(arg1)
+            result.append(arg2)
+
+        qtrio.run(main, 27, 32)
+
+        assert result == [27, 32]
+    """
+    testdir.makepyfile(test_file)
+
+    result = testdir.runpytest_subprocess(timeout=timeout)
+    result.assert_outcomes(passed=1)
+
+
 def test_qt_quit_cancels_trio(testdir):
     """When the Qt application exits the main Trio function is cancelled."""
 
