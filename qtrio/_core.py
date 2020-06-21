@@ -120,15 +120,19 @@ class Outcomes:
         raise qtrio.NoOutcomesError()
 
 
-def run(async_fn, done_callback=None) -> Outcomes:
+def run(async_fn, *args, done_callback=None) -> Outcomes:
     """Run a Trio-flavored async function in guest mode on a Qt host application, and
     return the outcomes.
+
+    Args:
+        async_fn: The async function to run.
+        args: Positional arguments to pass to `async_fn`.
 
     Returns:
         The :class:`Outcomes` with both the Trio and Qt outcomes.
     """
     runner = Runner(done_callback=done_callback)
-    runner.run(async_fn)
+    runner.run(async_fn, *args)
 
     return runner.outcomes
 
