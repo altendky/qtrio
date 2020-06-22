@@ -4,7 +4,6 @@ Attributes:
     REENTER_EVENT_HINT: The registered event type hint for our reenter events.
     REENTER_EVENT: The QtCore.QEvent.Type enumerator for our reenter events.
 """
-
 import contextlib
 import sys
 import traceback
@@ -194,7 +193,7 @@ class Runner:
         *args,
         execute_application: bool = True,
     ) -> outcome.Outcome:
-        """Starts the guest loop executing `async_fn`.
+        """Start the guest loop executing `async_fn`.
 
         Args:
             async_fn: The async function to be run in the Qt host loop by the Trio
