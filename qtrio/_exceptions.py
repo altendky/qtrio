@@ -1,14 +1,33 @@
+"""A central location to define QTrio specific exceptions and avoid introducing
+inter-module dependency issues."""
+
+
 class QTrioException(Exception):
+    """Base exception for all QTrio exceptions."""
+
     pass
 
 
 class NoOutcomesError(QTrioException):
+    """Raised if you try to unwrap a :class:`qtrio.Outcomes` which has no outcomes."""
+
+    pass
+
+
+class RegisterEventTypeError(QTrioException):
+    """Raised if the attempt to register a new event type fails."""
+
     pass
 
 
 class ReturnCodeError(QTrioException):
-    pass
+    """Wraps a QApplication return code as an exception."""
+
+    def __eq__(self, other):
+        return isinstance(other, type(self)) and self.args == other.args
 
 
 class UserCancelledError(QTrioException):
+    """Raised when a user requested cancellation of an operation."""
+
     pass

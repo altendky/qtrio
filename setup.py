@@ -14,8 +14,8 @@ setup(
     author_email="sda@fstab.net",
     license="MIT -or- Apache License 2.0",
     packages=find_packages(),
-    install_requires=["async_generator", "attrs", "outcome", "pytest", "trio"],
-    extras_require={"pyqt5": ["pyqt5"]},
+    install_requires=["async_generator", "attrs", "outcome", "pytest", "qtpy", "trio"],
+    extras_require={"pyqt5": ["pyqt5"], "pyside2": ["pyside2"]},
     keywords=["async", "io", "Trio", "GUI", "Qt", "PyQt5", "PySide2"],
     python_requires=">=3.6",
     classifiers=[
