@@ -83,6 +83,15 @@ async def wait_signal(signal: SignalInstance) -> typing.Tuple[typing.Any, ...]:
     return result
 
 
+@async_generator.asynccontextmanager
+async def wait_signal_context(signal: SignalInstance) -> None:
+    event = trio.Event()
+
+    with qtrio._qt.connection(signal=signal, slot=lambda *args, **kwargs: event.set()):
+        yield
+        await event.wait()
+
+
 @attr.s(auto_attribs=True, frozen=True, slots=True)
 class Outcomes:
     """This class holds the :class:`outcomes.Outcome`s of both the Trio and the Qt
