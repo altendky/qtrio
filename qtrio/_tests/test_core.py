@@ -82,12 +82,53 @@ def test_run_passes_args(testdir):
     result.assert_outcomes(passed=1)
 
 
-def test_qt_quit_cancels_trio(testdir):
-    """When the Qt application exits the main Trio function is cancelled."""
+def test_qt_last_window_closed_does_not_quit_qt_or_cancel_trio(testdir):
+    """When the last Qt window is closed, application and Trio both continue."""
 
     test_file = r"""
     import outcome
     from qtpy import QtCore
+    import trio
+
+    import qtrio
+
+
+    def test():
+        async def main():
+            counter = 0
+
+            def f():
+                nonlocal counter
+                application.lastWindowClosed.emit()
+                counter = 1
+
+            application = QtCore.QCoreApplication.instance()
+            QtCore.QTimer.singleShot(100, f)
+
+            while True:
+                await trio.sleep(0.1)
+                if counter == 1:
+                    counter += 1
+                elif counter > 1:
+                    return counter
+
+        outcomes = qtrio.run(async_fn=main)
+
+        assert outcomes.trio.value == 2
+    """
+    testdir.makepyfile(test_file)
+
+    result = testdir.runpytest_subprocess(timeout=timeout)
+    result.assert_outcomes(passed=1)
+
+
+def test_qt_quit_cancels_trio_with_custom_application(testdir):
+    """When a passed Qt application exits the main Trio function is cancelled."""
+
+    test_file = r"""
+    import outcome
+    from qtpy import QtCore
+    from qtpy import QtWidgets
     import trio
 
     import qtrio
@@ -103,7 +144,8 @@ def test_qt_quit_cancels_trio(testdir):
             while True:
                 await trio.sleep(1)
 
-        outcomes = qtrio.run(async_fn=main)
+        runner = qtrio.Runner(application=QtWidgets.QApplication([]))
+        outcomes = runner.run(async_fn=main)
 
         assert outcomes.trio.value == None
     """
