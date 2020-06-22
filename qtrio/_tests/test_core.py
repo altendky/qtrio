@@ -356,6 +356,35 @@ def test_wait_signal_returns_the_value(testdir):
     result.assert_outcomes(passed=1)
 
 
+def test_wait_signal_context_waits(testdir):
+    """wait_signal_context() waits for the signal.
+    """
+    test_file = r"""
+    import time
+
+    from qtpy import QtCore
+    import qtrio
+
+
+    @qtrio.host
+    async def test(request):
+        timer = QtCore.QTimer()
+        timer.setSingleShot(True)
+
+        async with qtrio.wait_signal_context(signal=timer.timeout):
+            start = time.monotonic()
+            timer.start(100)
+
+        end = time.monotonic()
+
+        assert end - start > 0.090
+    """
+    testdir.makepyfile(test_file)
+
+    result = testdir.runpytest_subprocess(timeout=timeout)
+    result.assert_outcomes(passed=1)
+
+
 def test_outcomes_unwrap_none():
     """Unwrapping an empty Outcomes raises NoOutcomesError."""
     this_outcome = qtrio.Outcomes()
