@@ -78,16 +78,14 @@ async def test_get_integer_gets_value_after_retry(request, qtbot):
 
 @qtrio.host
 async def test_file_save(request, qtbot, tmp_path):
-    dialog = qtrio._dialogs.create_file_save_dialog()
-
     path_to_select = tmp_path / "something.new"
+
+    dialog = qtrio._dialogs.create_file_save_dialog(default_path=path_to_select)
 
     async def user(task_status):
         async with qtrio.wait_signal_context(dialog.shown):
             task_status.started()
 
-        dialog.dialog.setDirectory(os.fspath(path_to_select.parent))
-        dialog.dialog.selectFile(os.fspath(path_to_select))
         dialog.dialog.accept()
 
     async with trio.open_nursery() as nursery:
