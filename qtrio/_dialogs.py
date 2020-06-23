@@ -23,31 +23,27 @@ class IntegerDialog:
 
     shown = qtrio._qt.Signal(QtWidgets.QInputDialog)
     hidden = qtrio._qt.Signal()
+    finished = qtrio._qt.Signal(int)  # QtWidgets.QDialog.DialogCode
 
     @classmethod
     def build(cls, parent: QtCore.QObject = None,) -> "IntegerDialog":
         return cls(parent=parent)
 
     def setup(self):
+        self.result = None
+
         self.dialog = QtWidgets.QInputDialog(self.parent)
 
-        # TODO: find a better way to trigger population of widgets
+        # TODO: adjust so we can use a context manager?
+        self.dialog.finished.connect(self.finished)
+
         self.dialog.show()
 
-        for widget in self.dialog.findChildren(QtWidgets.QWidget):
-            if isinstance(widget, QtWidgets.QLineEdit):
-                self.edit_widget = widget
-            elif isinstance(widget, QtWidgets.QPushButton):
-                if widget.text() == self.dialog.okButtonText():
-                    self.ok_button = widget
-                elif widget.text() == self.dialog.cancelButtonText():
-                    self.cancel_button = widget
+        buttons = dialog_button_box_buttons_by_role(dialog=self.dialog)
+        self.ok_button = buttons.get(QtWidgets.QDialogButtonBox.AcceptRole)
+        self.cancel_button = buttons.get(QtWidgets.QDialogButtonBox.RejectRole)
 
-            widgets = {self.edit_widget, self.ok_button, self.cancel_button}
-            if None not in widgets:
-                break
-        else:
-            raise qtrio._qt.QTrioException("not all widgets found")
+        [self.edit_widget] = self.dialog.findChildren(QtWidgets.QLineEdit)
 
         if self.attempt is None:
             self.attempt = 0
@@ -57,29 +53,36 @@ class IntegerDialog:
         self.shown.emit(self.dialog)
 
     def teardown(self):
-        self.edit_widget = None
+        if self.dialog is not None:
+            self.dialog.close()
+        self.dialog.finished.disconnect(self.finished)
+        self.dialog = None
         self.ok_button = None
         self.cancel_button = None
-
-        if self.dialog is not None:
-            self.dialog.hide()
-            self.dialog = None
-            self.hidden.emit()
+        self.edit_widget = None
 
     @contextlib.contextmanager
-    def manager(self):
-        try:
-            self.setup()
-            yield
-        finally:
-            self.teardown()
+    def manage(self, finished_event=None):
+        with contextlib.ExitStack() as exit_stack:
+            if finished_event is not None:
+                exit_stack.enter_context(
+                    qtrio._qt.connection(
+                        signal=self.finished,
+                        slot=lambda *args, **kwargs: finished_event.set(),
+                    )
+                )
+            try:
+                self.setup()
+                yield self
+            finally:
+                self.teardown()
 
-    async def wait(self) -> int:
+    async def wait(self):
         while True:
-            with self.manager():
-                [result] = await qtrio._core.wait_signal(self.dialog.finished)
-
-                if result == QtWidgets.QDialog.Rejected:
+            finished_event = trio.Event()
+            with self.manage(finished_event=finished_event):
+                await finished_event.wait()
+                if self.dialog.result() != QtWidgets.QDialog.Accepted:
                     raise qtrio.UserCancelledError()
 
                 try:
@@ -87,7 +90,7 @@ class IntegerDialog:
                 except ValueError:
                     continue
 
-            return self.result
+                return self.result
 
 
 @attr.s(auto_attribs=True)
