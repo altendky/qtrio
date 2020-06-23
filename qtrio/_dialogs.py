@@ -1,5 +1,6 @@
 import contextlib
 import os
+import sys
 import typing
 
 import async_generator
@@ -181,7 +182,12 @@ class FileDialog:
     parent: typing.Optional[QtCore.QObject] = None
     default_directory: typing.Optional[trio.Path] = None
     default_file: typing.Optional[trio.Path] = None
-    options: QtWidgets.QFileDialog.Options = QtWidgets.QFileDialog.Options()
+    # https://github.com/altendky/qtrio/issues/28
+    options: QtWidgets.QFileDialog.Options = QtWidgets.QFileDialog.Options(
+        QtWidgets.QFileDialog.DontUseNativeDialog
+        if sys.platform == "darwin"
+        else QtWidgets.QFileDialog.Options()
+    )
     accept_button: typing.Optional[QtWidgets.QPushButton] = None
     reject_button: typing.Optional[QtWidgets.QPushButton] = None
     result: typing.Optional[trio.Path] = None

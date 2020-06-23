@@ -1,4 +1,4 @@
-import os
+import sys
 
 from qtpy import QtCore
 from qtpy import QtWidgets
@@ -78,10 +78,11 @@ async def test_get_integer_gets_value_after_retry(request, qtbot):
 
 @qtrio.host
 async def test_file_save(request, qtbot, tmp_path):
+    assert tmp_path.is_dir()
     path_to_select = trio.Path(tmp_path) / "something.new"
 
     dialog = qtrio._dialogs.create_file_save_dialog(
-        default_directory=path_to_select.parent, default_file=path_to_select
+        default_directory=path_to_select.parent, default_file=path_to_select,
     )
 
     async def user(task_status):
