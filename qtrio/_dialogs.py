@@ -179,7 +179,8 @@ class FileDialog:
     accept_mode: QtWidgets.QFileDialog.AcceptMode
     dialog: typing.Optional[QtWidgets.QFileDialog] = None
     parent: typing.Optional[QtCore.QObject] = None
-    default_path: typing.Optional[trio.Path] = None
+    default_directory: typing.Optional[trio.Path] = None
+    default_file: typing.Optional[trio.Path] = None
     options: QtWidgets.QFileDialog.Options = QtWidgets.QFileDialog.Options()
     accept_button: typing.Optional[QtWidgets.QPushButton] = None
     reject_button: typing.Optional[QtWidgets.QPushButton] = None
@@ -191,9 +192,16 @@ class FileDialog:
     def setup(self):
         self.result = None
 
-        self.dialog = QtWidgets.QFileDialog(
-            parent=self.parent, directory=os.fspath(self.default_path)
-        )
+        extras = {}
+
+        if self.default_directory is not None:
+            extras["directory"] = os.fspath(self.default_directory)
+
+        self.dialog = QtWidgets.QFileDialog(parent=self.parent, **extras)
+
+        if self.default_file is not None:
+            self.dialog.selectFile(os.fspath(self.default_file))
+
         self.dialog.setFileMode(self.file_mode)
         self.dialog.setAcceptMode(self.accept_mode)
 
@@ -247,12 +255,14 @@ class FileDialog:
 
 def create_file_save_dialog(
     parent: typing.Optional[QtCore.QObject] = None,
-    default_path: typing.Optional[trio.Path] = None,
+    default_directory: typing.Optional[trio.Path] = None,
+    default_file: typing.Optional[trio.Path] = None,
     options: QtWidgets.QFileDialog.Options = QtWidgets.QFileDialog.Options(),
 ):
     return FileDialog(
         parent=parent,
-        default_path=default_path,
+        default_directory=default_directory,
+        default_file=default_file,
         options=options,
         file_mode=QtWidgets.QFileDialog.AnyFile,
         accept_mode=QtWidgets.QFileDialog.AcceptSave,
