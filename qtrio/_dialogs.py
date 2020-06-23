@@ -161,8 +161,12 @@ def create_text_input_dialog(
 def dialog_button_box_buttons_by_role(
     dialog: QtWidgets.QDialog,
 ) -> typing.Mapping[QtWidgets.QDialogButtonBox.ButtonRole, QtWidgets.QAbstractButton]:
-    [button_box] = dialog.findChildren(QtWidgets.QDialogButtonBox)
+    hits = dialog.findChildren(QtWidgets.QDialogButtonBox)
 
+    if len(hits) == 0:
+        return {}
+
+    [button_box] = hits
     return {button_box.buttonRole(button): button for button in button_box.buttons()}
 
 
@@ -192,8 +196,8 @@ class FileDialog:
         self.dialog.show()
 
         buttons = dialog_button_box_buttons_by_role(dialog=self.dialog)
-        self.accept_button = buttons[QtWidgets.QDialogButtonBox.AcceptRole]
-        self.reject_button = buttons[QtWidgets.QDialogButtonBox.RejectRole]
+        self.accept_button = buttons.get(QtWidgets.QDialogButtonBox.AcceptRole)
+        self.reject_button = buttons.get(QtWidgets.QDialogButtonBox.RejectRole)
 
         self.shown.emit(self.dialog)
 
