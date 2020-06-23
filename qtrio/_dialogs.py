@@ -1,9 +1,12 @@
 import contextlib
+import os
 import typing
 
+import async_generator
 import attr
 from qtpy import QtCore
 from qtpy import QtWidgets
+import trio
 
 import qtrio._qt
 
@@ -85,3 +88,232 @@ class IntegerDialog:
                     continue
 
             return self.result
+
+
+@attr.s(auto_attribs=True)
+class TextInputDialog:
+    title: typing.Optional[str] = None
+    label: typing.Optional[str] = None
+    parent: typing.Optional[QtCore.QObject] = None
+
+    dialog: typing.Optional[QtWidgets.QInputDialog] = None
+    accept_button: typing.Optional[QtWidgets.QPushButton] = None
+    reject_button: typing.Optional[QtWidgets.QPushButton] = None
+    line_edit: typing.Optional[QtWidgets.QLineEdit] = None
+    result: typing.Optional[trio.Path] = None
+
+    shown = qtrio._qt.Signal(QtWidgets.QFileDialog)
+
+    def setup(self):
+        self.result = None
+
+        self.dialog = QtWidgets.QInputDialog(parent=self.parent)
+        if self.label is not None:
+            self.dialog.setLabelText(self.label)
+        if self.title is not None:
+            self.dialog.setWindowTitle(self.title)
+
+        self.dialog.show()
+
+        buttons = dialog_button_box_buttons_by_role(dialog=self.dialog)
+        self.accept_button = buttons[QtWidgets.QDialogButtonBox.AcceptRole]
+        self.reject_button = buttons[QtWidgets.QDialogButtonBox.RejectRole]
+
+        [self.line_edit] = self.dialog.findChildren(QtWidgets.QLineEdit)
+
+        self.shown.emit(self.dialog)
+
+    def teardown(self):
+        if self.dialog is not None:
+            self.dialog.close()
+        self.dialog = None
+        self.accept_button = None
+        self.reject_button = None
+
+    @contextlib.contextmanager
+    def manage(self):
+        try:
+            self.setup()
+            yield self
+        finally:
+            self.teardown()
+
+    async def wait(self):
+        with self.manage():
+            [result] = await qtrio._core.wait_signal(self.dialog.finished)
+
+            if result == QtWidgets.QDialog.Rejected:
+                raise qtrio.UserCancelledError()
+
+            self.result = self.dialog.textValue()
+
+            return self.result
+
+
+def create_text_input_dialog(
+    title: typing.Optional[str] = None,
+    label: typing.Optional[str] = None,
+    parent: typing.Optional[QtCore.QObject] = None,
+):
+    return TextInputDialog(title=title, label=label, parent=parent)
+
+
+def dialog_button_box_buttons_by_role(
+    dialog: QtWidgets.QDialog,
+) -> typing.Mapping[QtWidgets.QDialogButtonBox.ButtonRole, QtWidgets.QAbstractButton]:
+    [button_box] = dialog.findChildren(QtWidgets.QDialogButtonBox)
+
+    return {button_box.buttonRole(button): button for button in button_box.buttons()}
+
+
+@attr.s(auto_attribs=True)
+class FileDialog:
+    file_mode: QtWidgets.QFileDialog.FileMode
+    accept_mode: QtWidgets.QFileDialog.AcceptMode
+    dialog: typing.Optional[QtWidgets.QFileDialog] = None
+    parent: typing.Optional[QtCore.QObject] = None
+    default_path: typing.Optional[trio.Path] = None
+    options: QtWidgets.QFileDialog.Options = QtWidgets.QFileDialog.Options()
+    accept_button: typing.Optional[QtWidgets.QPushButton] = None
+    reject_button: typing.Optional[QtWidgets.QPushButton] = None
+    result: typing.Optional[trio.Path] = None
+
+    shown = qtrio._qt.Signal(QtWidgets.QFileDialog)
+
+    def setup(self):
+        self.result = None
+
+        self.dialog = QtWidgets.QFileDialog(parent=self.parent)
+        self.dialog.setFileMode(self.file_mode)
+        self.dialog.setAcceptMode(self.accept_mode)
+        if self.default_path is not None:
+            self.dialog.selectFile(os.fspath(self.default_path))
+
+        self.dialog.show()
+
+        buttons = dialog_button_box_buttons_by_role(dialog=self.dialog)
+        self.accept_button = buttons[QtWidgets.QDialogButtonBox.AcceptRole]
+        self.reject_button = buttons[QtWidgets.QDialogButtonBox.RejectRole]
+
+        self.shown.emit(self.dialog)
+
+    def teardown(self):
+        if self.dialog is not None:
+            self.dialog.close()
+        self.dialog = None
+        self.accept_button = None
+        self.reject_button = None
+
+    @contextlib.contextmanager
+    def manage(self):
+        try:
+            self.setup()
+            yield self
+        finally:
+            self.teardown()
+
+    async def wait(self):
+        with self.manage():
+            [result] = await qtrio._core.wait_signal(self.dialog.finished)
+
+            if result == QtWidgets.QDialog.Rejected:
+                raise qtrio.UserCancelledError()
+
+            [path_string] = self.dialog.selectedFiles()
+            self.result = trio.Path(path_string)
+
+            return self.result
+
+
+def create_file_save_dialog(
+    parent: typing.Optional[QtCore.QObject] = None,
+    default_path: typing.Optional[trio.Path] = None,
+    options: QtWidgets.QFileDialog.Options = QtWidgets.QFileDialog.Options(),
+):
+    return FileDialog(
+        parent=parent,
+        default_path=default_path,
+        options=options,
+        file_mode=QtWidgets.QFileDialog.AnyFile,
+        accept_mode=QtWidgets.QFileDialog.AcceptSave,
+    )
+
+
+@attr.s(auto_attribs=True)
+class MessageBox:
+    icon: QtWidgets.QMessageBox.Icon
+    title: str
+    text: str
+    buttons: QtWidgets.QMessageBox.StandardButtons
+
+    parent: typing.Optional[QtCore.QObject] = None
+
+    dialog: typing.Optional[QtWidgets.QMessageBox] = None
+    accept_button: typing.Optional[QtWidgets.QPushButton] = None
+    result: typing.Optional[trio.Path] = None
+
+    shown = qtrio._qt.Signal(QtWidgets.QMessageBox)
+
+    def setup(self):
+        self.result = None
+
+        self.dialog = QtWidgets.QMessageBox(
+            self.icon, self.title, self.text, self.buttons, self.parent
+        )
+
+        self.dialog.show()
+
+        buttons = dialog_button_box_buttons_by_role(dialog=self.dialog)
+        self.accept_button = buttons[QtWidgets.QDialogButtonBox.AcceptRole]
+
+        self.shown.emit(self.dialog)
+
+    def teardown(self):
+        if self.dialog is not None:
+            self.dialog.close()
+        self.dialog = None
+        self.accept_button = None
+
+    @contextlib.contextmanager
+    def manage(self):
+        try:
+            self.setup()
+            yield self
+        finally:
+            self.teardown()
+
+    async def wait(self):
+        with self.manage():
+            [result] = await qtrio._core.wait_signal(self.dialog.finished)
+
+            if result == QtWidgets.QDialog.Rejected:
+                raise qtrio.UserCancelledError()
+
+
+def create_information_message_box(
+    icon: QtWidgets.QMessageBox.Icon,
+    title: str,
+    text: str,
+    buttons: QtWidgets.QMessageBox.StandardButtons = QtWidgets.QMessageBox.Ok,
+    parent: typing.Optional[QtCore.QObject] = None,
+):
+    return MessageBox(icon=icon, title=title, text=text, buttons=buttons, parent=parent)
+
+
+@async_generator.asynccontextmanager
+async def manage_progress_dialog(
+    title: str,
+    label: str,
+    minimum: int = 0,
+    maximum: int = 0,
+    cancel_button_text: str = "Cancel",
+    parent: QtCore.QObject = None,
+):
+    dialog = QtWidgets.QProgressDialog(
+        label, cancel_button_text, minimum, maximum, parent
+    )
+    try:
+        dialog.setWindowTitle(title)
+        yield dialog
+    finally:
+        dialog.close()

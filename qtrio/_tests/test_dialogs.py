@@ -1,4 +1,7 @@
+import os
+
 from qtpy import QtCore
+from qtpy import QtWidgets
 import pytest
 import trio
 
@@ -71,3 +74,71 @@ async def test_get_integer_gets_value_after_retry(request, qtbot):
             integer = await dialog.wait()
 
     assert integer == test_value
+
+
+@qtrio.host
+async def test_file_save(request, qtbot, tmp_path):
+    dialog = qtrio._dialogs.create_file_save_dialog()
+
+    path_to_select = tmp_path / "something.new"
+
+    async def user(task_status):
+        async with qtrio.wait_signal_context(dialog.shown):
+            task_status.started()
+
+        dialog.dialog.selectFile(os.fspath(path_to_select))
+        dialog.dialog.accept()
+
+    async with trio.open_nursery() as nursery:
+        await nursery.start(user)
+        with qtrio._qt.connection(signal=dialog.shown, slot=qtbot.addWidget):
+            selected_path = await dialog.wait()
+
+    assert selected_path == path_to_select
+
+
+@qtrio.host
+async def test_information_message_box(request, qtbot):
+    text = "Consider yourself informed."
+    queried_text = None
+
+    dialog = qtrio._dialogs.create_information_message_box(
+        icon=QtWidgets.QMessageBox.Information, title="Information", text=text,
+    )
+
+    async def user(task_status):
+        nonlocal queried_text
+
+        async with qtrio.wait_signal_context(dialog.shown):
+            task_status.started()
+
+        queried_text = dialog.dialog.text()
+        dialog.dialog.accept()
+
+    async with trio.open_nursery() as nursery:
+        await nursery.start(user)
+        with qtrio._qt.connection(signal=dialog.shown, slot=qtbot.addWidget):
+            await dialog.wait()
+
+    assert queried_text == text
+
+
+@qtrio.host
+async def test_text_input_dialog(request, qtbot):
+    dialog = qtrio._dialogs.create_text_input_dialog()
+
+    entered_text = "etcetera"
+
+    async def user(task_status):
+        async with qtrio.wait_signal_context(dialog.shown):
+            task_status.started()
+
+        qtbot.keyClicks(dialog.line_edit, entered_text)
+        dialog.dialog.accept()
+
+    async with trio.open_nursery() as nursery:
+        await nursery.start(user)
+        with qtrio._qt.connection(signal=dialog.shown, slot=qtbot.addWidget):
+            returned_text = await dialog.wait()
+
+    assert returned_text == entered_text
