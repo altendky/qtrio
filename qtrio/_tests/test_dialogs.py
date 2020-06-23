@@ -78,7 +78,7 @@ async def test_get_integer_gets_value_after_retry(request, qtbot):
 
 @qtrio.host
 async def test_file_save(request, qtbot, tmp_path):
-    path_to_select = tmp_path / "something.new"
+    path_to_select = trio.Path(tmp_path) / "something.new"
 
     dialog = qtrio._dialogs.create_file_save_dialog(default_path=path_to_select)
 
