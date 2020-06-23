@@ -187,11 +187,11 @@ class FileDialog:
     def setup(self):
         self.result = None
 
-        self.dialog = QtWidgets.QFileDialog(parent=self.parent)
+        self.dialog = QtWidgets.QFileDialog(
+            parent=self.parent, directory=os.fspath(self.default_path)
+        )
         self.dialog.setFileMode(self.file_mode)
         self.dialog.setAcceptMode(self.accept_mode)
-        if self.default_path is not None:
-            self.dialog.selectFile(os.fspath(self.default_path))
 
         self.dialog.show()
 
