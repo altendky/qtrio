@@ -183,6 +183,7 @@ class FileDialog:
     result: typing.Optional[trio.Path] = None
 
     shown = qtrio._qt.Signal(QtWidgets.QFileDialog)
+    finished = qtrio._qt.Signal(int)  # QtWidgets.QDialog.DialogCode
 
     def setup(self):
         self.result = None
@@ -192,6 +193,9 @@ class FileDialog:
         )
         self.dialog.setFileMode(self.file_mode)
         self.dialog.setAcceptMode(self.accept_mode)
+
+        # TODO: adjust so we can use a context manager?
+        self.dialog.finished.connect(self.finished)
 
         self.dialog.show()
 
@@ -204,23 +208,32 @@ class FileDialog:
     def teardown(self):
         if self.dialog is not None:
             self.dialog.close()
+        self.dialog.finished.disconnect(self.finished)
         self.dialog = None
         self.accept_button = None
         self.reject_button = None
 
     @contextlib.contextmanager
-    def manage(self):
-        try:
-            self.setup()
-            yield self
-        finally:
-            self.teardown()
+    def manage(self, finished_event=None):
+        with contextlib.ExitStack() as exit_stack:
+            if finished_event is not None:
+                exit_stack.enter_context(
+                    qtrio._qt.connection(
+                        signal=self.finished,
+                        slot=lambda *args, **kwargs: finished_event.set(),
+                    )
+                )
+            try:
+                self.setup()
+                yield self
+            finally:
+                self.teardown()
 
     async def wait(self):
-        with self.manage():
-            [result] = await qtrio._core.wait_signal(self.dialog.finished)
-
-            if result == QtWidgets.QDialog.Rejected:
+        finished_event = trio.Event()
+        with self.manage(finished_event=finished_event):
+            await finished_event.wait()
+            if self.dialog.result() != QtWidgets.QDialog.Accepted:
                 raise qtrio.UserCancelledError()
 
             [path_string] = self.dialog.selectedFiles()
