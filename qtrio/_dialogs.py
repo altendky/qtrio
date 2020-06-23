@@ -182,12 +182,7 @@ class FileDialog:
     parent: typing.Optional[QtCore.QObject] = None
     default_directory: typing.Optional[trio.Path] = None
     default_file: typing.Optional[trio.Path] = None
-    # https://github.com/altendky/qtrio/issues/28
-    options: QtWidgets.QFileDialog.Options = (
-        QtWidgets.QFileDialog.DontUseNativeDialog
-        if sys.platform == "darwin"
-        else QtWidgets.QFileDialog.Options()
-    )
+    options: QtWidgets.QFileDialog.Options = QtWidgets.QFileDialog.Options()
     accept_button: typing.Optional[QtWidgets.QPushButton] = None
     reject_button: typing.Optional[QtWidgets.QPushButton] = None
     result: typing.Optional[trio.Path] = None
@@ -203,7 +198,14 @@ class FileDialog:
         if self.default_directory is not None:
             extras["directory"] = os.fspath(self.default_directory)
 
-        self.dialog = QtWidgets.QFileDialog(parent=self.parent, **extras)
+        options = self.options
+        if sys.platform == "darwin":
+            # https://github.com/altendky/qtrio/issues/28
+            options |= QtWidgets.QFileDialog.Options()
+
+        self.dialog = QtWidgets.QFileDialog(
+            parent=self.parent, options=options, **extras
+        )
 
         if self.default_file is not None:
             self.dialog.selectFile(os.fspath(self.default_file))
