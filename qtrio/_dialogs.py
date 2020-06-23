@@ -102,7 +102,7 @@ class TextInputDialog:
     line_edit: typing.Optional[QtWidgets.QLineEdit] = None
     result: typing.Optional[trio.Path] = None
 
-    shown = qtrio._qt.Signal(QtWidgets.QFileDialog)
+    shown = qtrio._qt.Signal(QtWidgets.QInputDialog)
 
     def setup(self):
         self.result = None
