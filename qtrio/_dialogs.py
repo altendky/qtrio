@@ -201,7 +201,7 @@ class FileDialog:
         options = self.options
         if sys.platform == "darwin":
             # https://github.com/altendky/qtrio/issues/28
-            options |= QtWidgets.QFileDialog.Options()
+            options |= QtWidgets.QFileDialog.DontUseNativeDialog
 
         self.dialog = QtWidgets.QFileDialog(
             parent=self.parent, options=options, **extras
