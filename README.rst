@@ -19,7 +19,7 @@
    :alt: Test coverage
 
 
-QTrio - a library bringing together Qt GUIs with ``async`` and ``await`` via Trio
+QTrio - a library bringing Qt GUIs together with ``async`` and ``await`` via Trio
 =================================================================================
 
 The QTrio project's goal is to bring the friendly concurrency of Trio using Python's
