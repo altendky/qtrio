@@ -183,7 +183,7 @@ class FileDialog:
     default_directory: typing.Optional[trio.Path] = None
     default_file: typing.Optional[trio.Path] = None
     # https://github.com/altendky/qtrio/issues/28
-    options: QtWidgets.QFileDialog.Options = QtWidgets.QFileDialog.Options(
+    options: QtWidgets.QFileDialog.Options = (
         QtWidgets.QFileDialog.DontUseNativeDialog
         if sys.platform == "darwin"
         else QtWidgets.QFileDialog.Options()
