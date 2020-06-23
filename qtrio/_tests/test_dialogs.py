@@ -86,6 +86,7 @@ async def test_file_save(request, qtbot, tmp_path):
         async with qtrio.wait_signal_context(dialog.shown):
             task_status.started()
 
+        dialog.dialog.setDirectory(os.fspath(path_to_select.parent))
         dialog.dialog.selectFile(os.fspath(path_to_select))
         dialog.dialog.accept()
 
