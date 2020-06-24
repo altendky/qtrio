@@ -4,16 +4,7 @@ import contextlib
 
 from qtpy import QtCore
 
-
-def identifier_path(it):
-    """Generate an identifier based on an object's module and qualified name.  This can
-    be useful such as for adding attributes to existing objects while minimizing odds
-    of collisions and maximizing traceability of the related party.
-
-    Args:
-        it: The object to generate the identifer from.
-    """
-    return "__" + "_".join(it.__module__.split(".") + [it.__qualname__])
+import qtrio._python
 
 
 class Signal:
@@ -32,7 +23,7 @@ class Signal:
 
     def __init__(self, *args, **kwargs):
         class _SignalQObject(QtCore.QObject):
-            signal = QtCore.pyqtSignal(*args, **kwargs)
+            signal = QtCore.Signal(*args, **kwargs)
 
         self.object_cls = _SignalQObject
 
@@ -40,6 +31,11 @@ class Signal:
         if instance is None:
             return self
 
+        o = self.object(instance=instance)
+
+        return o.signal
+
+    def object(self, instance):
         d = getattr(instance, self.attribute_name, None)
 
         if d is None:
@@ -51,14 +47,10 @@ class Signal:
             o = self.object_cls()
             d[self.object_cls] = o
 
-        signal = o.signal
-        return signal
-
-    def object(self, instance):
-        return getattr(instance, self.attribute_name)[self.object_cls]
+        return o
 
 
-Signal.attribute_name = identifier_path(Signal)
+Signal.attribute_name = qtrio._python.identifier_path(Signal)
 
 
 @contextlib.contextmanager
@@ -70,14 +62,24 @@ def connection(signal, slot):
         slot: The callable to connect the signal to.
     """
     this_connection = signal.connect(slot)
+
+    import qtpy
+
+    if qtpy.PYSIDE2:
+        # PySide2 presently returns a bool rather than a QMetaObject.Connection
+        # https://bugreports.qt.io/browse/PYSIDE-1334
+        this_connection = slot
+
     try:
         yield this_connection
     finally:
-        import qtpy
-
-        if qtpy.API in qtpy.PYQT5_API:
-            signal.disconnect(this_connection)
+        if qtpy.PYSIDE2:
+            expected_exception = RuntimeError
         else:
-            # PySide2 presently returns a bool rather than a QMetaObject.Connection
-            # https://bugreports.qt.io/browse/PYSIDE-1334
-            signal.disconnect(slot)
+            expected_exception = TypeError
+
+        try:
+            # can we precheck and avoid the exception?
+            signal.disconnect(this_connection)
+        except expected_exception:
+            pass

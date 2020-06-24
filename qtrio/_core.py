@@ -4,7 +4,6 @@ Attributes:
     REENTER_EVENT_HINT: The registered event type hint for our reenter events.
     REENTER_EVENT: The QtCore.QEvent.Type enumerator for our reenter events.
 """
-
 import contextlib
 import functools
 import sys
@@ -79,12 +78,8 @@ async def wait_signal(signal: SignalInstance) -> typing.Tuple[typing.Any, ...]:
         result = args
         event.set()
 
-    connection = signal.connect(slot)
-
-    try:
+    with qtrio._qt.connection(signal, slot):
         await event.wait()
-    finally:
-        signal.disconnect(connection)
 
     return result
 
@@ -148,6 +143,15 @@ async def emissions(signals: typing.Collection[SignalInstance],):
                 yield emission
 
 
+@async_generator.asynccontextmanager
+async def wait_signal_context(signal: SignalInstance) -> None:
+    event = trio.Event()
+
+    with qtrio._qt.connection(signal=signal, slot=lambda *args, **kwargs: event.set()):
+        yield
+        await event.wait()
+
+
 @attr.s(auto_attribs=True, frozen=True, slots=True)
 class Outcomes:
     """This class holds the :class:`outcomes.Outcome`s of both the Trio and the Qt
@@ -185,15 +189,19 @@ class Outcomes:
         raise qtrio.NoOutcomesError()
 
 
-def run(async_fn, done_callback=None) -> Outcomes:
+def run(async_fn, *args, done_callback=None) -> Outcomes:
     """Run a Trio-flavored async function in guest mode on a Qt host application, and
     return the outcomes.
+
+    Args:
+        async_fn: The async function to run.
+        args: Positional arguments to pass to `async_fn`.
 
     Returns:
         The :class:`Outcomes` with both the Trio and Qt outcomes.
     """
     runner = Runner(done_callback=done_callback)
-    runner.run(async_fn)
+    runner.run(async_fn, *args)
 
     return runner.outcomes
 
@@ -218,9 +226,14 @@ class Runner:
 
     Args:
 
-        application: The Qt application object to run as the host.
-        quit_application: When true, the builtin :meth:`done_callback` method will quit
-            the application when the async function passed to :meth:`run` has completed.
+        application: The Qt application object to run as the host.  If not set before
+            calling :meth:`run` the application will be created as
+            `QtWidgets.QApplication(sys.argv[1:])` and
+            `.setQuitOnLastWindowClosed(False)` will be called on it to allow the
+            application to continue throughout the lifetime of the async function passed
+            to :meth:`run`.
+        quit_application: When true, the :meth:`done_callback` method will quit the
+            application when the async function passed to :meth:`run` has completed.
         reenter: The `QObject` instance which will receive the events requesting
             execution of the needed Trio and user code in the host's event loop and
             thread.
@@ -231,9 +244,7 @@ class Runner:
             this callback.
     """
 
-    application: QtGui.QGuiApplication = attr.ib(
-        factory=lambda: QtWidgets.QApplication(sys.argv),
-    )
+    application: typing.Optional[QtGui.QGuiApplication] = None
     quit_application: bool = True
 
     reenter: Reenter = attr.ib(factory=Reenter)
@@ -265,6 +276,10 @@ class Runner:
             from the Qt application and `async_fn` will be returned.  Otherwise, an
             empty :class:`Outcomes`.
         """
+        if self.application is None:
+            self.application = QtWidgets.QApplication(sys.argv[1:])
+            self.application.setQuitOnLastWindowClosed(False)
+
         trio.lowlevel.start_guest_run(
             self.trio_main,
             async_fn,
@@ -309,9 +324,15 @@ class Runner:
             args: Positional arguments to be passed to `async_fn`
         """
         with trio.CancelScope() as self.cancel_scope:
-            with qtrio._qt.connection(
-                signal=self.application.lastWindowClosed, slot=self.cancel_scope.cancel,
-            ):
+            with contextlib.ExitStack() as exit_stack:
+                if self.application.quitOnLastWindowClosed():
+                    exit_stack.enter_context(
+                        qtrio._qt.connection(
+                            signal=self.application.lastWindowClosed,
+                            slot=self.cancel_scope.cancel,
+                        )
+                    )
+
                 return await async_fn(*args)
 
     def trio_done(self, run_outcome: outcome.Outcome) -> None:
@@ -336,43 +357,3 @@ class Runner:
 
         if self.quit_application:
             self.application.quit()
-
-
-def signal_event(signal: SignalInstance) -> trio.Event:
-    """Create a :class:`trio.Event` which will be set when the signal is emitted.
-
-    Note:
-        The arguments emitted through the signal are not captured.
-
-    Warning:
-        This may just be a vestige of early exploration and may be removed.
-
-    Args:
-        signal: A signal instance to be connected to the returned :class:`trio.Event`.
-
-    Returns:
-        A :class:`trio.Event` that will be set when the signal is emitted.
-    """
-    # TODO: does this leave these pairs laying around uncollectable?
-    event = trio.Event()
-
-    def event_set(*args):
-        event.set()
-
-    signal.connect(event_set)
-    return event
-
-
-@async_generator.asynccontextmanager
-async def signal_event_manager(signal: SignalInstance) -> None:
-    """A context manager that will block on exit until the signal is emitted.
-
-    Warning:
-        This may just be a vestige of early exploration and may be removed.
-
-    Args:
-         signal: The signal to wait for when exiting.
-    """
-    event = signal_event(signal)
-    yield event
-    await event.wait()
