@@ -328,26 +328,37 @@ def test_wait_signal_waits(testdir):
 def test_wait_signal_returns_the_value(testdir):
     """wait_signal() waits for the signal."""
     test_file = r"""
+    import time
+
     from qtpy import QtCore
     import qtrio
-    import trio
 
 
     class MyQObject(QtCore.QObject):
         signal = QtCore.Signal(int)
 
 
-    async def emit(signal, value):
-        signal.emit(value)
-
     @qtrio.host
     async def test(request):
         instance = MyQObject()
 
-        async with trio.open_nursery() as nursery:
-            nursery.start_soon(emit, instance.signal, 17)
-            result = await qtrio.wait_signal(instance.signal)
+        def emit():
+            instance.signal.emit(17)
 
+        timer = QtCore.QTimer()
+        timer.setSingleShot(True)
+        timer.timeout.connect(emit)
+
+        try:
+            start = time.monotonic()
+            timer.start(100)
+
+            result = await qtrio.wait_signal(instance.signal)
+            end = time.monotonic()
+        finally:
+            timer.timeout.disconnect(emit)
+
+        assert end - start > 0.090
         assert result == (17,)
     """
     testdir.makepyfile(test_file)
