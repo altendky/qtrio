@@ -2,6 +2,7 @@ import threading
 
 import outcome
 import pytest
+from qtpy import QtCore
 import qtrio._core
 
 
@@ -519,6 +520,56 @@ def test_failed_hosted_trio_prints_exception(testdir):
     result = testdir.runpytest_subprocess(timeout=timeout)
     result.assert_outcomes(failed=1)
     result.stdout.re_match_lines(lines2=["--- Error(UniqueLocalException())"])
+
+
+def test_emissions_equal():
+    class C(QtCore.QObject):
+        signal = QtCore.Signal()
+
+    instance = C()
+
+    assert (
+        qtrio._core.Emission(signal=instance.signal, args=(13,))
+        == qtrio._core.Emission(signal=instance.signal, args=(13,))
+    )
+
+
+def test_emissions_unequal_by_signal():
+    class C(QtCore.QObject):
+        signal_a = QtCore.Signal()
+        signal_b = QtCore.Signal()
+
+    instance = C()
+
+    assert (
+        qtrio._core.Emission(signal=instance.signal_a, args=(13,))
+        != qtrio._core.Emission(signal=instance.signal_b, args=(13,))
+    )
+
+
+def test_emissions_unequal_by_instance():
+    class C(QtCore.QObject):
+        signal = QtCore.Signal()
+
+    instance_a = C()
+    instance_b = C()
+
+    assert (
+        qtrio._core.Emission(signal=instance_a.signal, args=(13,))
+        != qtrio._core.Emission(signal=instance_b.signal, args=(13,))
+    )
+
+
+def test_emissions_unequal_by_args():
+    class C(QtCore.QObject):
+        signal = QtCore.Signal()
+
+    instance = C()
+
+    assert (
+        qtrio._core.Emission(signal=instance.signal, args=(13,))
+        != qtrio._core.Emission(signal=instance.signal, args=(14,))
+    )
 
 
 def test_open_emissions_channel_iterates_one(testdir):

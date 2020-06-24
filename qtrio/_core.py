@@ -14,6 +14,7 @@ import typing
 import async_generator
 import attr
 import outcome
+import qtpy
 from qtpy import QtCore
 from qtpy import QtGui
 from qtpy import QtWidgets
@@ -24,13 +25,10 @@ import qtrio._qt
 
 
 # https://github.com/spyder-ide/qtpy/pull/214
-import qtpy
-
 if qtpy.API in qtpy.PYQT5_API and not hasattr(QtCore, "SignalInstance"):
     SignalInstance = QtCore.pyqtBoundSignal
 else:
     SignalInstance = QtCore.SignalInstance
-del qtpy
 
 
 REENTER_EVENT_HINT: int = QtCore.QEvent.registerEventType()
@@ -112,7 +110,12 @@ class Emission:
         """
 
         # TODO: `repr()` here seems really bad.
-        return self.signal.signal == signal.signal and repr(self.signal) == repr(signal)
+        if qtpy.PYQT5:
+            return self.signal.signal == signal.signal and repr(self.signal) == repr(signal)
+        elif qtpy.PYSIDE2:
+            return self.signal == signal
+
+        raise qtrio.QTrioException()
 
     def __eq__(self, other):
         if type(other) != type(self):
