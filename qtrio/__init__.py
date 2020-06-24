@@ -13,7 +13,7 @@ from ._exceptions import (
 from ._core import (
     wait_signal,
     wait_signal_context,
-    emissions,
+    open_emissions_channel,
     Outcomes,
     run,
     Runner,

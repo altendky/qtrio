@@ -519,3 +519,104 @@ def test_failed_hosted_trio_prints_exception(testdir):
     result = testdir.runpytest_subprocess(timeout=timeout)
     result.assert_outcomes(failed=1)
     result.stdout.re_match_lines(lines2=["--- Error(UniqueLocalException())"])
+
+
+def test_open_emissions_channel_iterates_one(testdir):
+    # TODO: the trio.sleep(0.001) seems terrible
+    test_file = r"""
+    from qtpy import QtCore
+    import qtrio
+    import trio
+
+
+    class MyQObject(QtCore.QObject):
+        signal = QtCore.Signal(int)
+
+
+    @qtrio.host
+    async def test(request):
+        instance = MyQObject()
+
+        async with qtrio.open_emissions_channel(signals=[instance.signal]) as emissions:
+            instance.signal.emit(93)
+            await trio.sleep(0.001)
+            await emissions.aclose()
+            
+            async with emissions.channel:
+                emissions = [result async for result in emissions.channel] 
+
+        assert emissions == [qtrio._core.Emission(signal=instance.signal, args=(93,))]
+    """
+    testdir.makepyfile(test_file)
+
+    result = testdir.runpytest_subprocess(timeout=timeout)
+    result.assert_outcomes(passed=1)
+
+
+def test_open_emissions_channel_iterates_three(testdir):
+    # TODO: the trio.sleep(0.001) seems terrible
+    test_file = r"""
+    from qtpy import QtCore
+    import qtrio
+    import trio
+
+
+    class MyQObject(QtCore.QObject):
+        signal = QtCore.Signal(int)
+
+
+    @qtrio.host
+    async def test(request):
+        instance = MyQObject()
+
+        async with qtrio.open_emissions_channel(signals=[instance.signal]) as emissions:
+            for v in [93, 56, 27]:
+                instance.signal.emit(v)
+                await trio.sleep(0.001)
+            await emissions.aclose()
+
+            async with emissions.channel:
+                emissions = [result async for result in emissions.channel] 
+
+        assert emissions == [
+            qtrio._core.Emission(signal=instance.signal, args=(v,))
+            for v in [93, 56, 27]
+        ]
+    """
+    testdir.makepyfile(test_file)
+
+    result = testdir.runpytest_subprocess(timeout=timeout)
+    result.assert_outcomes(passed=1)
+
+
+def test_open_emissions_channel_with_three_receives_first(testdir):
+    # TODO: the trio.sleep(0.001) seems terrible
+    test_file = r"""
+    from qtpy import QtCore
+    import qtrio
+    import trio
+
+
+    class MyQObject(QtCore.QObject):
+        signal = QtCore.Signal(int)
+
+
+    @qtrio.host
+    async def test(request):
+        instance = MyQObject()
+
+        async with qtrio.open_emissions_channel(signals=[instance.signal]) as emissions:
+            for v in [93, 56, 27]:
+                instance.signal.emit(v)
+                await trio.sleep(0.001)
+            await emissions.aclose()
+
+            async with emissions.channel:
+                emission = await emissions.channel.receive() 
+
+        assert emission == qtrio._core.Emission(signal=instance.signal, args=(93,))
+    """
+    testdir.makepyfile(test_file)
+
+    result = testdir.runpytest_subprocess(timeout=timeout)
+    result.assert_outcomes(passed=1)

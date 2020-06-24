@@ -6,6 +6,7 @@ Attributes:
 """
 import contextlib
 import functools
+import math
 import sys
 import traceback
 import typing
@@ -84,7 +85,7 @@ async def wait_signal(signal: SignalInstance) -> typing.Tuple[typing.Any, ...]:
     return result
 
 
-@attr.s(auto_attribs=True, frozen=True, slots=True)
+@attr.s(auto_attribs=True, frozen=True, slots=True, eq=False)
 class Emission:
     """Stores the emission of a signal including the emitted arguments.  Can be
     compared against a signal instance to check the source.
@@ -113,8 +114,23 @@ class Emission:
         # TODO: `repr()` here seems really bad.
         return self.signal.signal == signal.signal and repr(self.signal) == repr(signal)
 
+    def __eq__(self, other):
+        if type(other) != type(self):
+            return False
 
-async def emissions(signals: typing.Collection[SignalInstance],):
+        return self.is_from(signal=other.signal) and self.args == other.args
+
+
+@attr.s(auto_attribs=True)
+class Emissions:
+    channel: trio.MemoryReceiveChannel
+    _aclose: typing.Callable[[], typing.Awaitable[None]]
+
+    async def aclose(self):
+        return await self._aclose()
+
+@async_generator.asynccontextmanager
+async def open_emissions_channel(signals: typing.Collection[SignalInstance]):
     """Enable iteration over the emissions of the `signals`.
 
     Args:
@@ -124,23 +140,23 @@ async def emissions(signals: typing.Collection[SignalInstance],):
     # Infinite buffer because I don't think there's any use in storing the emission
     # info in a `slot()` stack frame rather than in the memory channel.  Perhaps in the
     # future we can implement a limit beyond which events are thrown away to avoid
-    # infinite queueing.
+    # infinite queueing.  Maybe trio.MemorySendChannel.send_nowait() instead.
     send_channel, receive_channel = trio.open_memory_channel(max_buffer_size=math.inf)
 
     async def slot(signal, *args):
         await send_channel.send(Emission(signal=signal, args=args))
 
-    async with trio.open_nursery() as nursery:
-        with contextlib.ExitStack() as stack:
-            for signal in signals:
-                stack.enter_context(
-                    qtrio._qt.connection(
-                        signal, functools.partial(nursery.start_soon, slot, signal)
-                    ),
-                )
+    async with send_channel:
+        async with trio.open_nursery() as nursery:
+            with contextlib.ExitStack() as stack:
+                for signal in signals:
+                    stack.enter_context(
+                        qtrio._qt.connection(
+                            signal, functools.partial(nursery.start_soon, slot, signal)
+                        ),
+                    )
 
-            async for emission in receive_channel:
-                yield emission
+                yield Emissions(channel=receive_channel, aclose=send_channel.aclose)
 
 
 @async_generator.asynccontextmanager
