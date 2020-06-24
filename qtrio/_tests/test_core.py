@@ -586,7 +586,7 @@ def test_open_emissions_channel_iterates_one(testdir):
 
         async with qtrio.open_emissions_channel(signals=[instance.signal]) as emissions:
             instance.signal.emit(93)
-            await trio.sleep(0.01)
+            await trio.sleep(0.1)
             await emissions.aclose()
             
             async with emissions.channel:
@@ -619,7 +619,7 @@ def test_open_emissions_channel_iterates_three(testdir):
         async with qtrio.open_emissions_channel(signals=[instance.signal]) as emissions:
             for v in [93, 56, 27]:
                 instance.signal.emit(v)
-                await trio.sleep(0.01)
+                await trio.sleep(0.1)
             await emissions.aclose()
 
             async with emissions.channel:
@@ -655,7 +655,7 @@ def test_open_emissions_channel_with_three_receives_first(testdir):
         async with qtrio.open_emissions_channel(signals=[instance.signal]) as emissions:
             for v in [93, 56, 27]:
                 instance.signal.emit(v)
-                await trio.sleep(0.01)
+                await trio.sleep(0.1)
             await emissions.aclose()
 
             async with emissions.channel:
