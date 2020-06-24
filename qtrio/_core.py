@@ -111,7 +111,9 @@ class Emission:
 
         # TODO: `repr()` here seems really bad.
         if qtpy.PYQT5:
-            return self.signal.signal == signal.signal and repr(self.signal) == repr(signal)
+            return self.signal.signal == signal.signal and repr(self.signal) == repr(
+                signal
+            )
         elif qtpy.PYSIDE2:
             return self.signal == signal
 
@@ -131,6 +133,7 @@ class Emissions:
 
     async def aclose(self):
         return await self._aclose()
+
 
 @async_generator.asynccontextmanager
 async def open_emissions_channel(signals: typing.Collection[SignalInstance]):

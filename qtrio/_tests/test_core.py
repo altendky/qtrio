@@ -528,10 +528,9 @@ def test_emissions_equal():
 
     instance = C()
 
-    assert (
-        qtrio._core.Emission(signal=instance.signal, args=(13,))
-        == qtrio._core.Emission(signal=instance.signal, args=(13,))
-    )
+    assert qtrio._core.Emission(
+        signal=instance.signal, args=(13,)
+    ) == qtrio._core.Emission(signal=instance.signal, args=(13,))
 
 
 def test_emissions_unequal_by_signal():
@@ -541,10 +540,9 @@ def test_emissions_unequal_by_signal():
 
     instance = C()
 
-    assert (
-        qtrio._core.Emission(signal=instance.signal_a, args=(13,))
-        != qtrio._core.Emission(signal=instance.signal_b, args=(13,))
-    )
+    assert qtrio._core.Emission(
+        signal=instance.signal_a, args=(13,)
+    ) != qtrio._core.Emission(signal=instance.signal_b, args=(13,))
 
 
 def test_emissions_unequal_by_instance():
@@ -554,10 +552,9 @@ def test_emissions_unequal_by_instance():
     instance_a = C()
     instance_b = C()
 
-    assert (
-        qtrio._core.Emission(signal=instance_a.signal, args=(13,))
-        != qtrio._core.Emission(signal=instance_b.signal, args=(13,))
-    )
+    assert qtrio._core.Emission(
+        signal=instance_a.signal, args=(13,)
+    ) != qtrio._core.Emission(signal=instance_b.signal, args=(13,))
 
 
 def test_emissions_unequal_by_args():
@@ -566,10 +563,9 @@ def test_emissions_unequal_by_args():
 
     instance = C()
 
-    assert (
-        qtrio._core.Emission(signal=instance.signal, args=(13,))
-        != qtrio._core.Emission(signal=instance.signal, args=(14,))
-    )
+    assert qtrio._core.Emission(
+        signal=instance.signal, args=(13,)
+    ) != qtrio._core.Emission(signal=instance.signal, args=(14,))
 
 
 def test_open_emissions_channel_iterates_one(testdir):
