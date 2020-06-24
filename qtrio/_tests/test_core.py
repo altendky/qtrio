@@ -569,7 +569,7 @@ def test_emissions_unequal_by_args():
 
 
 def test_open_emissions_channel_iterates_one(testdir):
-    # TODO: the trio.sleep(0.001) seems terrible
+    # TODO: the trio.sleep(0.01) seems terrible
     test_file = r"""
     from qtpy import QtCore
     import qtrio
@@ -586,7 +586,7 @@ def test_open_emissions_channel_iterates_one(testdir):
 
         async with qtrio.open_emissions_channel(signals=[instance.signal]) as emissions:
             instance.signal.emit(93)
-            await trio.sleep(0.001)
+            await trio.sleep(0.01)
             await emissions.aclose()
             
             async with emissions.channel:
@@ -601,7 +601,7 @@ def test_open_emissions_channel_iterates_one(testdir):
 
 
 def test_open_emissions_channel_iterates_three(testdir):
-    # TODO: the trio.sleep(0.001) seems terrible
+    # TODO: the trio.sleep(0.01) seems terrible
     test_file = r"""
     from qtpy import QtCore
     import qtrio
@@ -619,7 +619,7 @@ def test_open_emissions_channel_iterates_three(testdir):
         async with qtrio.open_emissions_channel(signals=[instance.signal]) as emissions:
             for v in [93, 56, 27]:
                 instance.signal.emit(v)
-                await trio.sleep(0.001)
+                await trio.sleep(0.01)
             await emissions.aclose()
 
             async with emissions.channel:
@@ -637,7 +637,7 @@ def test_open_emissions_channel_iterates_three(testdir):
 
 
 def test_open_emissions_channel_with_three_receives_first(testdir):
-    # TODO: the trio.sleep(0.001) seems terrible
+    # TODO: the trio.sleep(0.01) seems terrible
     test_file = r"""
     from qtpy import QtCore
     import qtrio
@@ -655,7 +655,7 @@ def test_open_emissions_channel_with_three_receives_first(testdir):
         async with qtrio.open_emissions_channel(signals=[instance.signal]) as emissions:
             for v in [93, 56, 27]:
                 instance.signal.emit(v)
-                await trio.sleep(0.001)
+                await trio.sleep(0.01)
             await emissions.aclose()
 
             async with emissions.channel:
