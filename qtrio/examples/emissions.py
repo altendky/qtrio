@@ -1,6 +1,5 @@
 import attr
 import qtrio
-import qtrio._qt
 import trio
 
 from qtpy import QtWidgets
@@ -16,15 +15,16 @@ class Window:
     count: int = 0
 
     @classmethod
-    def build(cls, parent=None):
+    def build(cls, title="QTrio Emissions Example", parent=None):
         self = cls(
-            widget = QtWidgets.QWidget(),
-            layout = QtWidgets.QHBoxLayout(),
-            increment = QtWidgets.QPushButton(),
-            decrement = QtWidgets.QPushButton(),
-            label = QtWidgets.QLabel(),
+            widget=QtWidgets.QWidget(),
+            layout=QtWidgets.QHBoxLayout(),
+            increment=QtWidgets.QPushButton(),
+            decrement=QtWidgets.QPushButton(),
+            label=QtWidgets.QLabel(),
         )
 
+        self.widget.setWindowTitle(title)
         self.widget.setLayout(self.layout)
 
         self.increment.setText("+")
@@ -51,7 +51,9 @@ async def main():
     application = QtWidgets.QApplication.instance()
 
     with trio.CancelScope() as cancel_scope:
-        with qtrio._qt.connection(signal=application.lastWindowClosed, slot=cancel_scope.cancel):
+        with qtrio.connection(
+            signal=application.lastWindowClosed, slot=cancel_scope.cancel
+        ):
             window = Window.build()
 
             signals = [window.decrement.clicked, window.increment.clicked]
@@ -65,6 +67,3 @@ async def main():
                             window.decrement_count()
                         elif emission.is_from(window.increment.clicked):
                             window.increment_count()
-
-
-qtrio.run(main)
