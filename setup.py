@@ -15,7 +15,12 @@ setup(
     license="MIT -or- Apache License 2.0",
     packages=find_packages(),
     install_requires=["async_generator", "attrs", "outcome", "pytest", "qtpy", "trio"],
-    extras_require={"pyqt5": ["pyqt5"], "pyside2": ["pyside2"], "examples": ["click"],},
+    extras_require={
+        "pyqt5": ["pyqt5"],
+        "pyside2": ["pyside2"],
+        "examples": ["click"],
+        "tests": ["pytest", "pytest-qt"],
+    },
     entry_points={"console_scripts": ["qtrio = qtrio._cli:cli"]},
     keywords=["async", "io", "Trio", "GUI", "Qt", "PyQt5", "PySide2"],
     python_requires=">=3.6",
