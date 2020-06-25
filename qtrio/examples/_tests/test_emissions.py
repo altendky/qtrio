@@ -12,7 +12,7 @@ async def test_example(request, qtbot):
 
     results = []
 
-    async def user(task_status):
+    async def user(event, task_status):
         async with qtrio.wait_signal_context(window.shown):
             task_status.started()
 
@@ -31,10 +31,13 @@ async def test_example(request, qtbot):
             results.append(window.label.text())
             await trio.sleep(0.01)
 
+        event.set()
+
     async with trio.open_nursery() as nursery:
-        await nursery.start(user)
+        event = trio.Event()
+        await nursery.start(user, event)
         nursery.start_soon(qtrio.examples.emissions.main, window)
-        await trio.sleep(1)
+        await event.wait()
         nursery.cancel_scope.cancel()
 
     assert results == ["1", "2", "3", "2", "1", "0", "-1"]
