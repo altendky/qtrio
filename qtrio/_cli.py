@@ -12,7 +12,7 @@ def examples():
 
 
 @examples.command()
-def emissions():
+def emissions():  # pragma: no cover
     import qtrio.examples.emissions
 
     qtrio.run(qtrio.examples.emissions.main)
