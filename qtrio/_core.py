@@ -21,7 +21,6 @@ from qtpy import QtWidgets
 import trio
 
 import qtrio
-import qtrio._qt
 
 
 # https://github.com/spyder-ide/qtpy/pull/214
@@ -77,7 +76,7 @@ async def wait_signal(signal: SignalInstance) -> typing.Tuple[typing.Any, ...]:
         result = args
         event.set()
 
-    with qtrio._qt.connection(signal, slot):
+    with qtrio.connection(signal, slot):
         await event.wait()
 
     return result
@@ -169,7 +168,7 @@ async def open_emissions_channel(signals: typing.Collection[SignalInstance]):
 async def wait_signal_context(signal: SignalInstance) -> None:
     event = trio.Event()
 
-    with qtrio._qt.connection(signal=signal, slot=lambda *args, **kwargs: event.set()):
+    with qtrio.connection(signal=signal, slot=lambda *args, **kwargs: event.set()):
         yield
         await event.wait()
 
@@ -349,7 +348,7 @@ class Runner:
             with contextlib.ExitStack() as exit_stack:
                 if self.application.quitOnLastWindowClosed():
                     exit_stack.enter_context(
-                        qtrio._qt.connection(
+                        qtrio.connection(
                             signal=self.application.lastWindowClosed,
                             slot=self.cancel_scope.cancel,
                         )
