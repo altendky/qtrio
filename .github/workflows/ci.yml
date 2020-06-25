@@ -53,6 +53,7 @@ jobs:
     name: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_library }})'
     timeout-minutes: 20
     runs-on: 'windows-latest'
+    container: 'docker://python:${{ matrix.python }}-windowsservercore-1809'
     strategy:
       fail-fast: false
       matrix:
