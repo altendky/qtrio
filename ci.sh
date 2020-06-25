@@ -47,6 +47,8 @@ elif [ "$CHECK_FORMATTING" = "1" ]; then
 else
     # Actual tests
     python -m pip install -r test-requirements.txt
+    python -m pip list
+    python -m pip freeze
 
     # We run the tests from inside an empty directory, to make sure Python
     # doesn't pick up any .py files from our working dir. Might have been
