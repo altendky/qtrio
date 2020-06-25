@@ -557,6 +557,15 @@ def test_emissions_unequal_by_instance():
     ) != qtrio._core.Emission(signal=instance_b.signal, args=(13,))
 
 
+def test_emissions_unequal_by_type():
+    class C(QtCore.QObject):
+        signal = QtCore.Signal()
+
+    instance = C()
+
+    assert qtrio._core.Emission(signal=instance.signal, args=(13,)) != 13
+
+
 def test_emissions_unequal_by_args():
     class C(QtCore.QObject):
         signal = QtCore.Signal()

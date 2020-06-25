@@ -117,7 +117,7 @@ class Emission:
         elif qtpy.PYSIDE2:
             return self.signal == signal
 
-        raise qtrio.QTrioException()
+        raise qtrio.QTrioException()  # pragma: no cover
 
     def __eq__(self, other):
         if type(other) != type(self):
