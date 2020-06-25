@@ -12,6 +12,7 @@ from ._exceptions import (
 
 from ._core import (
     wait_signal,
+    wait_signal_context,
     Outcomes,
     run,
     Runner,
@@ -19,3 +20,4 @@ from ._core import (
 
 from ._qt import connection
 from ._pytest import host
+from ._qt import connection
