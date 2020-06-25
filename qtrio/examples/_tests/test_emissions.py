@@ -1,5 +1,6 @@
 timeout = 10
 
+
 def test_main(testdir):
     test_file = r"""
     import qtrio
