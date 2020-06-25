@@ -8,6 +8,8 @@ import qtrio.examples.emissions
 
 @qtrio.host
 async def test_example(request, qtbot):
+    import faulthandler
+    faulthandler.dump_traceback_later(2.5)
     window = qtrio.examples.emissions.Window.build()
     qtbot.addWidget(window.widget)
 
