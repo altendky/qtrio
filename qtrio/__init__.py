@@ -19,3 +19,4 @@ from ._core import (
 )
 
 from ._pytest import host
+from ._qt import connection
