@@ -11,7 +11,9 @@ class QSignalsWidget(QtWidgets.QWidget):
     closed = QtCore.Signal()
 
     def closeEvent(self, event):
-        self.closed.emit()
+        super().closeEvent(event)
+        if event.isAccepted():
+            self.closed.emit()
 
 
 @attr.s(auto_attribs=True)
