@@ -14,6 +14,8 @@ class QSignalsWidget(QtWidgets.QWidget):
         super().closeEvent(event)
         if event.isAccepted():
             self.closed.emit()
+        else:  # pragma: no cover
+            pass
 
 
 @attr.s(auto_attribs=True)
@@ -65,8 +67,8 @@ class Window:
 
 
 async def main(window=None):
-    if window is None:
-        window = Window.build()  # pragma: no cover
+    if window is None:  # pragma: no cover
+        window = Window.build()
 
     signals = [
         window.decrement.clicked,
@@ -85,3 +87,5 @@ async def main(window=None):
                     window.increment_count()
                 elif emission.is_from(window.widget.closed):
                     break
+                else:  # pragma: no cover
+                    raise qtrio.QTrioException(f"Unexpected emission: {emission}")
