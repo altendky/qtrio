@@ -156,7 +156,7 @@ async def open_emissions_channel(signals: typing.Collection[SignalInstance]):
             with contextlib.ExitStack() as stack:
                 for signal in signals:
                     stack.enter_context(
-                        qtrio._qt.connection(
+                        qtrio.connection(
                             signal, functools.partial(nursery.start_soon, slot, signal)
                         ),
                     )
