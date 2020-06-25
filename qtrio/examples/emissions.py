@@ -1,4 +1,5 @@
 import attr
+from qtpy import QtCore
 from qtpy import QtWidgets
 import trio
 
@@ -6,9 +7,16 @@ import qtrio
 import qtrio._qt
 
 
+class QSignalsWidget(QtWidgets.QWidget):
+    closed = QtCore.Signal()
+
+    def closeEvent(self, event):
+        self.closed.emit()
+
+
 @attr.s(auto_attribs=True)
 class Window:
-    widget: QtWidgets.QWidget
+    widget: QSignalsWidget
     increment: QtWidgets.QPushButton
     decrement: QtWidgets.QPushButton
     label: QtWidgets.QLabel
@@ -20,7 +28,7 @@ class Window:
     @classmethod
     def build(cls, title="QTrio Emissions Example", parent=None):
         self = cls(
-            widget=QtWidgets.QWidget(),
+            widget=QSignalsWidget(),
             layout=QtWidgets.QHBoxLayout(),
             increment=QtWidgets.QPushButton(),
             decrement=QtWidgets.QPushButton(),
@@ -55,23 +63,23 @@ class Window:
 
 
 async def main(window=None):
-    application = QtWidgets.QApplication.instance()
+    if window is None:
+        window = Window.build()  # pragma: no cover
 
-    with trio.CancelScope() as cancel_scope:
-        with qtrio.connection(
-            signal=application.lastWindowClosed, slot=cancel_scope.cancel
-        ):
-            if window is None:
-                window = Window.build()  # pragma: no cover
+    signals = [
+        window.decrement.clicked,
+        window.increment.clicked,
+        window.widget.closed,
+    ]
 
-            signals = [window.decrement.clicked, window.increment.clicked]
+    async with qtrio.open_emissions_channel(signals=signals) as emissions:
+        window.show()
 
-            async with qtrio.open_emissions_channel(signals=signals) as emissions:
-                window.show()
-
-                async with emissions.channel:
-                    async for emission in emissions.channel:
-                        if emission.is_from(window.decrement.clicked):
-                            window.decrement_count()
-                        elif emission.is_from(window.increment.clicked):
-                            window.increment_count()
+        async with emissions.channel:
+            async for emission in emissions.channel:
+                if emission.is_from(window.decrement.clicked):
+                    window.decrement_count()
+                elif emission.is_from(window.increment.clicked):
+                    window.increment_count()
+                elif emission.is_from(window.widget.closed):
+                    break
