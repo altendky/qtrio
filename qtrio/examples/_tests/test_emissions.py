@@ -7,11 +7,16 @@ timeout = 10
 @pytest.mark.xfail(strict=False)
 def test_main_first(testdir):
     test_file = r"""
+    from qtpy import QtWidgets
     import qtrio
 
     @qtrio.host
     async def test_example(request, qtbot):
-        pass
+        widget = QtWidgets.QWidget()
+        qtbot.addWidget(widget)
+        
+        widget.show()
+        widget.close()
     """
     testdir.makepyfile(test_file)
 
