@@ -9,6 +9,9 @@ import pytest
 import qtrio
 
 
+timeout = 3
+
+
 def host(test_function: typing.Callable[..., typing.Awaitable[None]]):
     """
     Decorate your tests that you want run with a Trio guest and a Qt Host.
@@ -24,7 +27,6 @@ def host(test_function: typing.Callable[..., typing.Awaitable[None]]):
     Args:
         test_function: The pytest function to be tested.
     """
-    timeout = 3000
 
     @pytest.mark.usefixtures("qapp", "qtbot")
     @functools.wraps(test_function)
@@ -54,12 +56,12 @@ def host(test_function: typing.Callable[..., typing.Awaitable[None]]):
         )
 
         def result_ready():
-            message = f"test not finished within {timeout/1000} seconds"
+            message = f"test not finished within {timeout} seconds"
             assert test_outcomes is not test_outcomes_sentinel, message
 
         # TODO: probably increases runtime of fast tests a lot due to polling
         try:
-            qtbot.wait_until(result_ready, timeout=timeout)
+            qtbot.wait_until(result_ready, timeout=timeout * 1000)
         except AssertionError:
             runner.cancel_scope.cancel()
             qtbot.wait_until(result_ready)

@@ -1,20 +1,25 @@
-def test_wait_signal_returns_the_value(testdir):
+import qtrio._pytest
+
+
+def test_overrunning_test_times_out(testdir):
     """The overrunning test is timed out."""
 
-    test_file = r"""
+    test_file = rf"""
     import qtrio
     import trio
 
     @qtrio.host
     async def test(request):
-        await trio.sleep(10)
+        await trio.sleep({2 * qtrio._pytest.timeout})
     """
     testdir.makepyfile(test_file)
 
-    result = testdir.runpytest_subprocess(timeout=10)
+    timeout = qtrio._pytest.timeout
+
+    result = testdir.runpytest_subprocess(timeout=2 * qtrio._pytest.timeout)
     result.assert_outcomes(failed=1)
     result.stdout.re_match_lines(
-        lines2=["E       AssertionError: test not finished within 3.0 seconds"]
+        lines2=[f"E       AssertionError: test not finished within {timeout} seconds"],
     )
 
 
