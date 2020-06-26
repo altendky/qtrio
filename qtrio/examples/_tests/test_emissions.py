@@ -4,7 +4,7 @@ import pytest
 timeout = 10
 
 
-@pytest.xfail(strict=False)
+@pytest.mark.xfail(strict=False)
 def test_main(testdir):
     test_file = r"""
     import faulthandler
