@@ -139,6 +139,8 @@ def test_79(testdir):
                 window.decrement,
                 window.decrement,
             ]
+            for button in buttons:
+                qtbot.mouseClick(button, QtCore.Qt.LeftButton)
 
             await trio.sleep(1)
             window.widget.close()
