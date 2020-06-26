@@ -37,7 +37,6 @@ def test_main_first(testdir):
                 results.append(window.label.text())
                 await trio.testing.wait_all_tasks_blocked(cushion=0.01)
 
-            await trio.sleep(1)
             window.widget.close()
 
         async with trio.open_nursery() as nursery:
@@ -91,7 +90,6 @@ def test_main_second(testdir):
                 results.append(window.label.text())
                 await trio.testing.wait_all_tasks_blocked(cushion=0.01)
 
-            await trio.sleep(1)
             window.widget.close()
 
         async with trio.open_nursery() as nursery:
