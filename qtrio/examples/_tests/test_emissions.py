@@ -53,3 +53,20 @@ def test_main(testdir):
 
     result = testdir.runpytest_subprocess("--capture=no", timeout=timeout)
     result.assert_outcomes(passed=1)
+
+
+def test_minimal(testdir):
+    test_file = r"""
+    import faulthandler
+    from qtpy import QtWidgets
+
+    def test():
+        faulthandler.dump_traceback_later(2.5)
+        app = QtWidgets.QApplication([])
+        widget = QtWidgets.QWidget()
+        widget.show()
+    """
+    testdir.makepyfile(test_file)
+
+    result = testdir.runpytest_subprocess("--capture=no", timeout=timeout)
+    result.assert_outcomes(passed=1)
