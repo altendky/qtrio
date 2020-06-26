@@ -592,11 +592,10 @@ def test_emissions_unequal_by_args():
 
 def test_open_emissions_channel_iterates_one(testdir):
     """Emissions channel yields one emission as expected."""
-    # TODO: the trio.sleep(0.01) seems terrible
     test_file = r"""
     from qtpy import QtCore
     import qtrio
-    import trio
+    import trio.testing
 
 
     class MyQObject(QtCore.QObject):
@@ -609,7 +608,7 @@ def test_open_emissions_channel_iterates_one(testdir):
 
         async with qtrio.open_emissions_channel(signals=[instance.signal]) as emissions:
             instance.signal.emit(93)
-            await trio.sleep(0.1)
+            await trio.testing.wait_all_tasks_blocked(cushion=0.01)
             await emissions.aclose()
             
             async with emissions.channel:
@@ -625,11 +624,10 @@ def test_open_emissions_channel_iterates_one(testdir):
 
 def test_open_emissions_channel_iterates_three(testdir):
     """Emissions channel yields three emissions as expected."""
-    # TODO: the trio.sleep(0.01) seems terrible
     test_file = r"""
     from qtpy import QtCore
     import qtrio
-    import trio
+    import trio.testing
 
 
     class MyQObject(QtCore.QObject):
@@ -643,7 +641,7 @@ def test_open_emissions_channel_iterates_three(testdir):
         async with qtrio.open_emissions_channel(signals=[instance.signal]) as emissions:
             for v in [93, 56, 27]:
                 instance.signal.emit(v)
-                await trio.sleep(0.1)
+                await trio.testing.wait_all_tasks_blocked(cushion=0.01)
             await emissions.aclose()
 
             async with emissions.channel:
@@ -662,11 +660,10 @@ def test_open_emissions_channel_iterates_three(testdir):
 
 def test_open_emissions_channel_with_three_receives_first(testdir):
     """Emissions channel yields receives first item when requested."""
-    # TODO: the trio.sleep(0.01) seems terrible
     test_file = r"""
     from qtpy import QtCore
     import qtrio
-    import trio
+    import trio.testing
 
 
     class MyQObject(QtCore.QObject):
@@ -680,7 +677,7 @@ def test_open_emissions_channel_with_three_receives_first(testdir):
         async with qtrio.open_emissions_channel(signals=[instance.signal]) as emissions:
             for v in [93, 56, 27]:
                 instance.signal.emit(v)
-                await trio.sleep(0.1)
+                await trio.testing.wait_all_tasks_blocked(cushion=0.01)
             await emissions.aclose()
 
             async with emissions.channel:
