@@ -59,10 +59,11 @@ def test_minimal(testdir):
     test_file = r"""
     import faulthandler
     from qtpy import QtWidgets
+    import qtrio
 
-    def test():
+    @qtrio.host
+    async def test():
         faulthandler.dump_traceback_later(2.5)
-        app = QtWidgets.QApplication([])
         widget = QtWidgets.QWidget()
         widget.show()
     """
