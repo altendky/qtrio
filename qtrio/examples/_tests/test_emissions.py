@@ -65,7 +65,6 @@ def test_94(testdir):
     import trio.testing
 
     import qtrio.examples.emissions
-
     @qtrio.host
     async def test_example(request, qtbot):
         faulthandler.dump_traceback_later(2.5)
@@ -92,7 +91,7 @@ def test_94(testdir):
                 results.append(window.label.text())
                 await trio.testing.wait_all_tasks_blocked(cushion=0.01)
 
-            await trio.sleep(0.2)
+            await trio.sleep(1)
             window.widget.close()
 
         async with trio.open_nursery() as nursery:
