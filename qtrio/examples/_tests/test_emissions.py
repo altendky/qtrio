@@ -21,13 +21,31 @@ def test_main(testdir):
         results = []
 
         async def user():
-            await trio.sleep(1)
+            await emissions.channel.receive()
+
+            buttons = [
+                window.increment,
+                window.increment,
+                window.increment,
+                window.decrement,
+                window.decrement,
+                window.decrement,
+                window.decrement,
+            ]
+            for button in buttons:
+                qtbot.mouseClick(button, QtCore.Qt.LeftButton)
+                await trio.testing.wait_all_tasks_blocked(cushion=0.01)
+                results.append(window.label.text())
+                await trio.testing.wait_all_tasks_blocked(cushion=0.01)
+
             window.widget.close()
 
         async with trio.open_nursery() as nursery:
-            nursery.start_soon(user)
+            async with qtrio.open_emissions_channel(signals=[window.shown]) as emissions:
+                async with emissions.channel:
+                    nursery.start_soon(user)
 
-            await qtrio.examples.emissions.main(window=window)
+                    await qtrio.examples.emissions.main(window=window)
 
         assert results == ["1", "2", "3", "2", "1", "0", "-1"]
     """
@@ -40,16 +58,32 @@ def test_main(testdir):
 def test_middle(testdir):
     test_file = r"""
     import faulthandler
-    from qtpy import QtWidgets
 
     import qtrio
+    from qtpy import QtCore
+    import trio
+    import trio.testing
+
     import qtrio.examples.emissions
 
     @qtrio.host
-    async def test(request):
+    async def test_example(request, qtbot):
         faulthandler.dump_traceback_later(2.5)
-        widget = qtrio.examples.emissions.QSignalsWidget()
-        widget.show()
+        window = qtrio.examples.emissions.Window.build()
+        qtbot.addWidget(window.widget)
+
+        results = []
+
+        async def user():
+            await trio.sleep(1)
+            window.widget.close()
+
+        async with trio.open_nursery() as nursery:
+            nursery.start_soon(user)
+
+            await qtrio.examples.emissions.main(window=window)
+
+        assert results == ["1", "2", "3", "2", "1", "0", "-1"]
     """
     testdir.makepyfile(test_file)
 
