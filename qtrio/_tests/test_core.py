@@ -523,6 +523,9 @@ def test_failed_hosted_trio_prints_exception(testdir):
 
 
 def test_emissions_equal():
+    """:class:`Emission` objects created from the same :class:`QtCore.Signal` instance
+    and args are equal even if the attributes are different instances.
+    """
     class C(QtCore.QObject):
         signal = QtCore.Signal()
 
@@ -534,6 +537,9 @@ def test_emissions_equal():
 
 
 def test_emissions_unequal_by_signal():
+    """:class:`Emission` objects with the same arguments but different signals are
+    unequal.
+    """
     class C(QtCore.QObject):
         signal_a = QtCore.Signal()
         signal_b = QtCore.Signal()
@@ -546,6 +552,9 @@ def test_emissions_unequal_by_signal():
 
 
 def test_emissions_unequal_by_instance():
+    """:class:`Emission` objects with the same signal but on different instances are
+    unequal.
+    """
     class C(QtCore.QObject):
         signal = QtCore.Signal()
 
@@ -558,6 +567,7 @@ def test_emissions_unequal_by_instance():
 
 
 def test_emissions_unequal_by_type():
+    """:class:`Emission` objects are not equal to integers"""
     class C(QtCore.QObject):
         signal = QtCore.Signal()
 
@@ -567,6 +577,9 @@ def test_emissions_unequal_by_type():
 
 
 def test_emissions_unequal_by_args():
+    """:class:`Emission` objects with the same signal but different arguments are
+    unequal.
+    """
     class C(QtCore.QObject):
         signal = QtCore.Signal()
 
@@ -578,6 +591,7 @@ def test_emissions_unequal_by_args():
 
 
 def test_open_emissions_channel_iterates_one(testdir):
+    """Emissions channel yields one emission as expected."""
     # TODO: the trio.sleep(0.01) seems terrible
     test_file = r"""
     from qtpy import QtCore
@@ -610,6 +624,7 @@ def test_open_emissions_channel_iterates_one(testdir):
 
 
 def test_open_emissions_channel_iterates_three(testdir):
+    """Emissions channel yields three emissions as expected."""
     # TODO: the trio.sleep(0.01) seems terrible
     test_file = r"""
     from qtpy import QtCore
@@ -646,6 +661,7 @@ def test_open_emissions_channel_iterates_three(testdir):
 
 
 def test_open_emissions_channel_with_three_receives_first(testdir):
+    """Emissions channel yields receives first item when requested."""
     # TODO: the trio.sleep(0.01) seems terrible
     test_file = r"""
     from qtpy import QtCore
