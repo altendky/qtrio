@@ -19,7 +19,7 @@ setup(
         "pyqt5": ["pyqt5"],
         "pyside2": ["pyside2"],
         "examples": ["click"],
-        "tests": ["pytest", "pytest-qt"],
+        "tests": ["click", "coverage", "pytest", "pytest-cov", "pytest-qt"],
     },
     entry_points={"console_scripts": ["qtrio = qtrio._cli:cli"]},
     keywords=["async", "io", "Trio", "GUI", "Qt", "PyQt5", "PySide2"],
