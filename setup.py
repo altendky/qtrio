@@ -18,6 +18,12 @@ setup(
     extras_require={
         "pyqt5": ["pyqt5"],
         "pyside2": ["pyside2"],
+        "docs": [
+            "sphinx >= 1.7.0",
+            "sphinx_rtd_theme",
+            "sphinxcontrib-trio",
+            "towncrier",
+        ],
         "tests": ["pytest", "pytest-qt"],
     },
     keywords=["async", "io", "Trio", "GUI", "Qt", "PyQt5", "PySide2"],
