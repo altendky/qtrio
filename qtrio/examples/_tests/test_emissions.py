@@ -72,6 +72,26 @@ def test_minimal(testdir):
     result.assert_outcomes(passed=1)
 
 
+def test_middle(testdir):
+    test_file = r"""
+    import faulthandler
+    from qtpy import QtWidgets
+
+    import qtrio
+    import qtrio.examples.emissions
+
+    @qtrio.host
+    async def test(request):
+        faulthandler.dump_traceback_later(2.5)
+        widget = qtrio.examples.emissions.QSignalsWidget()
+        widget.show()
+    """
+    testdir.makepyfile(test_file)
+
+    result = testdir.runpytest_subprocess("--capture=no", timeout=timeout)
+    result.assert_outcomes(passed=1)
+
+
 def test_hosted(testdir):
     test_file = r"""
     import faulthandler
