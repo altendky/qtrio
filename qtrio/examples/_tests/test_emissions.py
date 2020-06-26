@@ -63,6 +63,7 @@ def test_minimal(testdir):
 
     def test(request):
         faulthandler.dump_traceback_later(2.5)
+        app = QtWidgets.QApplication([])
         widget = QtWidgets.QWidget()
         widget.show()
     """
