@@ -18,7 +18,9 @@ setup(
     extras_require={
         "pyqt5": ["pyqt5"],
         "pyside2": ["pyside2"],
-        "tests": ["pytest", "pytest-qt"],
+        "checks": ["black", "flake8"],
+        "docs": ["sphinx >= 1.7.0", "sphinx_rtd_theme", "sphinxcontrib-trio", "towncrier"],
+        "tests": ["coverage", "pytest", "pytest-cov", "pytest-faulthandler", "pytest-qt", 'pytest-xvfb; sys_platform == "linux"'],
     },
     keywords=["async", "io", "Trio", "GUI", "Qt", "PyQt5", "PySide2"],
     python_requires=">=3.6",
