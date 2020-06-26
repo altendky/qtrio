@@ -3,6 +3,8 @@ timeout = 10
 
 def test_main(testdir):
     test_file = r"""
+    import faulthandler
+
     import qtrio
     from qtpy import QtCore
     import trio
@@ -12,6 +14,7 @@ def test_main(testdir):
 
     @qtrio.host
     async def test_example(request, qtbot):
+        faulthandler.dump_traceback_later(2.5)
         window = qtrio.examples.emissions.Window.build()
         qtbot.addWidget(window.widget)
 
