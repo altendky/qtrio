@@ -135,11 +135,13 @@ class Emissions:
 
 
 @async_generator.asynccontextmanager
-async def open_emissions_channel(signals: typing.Collection[SignalInstance]):
-    """Enable iteration over the emissions of the `signals`.
+async def open_emissions_channel(
+    signals: typing.Collection[SignalInstance],
+) -> typing.Iterator[trio.MemoryReceiveChannel]:
+    """Create a memory channel fed by the emissions of the `signals`.
 
     Args:
-        signals: A collection of signals from which :class:`Emission`s will be yielded
+        signals: A collection of signals from which :class:`Emission`s will be created.
     """
 
     # Infinite buffer because I don't think there's any use in storing the emission
