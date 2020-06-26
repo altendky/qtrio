@@ -82,8 +82,6 @@ def test_middle(testdir):
             nursery.start_soon(user)
 
             await qtrio.examples.emissions.main(window=window)
-
-        assert results == ["1", "2", "3", "2", "1", "0", "-1"]
     """
     testdir.makepyfile(test_file)
 
