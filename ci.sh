@@ -46,7 +46,7 @@ elif [ "$CHECK_FORMATTING" = "1" ]; then
     source check.sh
 else
     # Actual tests
-    python -m pip install -r test-requirements.txt
+#    python -m pip install -r test-requirements.txt
     python -m pip list
     python -m pip freeze
 
