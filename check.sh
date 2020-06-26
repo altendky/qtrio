@@ -28,7 +28,7 @@ if [ $EXIT_STATUS -ne 0 ]; then
 Problems were found by static analysis (listed above).
 To fix formatting and see remaining errors, run
 
-    pip install -r test-requirements.txt
+    pip install .[pyside2,checks]
     black setup.py ${PACKAGE_NAME}
     ./check.sh
 
