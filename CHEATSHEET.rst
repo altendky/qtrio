@@ -45,7 +45,7 @@ To run tests
 ------------
 
 * Install requirements: ``pip install -r test-requirements.txt``
-  (possibly in a virtualenv)
+  (work in a `virtual environment <https://chriswarrick.com/blog/2018/09/04/python-virtual-environments/>`__)
 
 * Actually run the tests: ``pytest qtrio``
 
