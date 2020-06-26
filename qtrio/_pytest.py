@@ -24,7 +24,7 @@ def host(test_function: typing.Callable[..., typing.Awaitable[None]]):
     Args:
         test_function: The pytest function to be tested.
     """
-    timeout = 6000
+    timeout = 3000
 
     @pytest.mark.usefixtures("qapp", "qtbot")
     @functools.wraps(test_function)
