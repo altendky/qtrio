@@ -16,6 +16,7 @@ def test_main_first(testdir):
         qtbot.addWidget(widget)
         
         widget.show()
+        await trio.sleep(2)
         widget.close()
     """
     testdir.makepyfile(test_file)
