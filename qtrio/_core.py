@@ -127,10 +127,19 @@ class Emission:
 
 @attr.s(auto_attribs=True)
 class Emissions:
+    """Hold elements useful for the application to work with emissions from signals.
+
+    Attributes:
+        channel: A memory receive channel to be fed by signal emissions.
+        _aclose: The send channel's `.aclose()` method.
+    """
     channel: trio.MemoryReceiveChannel
     _aclose: typing.Callable[[], typing.Awaitable[typing.Any]]
 
     async def aclose(self):
+        """Asynchronously close the send channel when signal emissions are no longer of
+        interest.
+        """
         return await self._aclose()
 
 

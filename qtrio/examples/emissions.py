@@ -7,32 +7,52 @@ import qtrio
 import qtrio._qt
 
 
-class QSignalsWidget(QtWidgets.QWidget):
+class QSignaledWidget(QtWidgets.QWidget):
+    """A :class:`QtWidgets.QWidget` with extra signals for events of interest.
+
+    Attributes:
+        closed: A signal that will be emitted after a close event.
+    """
     closed = QtCore.Signal()
+    shown = QtCore.Signal()
 
     def closeEvent(self, event):
+        """Detect close events and emit the `closed` signal."""
+
         super().closeEvent(event)
         if event.isAccepted():
             self.closed.emit()
         else:  # pragma: no cover
             pass
 
+    def showEvent(self, event):
+        """Detect show events and emit the `shown` signal."""
+
+        super().showEvent(event)
+        if event.isAccepted():
+            self.shown.emit()
+        else:  # pragma: no cover
+            pass
+
 
 @attr.s(auto_attribs=True)
 class Window:
-    widget: QSignalsWidget
+    """A manager for a simple window with increment and decrement buttons to change a
+    counter which is displayed via a widget in the center.
+    """
+    widget: QSignaledWidget
     increment: QtWidgets.QPushButton
     decrement: QtWidgets.QPushButton
     label: QtWidgets.QLabel
     layout: QtWidgets.QHBoxLayout
     count: int = 0
 
-    shown = qtrio._qt.Signal()
-
     @classmethod
     def build(cls, title="QTrio Emissions Example", parent=None):
+        """Build and lay out the widgets that make up this window."""
+
         self = cls(
-            widget=QSignalsWidget(),
+            widget=QSignaledWidget(parent),
             layout=QtWidgets.QHBoxLayout(),
             increment=QtWidgets.QPushButton(),
             decrement=QtWidgets.QPushButton(),
@@ -54,19 +74,27 @@ class Window:
         return self
 
     def increment_count(self):
+        """Increment the counter and update the label."""
+
         self.count += 1
         self.label.setText(str(self.count))
 
     def decrement_count(self):
+        """Decrement the counter and update the label."""
+
         self.count -= 1
         self.label.setText(str(self.count))
 
     def show(self):
+        """Show the primary widget for this window."""
+
         self.widget.show()
-        self.shown.emit()
 
 
 async def main(window=None):
+    """Show the example window and iterate over the relevant signal emissions to respond
+    to user interactions with the GUI.
+    """
     if window is None:  # pragma: no cover
         window = Window.build()
 

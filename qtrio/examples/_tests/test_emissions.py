@@ -44,7 +44,9 @@ def test_main_first(testdir):
             window.widget.close()
 
         async with trio.open_nursery() as nursery:
-            async with qtrio.open_emissions_channel(signals=[window.shown]) as emissions:
+            async with qtrio.open_emissions_channel(
+                signals=[window.widget.shown],
+            ) as emissions:
                 async with emissions.channel:
                     nursery.start_soon(user)
 
@@ -97,7 +99,9 @@ def test_main_second(testdir):
             window.widget.close()
 
         async with trio.open_nursery() as nursery:
-            async with qtrio.open_emissions_channel(signals=[window.shown]) as emissions:
+            async with qtrio.open_emissions_channel(
+                signals=[window.widget.shown],
+            ) as emissions:
                 async with emissions.channel:
                     nursery.start_soon(user)
 
