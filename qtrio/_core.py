@@ -128,7 +128,7 @@ class Emission:
 @attr.s(auto_attribs=True)
 class Emissions:
     channel: trio.MemoryReceiveChannel
-    _aclose: typing.Callable[[], typing.Awaitable[None]]
+    _aclose: typing.Callable[[], typing.Awaitable[typing.Any]]
 
     async def aclose(self):
         return await self._aclose()
