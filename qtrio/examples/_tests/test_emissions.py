@@ -108,6 +108,54 @@ def test_88(testdir):
     result.assert_outcomes(passed=1)
 
 
+def test_79(testdir):
+    test_file = r"""
+    import faulthandler
+
+    import qtrio
+    from qtpy import QtCore
+    import trio
+    import trio.testing
+
+    import qtrio.examples.emissions
+
+    @qtrio.host
+    async def test_example(request, qtbot):
+        faulthandler.dump_traceback_later(2.5)
+        window = qtrio.examples.emissions.Window.build()
+        qtbot.addWidget(window.widget)
+
+        results = []
+
+        async def user():
+            await emissions.channel.receive()
+
+            buttons = [
+                window.increment,
+                window.increment,
+                window.increment,
+                window.decrement,
+                window.decrement,
+                window.decrement,
+                window.decrement,
+            ]
+
+            await trio.sleep(1)
+            window.widget.close()
+
+        async with trio.open_nursery() as nursery:
+            async with qtrio.open_emissions_channel(signals=[window.shown]) as emissions:
+                async with emissions.channel:
+                    nursery.start_soon(user)
+
+                    await qtrio.examples.emissions.main(window=window)
+    """
+    testdir.makepyfile(test_file)
+
+    result = testdir.runpytest_subprocess("--capture=no", timeout=timeout)
+    result.assert_outcomes(passed=1)
+
+
 def test_75(testdir):
     test_file = r"""
     import faulthandler
