@@ -1,6 +1,10 @@
+import pytest
+
+
 timeout = 10
 
 
+@pytest.mark.xfail(strict=False)
 def test_main_first(testdir):
     test_file = r"""
     import faulthandler
