@@ -61,7 +61,7 @@ def test_minimal(testdir):
     from qtpy import QtWidgets
     import qtrio
 
-    def test():
+    def test(request):
         faulthandler.dump_traceback_later(2.5)
         widget = QtWidgets.QWidget()
         widget.show()
@@ -79,7 +79,7 @@ def test_hosted(testdir):
     import qtrio
 
     @qtrio.host
-    async def test():
+    async def test(request):
         faulthandler.dump_traceback_later(2.5)
         widget = QtWidgets.QWidget()
         widget.show()
