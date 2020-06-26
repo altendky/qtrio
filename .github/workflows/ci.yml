@@ -47,7 +47,7 @@ jobs:
           JOB_NAME: '${{ matrix.name }}'
           # TODO: needs some Qt library but I'm not clear the implications of
           #       choosing one over the other
-          INSTALL_EXTRAS: '[PyQt5]'
+          INSTALL_EXTRAS: '[pyside2,checks,docs]'
 
   Windows:
     name: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_library }})'

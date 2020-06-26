@@ -35,7 +35,6 @@ INSTALL_ARTIFACT=$(ls dist/*.zip)
 python -m pip install ${INSTALL_ARTIFACT}${INSTALL_EXTRAS}
 
 if [ "$CHECK_DOCS" = "1" ]; then
-    python -m pip install -r docs-requirements.txt
     python -m pip list
     python -m pip freeze
     towncrier --yes  # catch errors in newsfragments
@@ -44,7 +43,6 @@ if [ "$CHECK_DOCS" = "1" ]; then
     # -W: turn warnings into errors
     sphinx-build -nW  -b html source build
 elif [ "$CHECK_FORMATTING" = "1" ]; then
-    python -m pip install -r test-requirements.txt
     python -m pip list
     python -m pip freeze
     source check.sh
