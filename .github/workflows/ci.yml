@@ -65,8 +65,8 @@ jobs:
       - name: Run tests
         run: |
           docker run python:${{ matrix.python }}-windowsservercore-1809 pwd
-          docker run --volume "$(pwd -W)":/usr/src/qtrio python:${{ matrix.python }}-windowsservercore-1809 bash -c "cd qtrio; ./ci.sh"
-        shell: bash
+          docker run --volume "$(pwd)":/usr/src/qtrio python:${{ matrix.python }}-windowsservercore-1809 bash -c "cd qtrio; ./ci.sh"
+        shell: powershell
         env:
           # Should match 'name:' up above
           JOB_NAME: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_library }})'
