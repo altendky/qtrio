@@ -62,11 +62,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: choco pyenv-win
+      - name: Get pyenv-win
         shell: bash
         run: |
           git clone https://github.com/pyenv-win/pyenv-win.git ~/.pyenv
-      - name: pyenv-win install
+      - name: Install Python
         shell: bash
         run: |
           export PYENV=~/.pyenv/pyenv-win
