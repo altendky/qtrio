@@ -67,6 +67,7 @@ jobs:
         run: |
           choco feature disable -n=showDownloadProgress
           choco install python --version=${{ matrix.python }}
+          cat /c/ProgramData/chocolatey/logs/chocolatey.log
       - name: Run tests
         run: |
           export PATH=/c/Python36:$PATH
