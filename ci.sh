@@ -2,11 +2,6 @@
 
 set -ex -o pipefail
 
-if [ "$PYENVWIN" = "1" ]; then
-    export PATH=~/.pyenv/pyenv-win/shims:$PATH
-    ls -l ~/.pyenv/pyenv-win/shims
-fi
-
 # Log some general info about the environment
 env | sort
 

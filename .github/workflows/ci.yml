@@ -69,12 +69,18 @@ jobs:
       - name: pyenv-win install
         shell: bash
         run: |
+          export PYENV=~/.pyenv/pyenv-win
+          export PATH=$PYENV/shims:$PATH
           ~/.pyenv/pyenv-win/bin/pyenv --version
           ~/.pyenv/pyenv-win/bin/pyenv install 3.8.3
           ~/.pyenv/pyenv-win/bin/pyenv global 3.8.3
           ~/.pyenv/pyenv-win/bin/pyenv rehash
       - name: Run tests
-        run: ./ci.sh
+        run: |
+          export PYENV=~/.pyenv/pyenv-win
+          export PATH=$PYENV/shims:$PATH
+          ls -l $PYENV/shims
+          ./ci.sh
         shell: bash
         env:
           # Should match 'name:' up above
