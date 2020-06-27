@@ -56,23 +56,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.6.8', '3.7.7', '3.8.3']
+        python: ['3.6', '3.7', '3.8']
         arch: ['x86', 'x64']
         qt_library: ['PyQt5', 'PySide2']
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Chocolatey Python
-        shell: bash
-        run: |
-          choco feature disable -n=showDownloadProgress
-          choco install python --version=${{ matrix.python }}
-          cat /c/ProgramData/chocolatey/logs/chocolatey.log
       - name: Run tests
         run: |
-          export PATH=/c/Python36:$PATH
-          ls -la /c/Python36
-          ./ci.sh
+          docker run python:${{ matrix.python }} ./ci.sh
         shell: bash
         env:
           # Should match 'name:' up above
