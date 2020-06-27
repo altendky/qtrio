@@ -63,9 +63,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: choco pyenv-win
+        shell: bash
         run: |
           choco install pyenv-win
       - name: pyenv-win install
+        shell: bash
         run: |
           pyenv --version
           pyenv rehash
