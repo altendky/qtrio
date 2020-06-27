@@ -65,7 +65,7 @@ jobs:
       - name: choco pyenv-win
         shell: bash
         run: |
-          choco install pyenv-win
+          git clone https://github.com/pyenv-win/pyenv-win.git ~/.pyenv
       - name: pyenv-win install
         shell: bash
         run: |
