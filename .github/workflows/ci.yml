@@ -56,30 +56,18 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.6.10', '3.7.7', '3.8.3']
+        python: ['3.6.8', '3.7.7', '3.8.3']
         arch: ['x86', 'x64']
         qt_library: ['PyQt5', 'PySide2']
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Get pyenv-win
+      - name: Chocolatey Python
         shell: bash
         run: |
-          git clone https://github.com/pyenv-win/pyenv-win.git ~/.pyenv
-      - name: Install Python
-        shell: bash
-        run: |
-          export PYENV=~/.pyenv/pyenv-win
-          export PATH=$PYENV/shims:$PYENV/bin:$PATH
-          pyenv --version
-          pyenv rehash
-          pyenv install ${{ matrix.python }}
-          pyenv global ${{ matrix.python }}
+          choco install python --version=${{ matrix.python }}
       - name: Run tests
         run: |
-          export PYENV=~/.pyenv/pyenv-win
-          export PATH=$PYENV/shims:$PYENV/bin:$PATH
-          ls -la $PYENV/shims
           ./ci.sh
         shell: bash
         env:
