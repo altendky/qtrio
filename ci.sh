@@ -21,6 +21,14 @@ function curl-harder() {
     return 1
 }
 
+if [ "$PYENVWIN" = "1" ]; then
+    choco install pyenv-win
+    pyenv --version
+    pyenv rehash
+    pyenv install 3.8.3
+    pyenv global 3.8.3
+fi
+
 ################################################################
 # We have a Python environment!
 ################################################################
