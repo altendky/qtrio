@@ -70,16 +70,16 @@ jobs:
         shell: bash
         run: |
           export PYENV=~/.pyenv/pyenv-win
-          export PATH=$PYENV/shims:$PATH
-          ~/.pyenv/pyenv-win/bin/pyenv --version
-          ~/.pyenv/pyenv-win/bin/pyenv install 3.8.3
-          ~/.pyenv/pyenv-win/bin/pyenv global 3.8.3
-          ~/.pyenv/pyenv-win/bin/pyenv rehash
+          export PATH=$PYENV/shims:$PYENV/bin:$PATH
+          pyenv --version
+          pyenv rehash
+          pyenv install 3.8.3
+          pyenv global 3.8.3
       - name: Run tests
         run: |
           export PYENV=~/.pyenv/pyenv-win
-          export PATH=$PYENV/shims:$PATH
-          ls -l $PYENV/shims
+          export PATH=$PYENV/shims:$PYENV/bin:$PATH
+          ls -la $PYENV/shims
           ./ci.sh
         shell: bash
         env:
