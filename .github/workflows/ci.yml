@@ -69,10 +69,10 @@ jobs:
       - name: pyenv-win install
         shell: bash
         run: |
-          pyenv --version
-          pyenv rehash
-          pyenv install 3.8.3
-          pyenv global 3.8.3
+          ~/.pyenv/pyenv-win/bin/pyenv --version
+          ~/.pyenv/pyenv-win/bin/pyenv rehash
+          ~/.pyenv/pyenv-win/bin/pyenv install 3.8.3
+          ~/.pyenv/pyenv-win/bin/pyenv global 3.8.3
       - name: Run tests
         run: ./ci.sh
         shell: bash

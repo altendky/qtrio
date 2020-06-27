@@ -21,6 +21,10 @@ function curl-harder() {
     return 1
 }
 
+if [ "$PYENVWIN" = "1" ]; then
+    export PATH=~/.pyenv/pyenv-win/bin:$PATH
+fi
+
 ################################################################
 # We have a Python environment!
 ################################################################
