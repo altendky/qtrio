@@ -64,6 +64,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Run tests
         run: |
+          docker run python:${{ matrix.python }}-windowsservercore-1809 pwd
           docker run --volume "$(pwd -W)":/usr/src/qtrio python:${{ matrix.python }}-windowsservercore-1809 bash -c "cd qtrio; ./ci.sh"
         shell: bash
         env:
