@@ -2,6 +2,10 @@
 
 set -ex -o pipefail
 
+if [ "$PYENVWIN" = "1" ]; then
+    export PATH=~/.pyenv/pyenv-win/shims:$PATH
+fi
+
 # Log some general info about the environment
 env | sort
 
@@ -20,10 +24,6 @@ function curl-harder() {
     done
     return 1
 }
-
-if [ "$PYENVWIN" = "1" ]; then
-    export PATH=~/.pyenv/pyenv-win/shims:$PATH
-fi
 
 ################################################################
 # We have a Python environment!
