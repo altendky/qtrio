@@ -65,10 +65,12 @@ jobs:
       - name: Chocolatey Python
         shell: bash
         run: |
+          choco feature disable -n=showDownloadProgress
           choco install python --version=${{ matrix.python }}
       - name: Run tests
         run: |
           export PATH=/c/Python36:$PATH
+          ls -la /c/Python36
           ./ci.sh
         shell: bash
         env:
