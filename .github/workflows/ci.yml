@@ -64,7 +64,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Run tests
         run: |
-          docker run --volume "$PWD":/usr/src/qtrio python:${{ matrix.python }} bash -c "cd qtrio; ./ci.sh"
+          docker run --volume "$PWD":/usr/src/qtrio python:${{ matrix.python }}-windowsservercore-1809 bash -c "cd qtrio; ./ci.sh"
         shell: bash
         env:
           # Should match 'name:' up above
