@@ -22,7 +22,7 @@ function curl-harder() {
 }
 
 if [ "$PYENVWIN" = "1" ]; then
-    export PATH=~/.pyenv/pyenv-win/bin:$PATH
+    export PATH=~/.pyenv/pyenv-win/shims:$PATH
 fi
 
 ################################################################
