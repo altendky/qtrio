@@ -65,9 +65,10 @@ jobs:
       - name: Chocolatey Python
         shell: bash
         run: |
-          choco install python --version=${{ matrix.python }} --params "PrependPath=1"
+          choco install python --version=${{ matrix.python }}
       - name: Run tests
         run: |
+          export PATH=/c/Python36:$PATH
           ./ci.sh
         shell: bash
         env:
