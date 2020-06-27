@@ -80,6 +80,7 @@ jobs:
           # Should match 'name:' up above
           JOB_NAME: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_library }})'
           INSTALL_EXTRAS: '[${{ matrix.qt_library }},tests]'
+          PYENVWIN: '1'
 
   Ubuntu:
     name: 'Ubuntu (${{ matrix.python }}, ${{ matrix.qt_library }})'
