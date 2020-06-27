@@ -73,8 +73,8 @@ jobs:
           export PATH=$PYENV/shims:$PYENV/bin:$PATH
           pyenv --version
           pyenv rehash
-          pyenv install 3.8.3
-          pyenv global 3.8.3
+          pyenv install ${{ matrix.python }}
+          pyenv global ${{ matrix.python }}
       - name: Run tests
         run: |
           export PYENV=~/.pyenv/pyenv-win
