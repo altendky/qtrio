@@ -63,9 +63,11 @@ jobs:
         uses: actions/checkout@v2
       - name: Run tests
         run: |
+          # https://docs.codecov.io/docs/testing-with-docker
+          CODECOV_CI_ENV=$(bash <(curl -s https://codecov.io/env))
           docker pull python:${{ matrix.python }}-windowsservercore
-          docker run --env "JOB_NAME=$Env:JOB_NAME" --env "INSTALL_EXTRAS=$Env:INSTALL_EXTRAS" --env "PACKAGE_NAME=$Env:PACKAGE_NAME" --mount type=bind,source=$((Resolve-Path .\).Path),destination=c:/qtrio -w=c:/qtrio python:${{ matrix.python }}-windowsservercore powershell ./ci.ps1
-        shell: powershell
+          docker run --env "JOB_NAME=${JOB_NAME}" --env "INSTALL_EXTRAS=${INSTALL_EXTRAS}" --env "PACKAGE_NAME=${PACKAGE_NAME}" ${CODECOV_CI_ENV} --mount type=bind,source=$((Resolve-Path .\).Path),destination=c:/qtrio -w=c:/qtrio python:${{ matrix.python }}-windowsservercore powershell ./ci.ps1
+        shell: bash
         env:
           # Should match 'name:' up above
           JOB_NAME: 'Windows (${{ matrix.python }}, ${{ matrix.qt_library }})'
