@@ -1,5 +1,6 @@
 Set-PSDebug -Trace 1
 
+where git
 dir "C:/Program Files/Git/"
 dir "C:/Program Files/Git/bin"
 
