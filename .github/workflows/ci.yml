@@ -67,7 +67,7 @@ jobs:
           # https://docs.codecov.io/docs/testing-with-docker
           CODECOV_CI_ENV=$(bash <(curl -s https://codecov.io/env))
           docker pull python:${{ matrix.python }}-windowsservercore
-          docker run --env JOB_NAME --env INSTALL_EXTRAS --env PACKAGE_NAME ${CODECOV_CI_ENV} --mount type=bind,source="$(pwd -W)",destination=c:/qtrio -w=c:/qtrio python:${{ matrix.python }}-windowsservercore powershell ./ci.ps1
+          docker run -e JOB_NAME -e INSTALL_EXTRAS -e PACKAGE_NAME ${CODECOV_CI_ENV} --mount type=bind,source="$(pwd -W)",destination=c:/qtrio -w=c:/qtrio python:${{ matrix.python }}-windowsservercore powershell ./ci.ps1
         shell: bash
         env:
           # Should match 'name:' up above
