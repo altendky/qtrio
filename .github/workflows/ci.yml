@@ -64,7 +64,7 @@ jobs:
       - name: Run tests
         run: |
           docker pull python:${{ matrix.python }}-windowsservercore
-          docker run --env "JOB_NAME=$Env:JOB_NAME" --env "INSTALL_EXTRAS=$Env:INSTALL_EXTRAS" --mount type=bind,source=$((Resolve-Path .\).Path),destination=c:/qtrio -w=c:/qtrio python:${{ matrix.python }}-windowsservercore powershell ./ci.ps1
+          docker run --env "JOB_NAME=$Env:JOB_NAME" --env "INSTALL_EXTRAS=$Env:INSTALL_EXTRAS" --env "PACKAGE_NAME=$Env:PACKAGE_NAME" --mount type=bind,source=$((Resolve-Path .\).Path),destination=c:/qtrio -w=c:/qtrio python:${{ matrix.python }}-windowsservercore powershell ./ci.ps1
         shell: powershell
         env:
           # Should match 'name:' up above

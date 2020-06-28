@@ -6,7 +6,7 @@ venv/scripts/python -m pip install --upgrade pip setuptools wheel
 venv/scripts/pip install ".$Env:INSTALL_EXTRAS"
 mkdir empty
 cd empty
-$Env:INSTALLDIR=(../venv/scripts/python -c "import os, ${PACKAGE_NAME}; print(os.path.dirname(${PACKAGE_NAME}.__file__))") | Out-String
+$Env:INSTALLDIR=(../venv/scripts/python -c "import os, $Env:PACKAGE_NAME; print(os.path.dirname($Env:PACKAGE_NAME.__file__))") | Out-String
 cp ../setup.cfg $Env:INSTALLDIR
 if ((../venv/scripts/pytest -W error -r a --junitxml=../test-results.xml $Env:INSTALLDIR --cov="$Env:INSTALLDIR" --cov-config=../.coveragerc --verbose --capture=no --no-qt-log).ExitCode) {
     $Env:PASSED = 0
