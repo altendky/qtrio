@@ -526,6 +526,7 @@ def test_emissions_equal():
     """:class:`Emission` objects created from the same :class:`QtCore.Signal` instance
     and args are equal even if the attributes are different instances.
     """
+
     class C(QtCore.QObject):
         signal = QtCore.Signal()
 
@@ -540,6 +541,7 @@ def test_emissions_unequal_by_signal():
     """:class:`Emission` objects with the same arguments but different signals are
     unequal.
     """
+
     class C(QtCore.QObject):
         signal_a = QtCore.Signal()
         signal_b = QtCore.Signal()
@@ -555,6 +557,7 @@ def test_emissions_unequal_by_instance():
     """:class:`Emission` objects with the same signal but on different instances are
     unequal.
     """
+
     class C(QtCore.QObject):
         signal = QtCore.Signal()
 
@@ -568,6 +571,7 @@ def test_emissions_unequal_by_instance():
 
 def test_emissions_unequal_by_type():
     """:class:`Emission` objects are not equal to integers"""
+
     class C(QtCore.QObject):
         signal = QtCore.Signal()
 
@@ -580,6 +584,7 @@ def test_emissions_unequal_by_args():
     """:class:`Emission` objects with the same signal but different arguments are
     unequal.
     """
+
     class C(QtCore.QObject):
         signal = QtCore.Signal()
 
