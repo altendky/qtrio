@@ -16,7 +16,7 @@ if ((../venv/scripts/pytest -W error -r a --junitxml=../test-results.xml $Env:IN
 
 # https://github.com/codecov/codecov-exe#introduction
 (New-Object System.Net.WebClient).DownloadFile("https://github.com/codecov/codecov-exe/releases/download/1.12.0/codecov-win7-x64.zip", (Join-Path $pwd "Codecov.zip"))
-Expand-Archive .\Codecov.zip -DestinationPath .
-.\Codecov\codecov.exe -n "$Env:JOB_NAME"
+Expand-Archive Codecov.zip -DestinationPath .
+codecov.exe -n "$Env:JOB_NAME"
 
 exit $Env:PASSED
