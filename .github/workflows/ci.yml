@@ -65,7 +65,7 @@ jobs:
         run: |
           set -vx
           # https://docs.codecov.io/docs/testing-with-docker
-          CODECOV_CI_ENV=$(bash <(curl -s https://codecov.io/env))
+          CODECOV_CI_ENV=$(bash codecov_env)
           docker pull python:${{ matrix.python }}-windowsservercore
           docker run -e JOB_NAME -e INSTALL_EXTRAS -e PACKAGE_NAME ${CODECOV_CI_ENV} --mount type=bind,source="$(pwd -W)",destination=c:/qtrio -w=c:/qtrio python:${{ matrix.python }}-windowsservercore powershell ./ci.ps1
         shell: bash
