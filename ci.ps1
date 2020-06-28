@@ -8,7 +8,7 @@ cd empty
 ../venv/scripts/pytest qtrio --pyargs
 $Env:INSTALLDIR=(python -c "import os, ${PACKAGE_NAME}; print(os.path.dirname(${PACKAGE_NAME}.__file__))") | Out-String
 cp ../setup.cfg $Env:INSTALLDIR
-if (pytest -W error -r a --junitxml=../test-results.xml $Env:INSTALLDIR --cov="$Env:INSTALLDIR" --cov-config=../.coveragerc --verbose --capture=no --no-qt-log).ExitCode {
+if ()(pytest -W error -r a --junitxml=../test-results.xml $Env:INSTALLDIR --cov="$Env:INSTALLDIR" --cov-config=../.coveragerc --verbose --capture=no --no-qt-log).ExitCode) {
     $Env:PASSED = 0
 } else {
     $Env:PASSED = 1
