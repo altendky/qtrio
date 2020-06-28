@@ -1,5 +1,8 @@
 Set-PSDebug -Trace 1
 
+dir "C:/Program Files/Git/"
+dir "C:/Program Files/Git/bin"
+
 Get-ChildItem Env:* | Sort-Object name
 
 python -m venv venv
