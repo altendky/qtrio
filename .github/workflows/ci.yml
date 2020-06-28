@@ -50,7 +50,7 @@ jobs:
           INSTALL_EXTRAS: '[pyside2,checks,docs]'
 
   Windows:
-    name: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_library }}, ${{ matrix.qt_version }})'
+    name: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_library }})'
     timeout-minutes: 20
     runs-on: 'windows-latest'
     strategy:
@@ -73,7 +73,7 @@ jobs:
         shell: bash
         env:
           # Should match 'name:' up above
-          JOB_NAME: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_library }}, ${{ matrix.qt_version }})'
+          JOB_NAME: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_library }})'
           INSTALL_EXTRAS: '[${{ matrix.qt_library }},tests] ${{ matrix.qt_library }}~=${{ matrix.qt_version }}'
 
   Ubuntu:
