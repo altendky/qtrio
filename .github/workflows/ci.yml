@@ -65,7 +65,7 @@ jobs:
       - name: Run tests
         run: |
           docker run hello-world
-          docker run python:${{ matrix.python }}-windowsservercore-1809 dir
+          docker run python:${{ matrix.python }}-windowsservercore dir
           docker run --volume "$(pwd)":/usr/src/qtrio python:${{ matrix.python }}-windowsservercore-1809 bash -c "cd qtrio; ./ci.sh"
         shell: powershell
         env:
