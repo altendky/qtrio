@@ -133,6 +133,7 @@ class Emissions:
         channel: A memory receive channel to be fed by signal emissions.
         _aclose: The send channel's `.aclose()` method.
     """
+
     channel: trio.MemoryReceiveChannel
     _aclose: typing.Callable[[], typing.Awaitable[typing.Any]]
 

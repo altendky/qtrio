@@ -13,6 +13,7 @@ class QSignaledWidget(QtWidgets.QWidget):
     Attributes:
         closed: A signal that will be emitted after a close event.
     """
+
     closed = QtCore.Signal()
     shown = QtCore.Signal()
 
@@ -40,6 +41,7 @@ class Window:
     """A manager for a simple window with increment and decrement buttons to change a
     counter which is displayed via a widget in the center.
     """
+
     widget: QSignaledWidget
     increment: QtWidgets.QPushButton
     decrement: QtWidgets.QPushButton
