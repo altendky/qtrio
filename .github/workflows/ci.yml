@@ -67,7 +67,7 @@ jobs:
           docker run hello-world
           docker pull python:${{ matrix.python }}-windowsservercore
           docker run python:${{ matrix.python }}-windowsservercore python -c "import os; print(os.getcwd())"
-          docker run --volume "$(pwd)";c:/qtrio python:${{ matrix.python }}-windowsservercore-1809 bash -c "cd c:/qtrio; bash ci.sh"
+          docker run --volume $(pwd);c:/qtrio python:${{ matrix.python }}-windowsservercore bash -c "cd c:/qtrio; bash ci.sh"
         shell: powershell
         env:
           # Should match 'name:' up above
