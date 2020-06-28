@@ -67,7 +67,7 @@ jobs:
           docker run hello-world
           docker pull python:${{ matrix.python }}-windowsservercore
           docker run python:${{ matrix.python }}-windowsservercore python -c "import os; print(os.getcwd())"
-          docker run --mount type=bind,source=$((Resolve-Path .\).Path),destination=c:/qtrio python:${{ matrix.python }}-windowsservercore powershell "cd c:/qtrio; python -m venv venv; venv/scripts/python -m pip install --upgrade pip setuptools wheel; /venv/scripts/pip install .[pyside2,tests]; mkdir empty; cd empty; ../venv/scripts/pytest qtrio --pyargs"
+          docker run --mount type=bind,source=$((Resolve-Path .\).Path),destination=c:/qtrio python:${{ matrix.python }}-windowsservercore powershell "cd c:/qtrio; python -m venv venv; venv/scripts/python -m pip install --upgrade pip setuptools wheel; venv/scripts/pip install .[pyside2,tests]; mkdir empty; cd empty; ../venv/scripts/pytest qtrio --pyargs"
         shell: powershell
         env:
           # Should match 'name:' up above
