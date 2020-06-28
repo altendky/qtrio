@@ -50,29 +50,25 @@ jobs:
           INSTALL_EXTRAS: '[pyside2,checks,docs]'
 
   Windows:
-    name: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_library }})'
+    name: 'Windows (${{ matrix.python }}, ${{ matrix.qt_library }})'
     timeout-minutes: 20
     runs-on: 'windows-latest'
     strategy:
       fail-fast: false
       matrix:
         python: ['3.6', '3.7', '3.8']
-        arch: ['x86', 'x64']
         qt_library: ['PyQt5', 'PySide2']
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Setup python
-        uses: actions/setup-python@v1
-        with:
-          python-version: '${{ matrix.python }}'
-          architecture: '${{ matrix.arch }}'
       - name: Run tests
-        run: ./ci.sh
-        shell: bash
+        run: |
+          docker pull python:${{ matrix.python }}-windowsservercore
+          docker run --env "JOB_NAME=$Env:JOB_NAME" --env "INSTALL_EXTRAS=$Env:INSTALL_EXTRAS" --mount type=bind,source=$((Resolve-Path .\).Path),destination=c:/qtrio -w=c:/qtrio python:${{ matrix.python }}-windowsservercore powershell ./ci.ps1
+        shell: powershell
         env:
           # Should match 'name:' up above
-          JOB_NAME: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_library }})'
+          JOB_NAME: 'Windows (${{ matrix.python }}, ${{ matrix.qt_library }})'
           INSTALL_EXTRAS: '[${{ matrix.qt_library }},tests]'
 
   Ubuntu:
