@@ -68,7 +68,7 @@ jobs:
           docker pull python:${{ matrix.python }}-windowsservercore
           docker run python:${{ matrix.python }}-windowsservercore python -c "import os; print(os.getcwd())"
           docker run python:${{ matrix.python }}-windowsservercore bash -c "pwd; ls -la"
-          docker run --volume .;c:/qtrio python:${{ matrix.python }}-windowsservercore bash -c "cd c:/qtrio; bash ci.sh"
+          docker run --volume .;c:/qtrio python:${{ matrix.python }}-windowsservercore powershell "cd qtrio; python -m venv venv; venv/scripts/pip install .[pyside2,tests]; mkdir empty; cd empty; ../venv/scripts/pytest qtrio --pyargs"
         shell: powershell
         env:
           # Should match 'name:' up above
