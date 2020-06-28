@@ -59,7 +59,6 @@ jobs:
         python: ['3.6', '3.7', '3.8']
         arch: ['x86', 'x64']
         qt_library: ['PyQt5', 'PySide2']
-        qt_version: ['5.13', '5.14', '5.15']
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -74,7 +73,7 @@ jobs:
         env:
           # Should match 'name:' up above
           JOB_NAME: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_library }})'
-          INSTALL_EXTRAS: '[${{ matrix.qt_library }},tests] ${{ matrix.qt_library }}~=${{ matrix.qt_version }}'
+          INSTALL_EXTRAS: '[${{ matrix.qt_library }},tests]'
 
   Ubuntu:
     name: 'Ubuntu (${{ matrix.python }}, ${{ matrix.qt_library }})'
