@@ -1,5 +1,7 @@
 Set-PSDebug -Trace 1
 
+Get-ChildItem Env:* | Sort-Object name
+
 python -m venv venv
 venv/scripts/python -c "import os; import sys; print(os.getcwd()); print(sys.executable); print(sys.version_info)"
 venv/scripts/python -m pip install --upgrade pip setuptools wheel
