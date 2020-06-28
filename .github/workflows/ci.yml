@@ -65,6 +65,7 @@ jobs:
       - name: Run tests
         run: |
           docker run hello-world
+          docker pull python:${{ matrix.python }}-windowsservercore
           docker run --mount type=bind,source=$((Resolve-Path .\).Path),destination=c:/qtrio python:${{ matrix.python }}-windowsservercore powershell ci.ps1
         shell: powershell
         env:
