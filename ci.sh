@@ -64,6 +64,4 @@ else
     else
         PASSED=false
     fi
-
-    $PASSED
 fi
