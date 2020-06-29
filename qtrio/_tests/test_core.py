@@ -519,3 +519,7 @@ def test_failed_hosted_trio_prints_exception(testdir):
     result = testdir.runpytest_subprocess(timeout=timeout)
     result.assert_outcomes(failed=1)
     result.stdout.re_match_lines(lines2=["--- Error(UniqueLocalException())"])
+
+
+def test_fail():
+    assert False
