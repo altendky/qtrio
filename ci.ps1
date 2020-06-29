@@ -1,9 +1,5 @@
 Set-PSDebug -Trace 1
 
-where git
-dir "C:/Program Files/Git/"
-dir "C:/Program Files/Git/bin"
-
 Get-ChildItem Env:* | Sort-Object name
 
 python -m venv venv
@@ -14,11 +10,8 @@ mkdir empty
 cd empty
 $Env:INSTALLDIR = ((../venv/scripts/python -c "import os, $Env:PACKAGE_NAME; print(os.path.dirname($Env:PACKAGE_NAME.__file__))") | Out-String).trim()
 cp ../setup.cfg "$Env:INSTALLDIR"
-if ((../venv/scripts/pytest -W error -r a --junitxml=../test-results.xml $Env:INSTALLDIR --cov="$Env:INSTALLDIR" --cov-config=../.coveragerc --verbose --capture=no --no-qt-log).ExitCode) {
-    $Env:PASSED = 0
-} else {
-    $Env:PASSED = 1
-}
+../venv/scripts/pytest -W error -r a --junitxml=../test-results.xml $Env:INSTALLDIR --cov="$Env:INSTALLDIR" --cov-config=../.coveragerc --verbose --capture=no --no-qt-log
+$Env:PASSED = $LastExitCode
 
 # https://github.com/codecov/codecov-exe#introduction
 Set-PSDebug -Trace 0
@@ -26,8 +19,6 @@ Set-PSDebug -Trace 0
 Expand-Archive Codecov.zip -DestinationPath .
 Set-PSDebug -Trace 1
 
-dir
-dir codecov
 ./codecov.exe -n "$Env:JOB_NAME"
 
 exit $Env:PASSED
