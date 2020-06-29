@@ -51,7 +51,7 @@ else
     python -m pip list
     python -m pip freeze
 
-    bash -c 'venvps/bin/python garbage.py&'
+    bash -c 'python garbage.py&'
 
     # We run the tests from inside an empty directory, to make sure Python
     # doesn't pick up any .py files from our working dir. Might have been
