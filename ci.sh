@@ -51,8 +51,6 @@ else
     python -m pip list
     python -m pip freeze
 
-    bash -c 'python garbage.py&'
-
     # We run the tests from inside an empty directory, to make sure Python
     # doesn't pick up any .py files from our working dir. Might have been
     # pre-created by some of the code above.
@@ -66,4 +64,14 @@ else
     else
         PASSED=false
     fi
+
+    # The codecov docs recommend something like 'bash <(curl ...)' to pipe the
+    # script directly into bash as its being downloaded. But, the codecov
+    # server is flaky, so we instead save to a temp file with retries, and
+    # wait until we've successfully fetched the whole script before trying to
+    # run it.
+    curl-harder -o codecov.sh https://codecov.io/bash
+    bash codecov.sh -n "${JOB_NAME}"
+
+    $PASSED
 fi
