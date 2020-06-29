@@ -33,7 +33,6 @@ jobs:
         uses: actions/setup-python@v1
         with:
           python-version: '${{ matrix.python }}'
-          architecture: '${{ matrix.arch }}'
       - name: Run tests
         run: ./ci.sh
         shell: bash
