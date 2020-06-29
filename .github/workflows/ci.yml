@@ -15,6 +15,7 @@ on:
 
 env:
   PACKAGE_NAME: 'qtrio'
+  CODECOV_TOKEN: '104ac6cc-b596-42f5-9c71-f31810921684'
 
 jobs:
   Checks:
@@ -67,7 +68,7 @@ jobs:
           # https://docs.codecov.io/docs/testing-with-docker
           CODECOV_CI_ENV=$(bash codecov_env)
           docker pull python:${{ matrix.python }}-windowsservercore
-          docker run -e JOB_NAME -e INSTALL_EXTRAS -e PACKAGE_NAME ${CODECOV_CI_ENV} --mount type=bind,source="$(pwd -W)",destination=c:/qtrio -w=c:/qtrio python:${{ matrix.python }}-windowsservercore powershell ./ci.ps1
+          docker run -e JOB_NAME -e INSTALL_EXTRAS -e PACKAGE_NAME -e CODECOV_TOKEN ${CODECOV_CI_ENV} --mount type=bind,source="$(pwd -W)",destination=c:/qtrio -w=c:/qtrio python:${{ matrix.python }}-windowsservercore powershell ./ci.ps1
         shell: bash
         env:
           # Should match 'name:' up above
