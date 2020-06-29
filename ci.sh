@@ -59,19 +59,11 @@ else
 
     INSTALLDIR=$(python -c "import os, ${PACKAGE_NAME}; print(os.path.dirname(${PACKAGE_NAME}.__file__))")
     cp ../setup.cfg $INSTALLDIR
-    if pytest -W error -r a --junitxml=../test-results.xml ${INSTALLDIR} --cov="$INSTALLDIR" --cov-config=../.coveragerc --verbose --capture=no --no-qt-log; then
+    if pytest -W error -r a --junitxml=../test-results.xml ${INSTALLDIR}/examples --cov="$INSTALLDIR" --cov-config=../.coveragerc --verbose --capture=no --no-qt-log; then
         PASSED=true
     else
         PASSED=false
     fi
-
-    # The codecov docs recommend something like 'bash <(curl ...)' to pipe the
-    # script directly into bash as its being downloaded. But, the codecov
-    # server is flaky, so we instead save to a temp file with retries, and
-    # wait until we've successfully fetched the whole script before trying to
-    # run it.
-    curl-harder -o codecov.sh https://codecov.io/bash
-    bash codecov.sh -n "${JOB_NAME}"
 
     $PASSED
 fi
