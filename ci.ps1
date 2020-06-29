@@ -19,6 +19,6 @@ Set-PSDebug -Trace 0
 Expand-Archive Codecov.zip -DestinationPath .
 Set-PSDebug -Trace 1
 
-../venv/scripts/codecov -n "$Env:JOB_NAME"
+../venv/scripts/codecov -n "$Env:JOB_NAME" --commit "$Env:GITHUB_SHA"
 
 exit $Env:PASSED
