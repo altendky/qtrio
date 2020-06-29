@@ -51,7 +51,7 @@ else
     python -m pip list
     python -m pip freeze
 
-    python -c 'import subprocess; import sys; subprocess.run([sys.executable, "garbage.py"], timeout=3)'
+    python -c 'import subprocess; import sys; subprocess.run([sys.executable, "garbage.py"], timeout=3)' || true
 
     # We run the tests from inside an empty directory, to make sure Python
     # doesn't pick up any .py files from our working dir. Might have been
