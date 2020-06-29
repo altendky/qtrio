@@ -26,6 +26,7 @@ setup(
             "towncrier",
         ],
         "tests": [
+            "codecov",
             "coverage",
             "pytest",
             "pytest-cov",

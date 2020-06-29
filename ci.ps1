@@ -19,6 +19,6 @@ Set-PSDebug -Trace 0
 Expand-Archive Codecov.zip -DestinationPath .
 Set-PSDebug -Trace 1
 
-./codecov.exe -n "$Env:JOB_NAME"
+../venv/scripts/codecov -n "$Env:JOB_NAME"
 
 exit $Env:PASSED
