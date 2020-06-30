@@ -26,5 +26,5 @@ async def main(
     await trio.sleep(close_delay)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     qtrio.run(main)

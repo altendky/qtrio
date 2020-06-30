@@ -17,5 +17,5 @@ async def main(button: typing.Optional[QtWidgets.QPushButton] = None):
             await emissions.channel.receive()
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":  # pragma: no cover
     qtrio.run(main)
