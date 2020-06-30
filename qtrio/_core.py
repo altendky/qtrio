@@ -146,8 +146,7 @@ class Emissions:
 
 @async_generator.asynccontextmanager
 async def open_emissions_channel(
-    signals: typing.Collection[SignalInstance],
-    max_buffer_size=math.inf,
+    signals: typing.Collection[SignalInstance], max_buffer_size=math.inf,
 ) -> typing.Iterator[trio.MemoryReceiveChannel]:
     """Create a memory channel fed by the emissions of the `signals`.
 
