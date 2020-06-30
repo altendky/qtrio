@@ -5,7 +5,7 @@ from qtpy import QtWidgets
 
 
 async def main(button: typing.Optional[QtWidgets.QPushButton] = None):
-    if button is None:
+    if button is None:  # pragma: no cover
         button = QtWidgets.QPushButton()
 
     button.setText("Exit")
