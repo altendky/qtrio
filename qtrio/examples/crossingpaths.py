@@ -14,7 +14,7 @@ async def main():
 
     for i in range(len(message)):
         await trio.sleep(0.5)
-        label.setText(message[:i + 1])
+        label.setText(message[: i + 1])
 
     await trio.sleep(3)
 
