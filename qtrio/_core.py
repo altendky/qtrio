@@ -197,10 +197,10 @@ async def wait_signal_context(signal: SignalInstance) -> None:
 
 @attr.s(auto_attribs=True, frozen=True, slots=True)
 class Outcomes:
-    """This class holds the :class:`outcome.Outcome`s of both the Trio and the Qt
+    """This class holds an :class:`outcome.Outcome` from each of the Trio and the Qt
     application execution.
 
-    Args:
+    Attributes:
         qt: The Qt application :class:`outcome.Outcome`
         trio: The Trio async function :class:`outcome.Outcome`
     """
@@ -271,7 +271,7 @@ def outcome_from_application_return_code(return_code: int) -> outcome.Outcome:
 class Runner:
     """This class helps run Trio in guest mode on a Qt host application.
 
-    Args:
+    Attributes:
 
         application: The Qt application object to run as the host.  If not set before
             calling :meth:`run` the application will be created as
