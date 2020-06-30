@@ -244,6 +244,7 @@ def run(
     Args:
         async_fn: The async function to run.
         args: Positional arguments to pass to `async_fn`.
+        done_callback: See :class:`qtrio.Runner.done_callback`.
 
     Returns:
         The :class:`qtrio.Outcomes` with both the Trio and Qt outcomes.
