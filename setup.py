@@ -25,7 +25,9 @@ setup(
             "sphinxcontrib-trio",
             "towncrier",
         ],
+        "examples": ["click"],
         "tests": [
+            "click",
             "coverage",
             "pytest",
             "pytest-cov",
@@ -34,6 +36,7 @@ setup(
             'pytest-xvfb; sys_platform == "linux"',
         ],
     },
+    entry_points={"console_scripts": ["qtrio = qtrio._cli:cli"]},
     keywords=["async", "io", "Trio", "GUI", "Qt", "PyQt5", "PySide2"],
     python_requires=">=3.6",
     classifiers=[
