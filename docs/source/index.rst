@@ -10,6 +10,7 @@
    :maxdepth: 2
 
    tutorial.rst
+   core.rst
    history.rst
 
 ====================

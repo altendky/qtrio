@@ -60,6 +60,10 @@ class Reenter(QtCore.QObject):
 async def wait_signal(signal: SignalInstance) -> typing.Tuple[typing.Any, ...]:
     """Block for the next emission of `signal` and return the emitted arguments.
 
+    Warning:
+        In many cases this can result in a race condition since you are unable to
+        first connect the signal and then wait for it.
+
     Args:
         signal: The signal instance to wait for emission of.
     """
@@ -178,6 +182,12 @@ async def open_emissions_channel(
 
 @async_generator.asynccontextmanager
 async def wait_signal_context(signal: SignalInstance) -> None:
+    """Connect a signal during the context and wait for it on exit.  Presently no
+    mechanism is provided for retrieving the emitted arguments.
+
+    Args:
+        signal: The signal to connect to and wait for.
+    """
     event = trio.Event()
 
     with qtrio.connection(signal=signal, slot=lambda *args, **kwargs: event.set()):
@@ -222,7 +232,11 @@ class Outcomes:
         raise qtrio.NoOutcomesError()
 
 
-def run(async_fn, *args, done_callback=None) -> Outcomes:
+def run(
+    async_fn: typing.Callable[[], typing.Awaitable[None]],
+    *args: typing.Tuple[typing.Any, ...],
+    done_callback: typing.Optional[typing.Callable[[Outcomes], None]] = None,
+) -> Outcomes:
     """Run a Trio-flavored async function in guest mode on a Qt host application, and
     return the outcomes.
 
@@ -231,7 +245,7 @@ def run(async_fn, *args, done_callback=None) -> Outcomes:
         args: Positional arguments to pass to `async_fn`.
 
     Returns:
-        The :class:`Outcomes` with both the Trio and Qt outcomes.
+        The :class:`qtrio.Outcomes` with both the Trio and Qt outcomes.
     """
     runner = Runner(done_callback=done_callback)
     runner.run(async_fn, *args)
@@ -264,9 +278,10 @@ class Runner:
             `QtWidgets.QApplication(sys.argv[1:])` and
             `.setQuitOnLastWindowClosed(False)` will be called on it to allow the
             application to continue throughout the lifetime of the async function passed
-            to :meth:`run`.
+            to :meth:`qtrio.Runner.run`.
         quit_application: When true, the :meth:`done_callback` method will quit the
-            application when the async function passed to :meth:`run` has completed.
+            application when the async function passed to :meth:`qtrio.Runner.run` has
+            completed.
         reenter: The `QObject` instance which will receive the events requesting
             execution of the needed Trio and user code in the host's event loop and
             thread.
