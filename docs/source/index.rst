@@ -11,6 +11,7 @@
 
    tutorial.rst
    core.rst
+   testing.rst
    exceptions.rst
    history.rst
 

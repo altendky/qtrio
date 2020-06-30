@@ -1,7 +1,6 @@
 Exceptions
 ==========
 
-
 .. autoclass:: qtrio.QTrioException
 .. autoclass:: qtrio.NoOutcomesError
 .. autoclass:: qtrio.RegisterEventTypeError
