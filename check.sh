@@ -4,7 +4,7 @@ set -ex
 
 EXIT_STATUS=0
 
-BLACK_FILES=setup.py docs ${PACKAGE_NAME}
+BLACK_FILES="setup.py docs ${PACKAGE_NAME}"
 
 # Autoformatter *first*, to avoid double-reporting errors
 # (we'd like to run further autoformatters but *after* merging;
