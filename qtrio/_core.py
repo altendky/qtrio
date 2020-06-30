@@ -152,10 +152,11 @@ class Emissions:
 async def open_emissions_channel(
     signals: typing.Collection[SignalInstance],
 ) -> typing.Iterator[trio.MemoryReceiveChannel]:
-    """Create a memory channel fed by the emissions of the `signals`.
+    """Create a memory channel fed by the emissions of the signals.  Each signal
+    emission will be converted to a :class:`qtrio.Emission` object.
 
     Args:
-        signals: A collection of signals from which :class:`Emission`s will be created.
+        signals: A collection of signals which will be monitored for emissions.
     """
 
     # Infinite buffer because I don't think there's any use in storing the emission
