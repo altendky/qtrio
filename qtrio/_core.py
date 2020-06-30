@@ -197,12 +197,12 @@ async def wait_signal_context(signal: SignalInstance) -> None:
 
 @attr.s(auto_attribs=True, frozen=True, slots=True)
 class Outcomes:
-    """This class holds the :class:`outcomes.Outcome`s of both the Trio and the Qt
+    """This class holds the :class:`outcome.Outcome`s of both the Trio and the Qt
     application execution.
 
     Args:
-        qt: The Qt application :class:`outcomes.Outcome`
-        trio: The Trio async function :class:`outcomes.Outcome`
+        qt: The Qt application :class:`outcome.Outcome`
+        trio: The Trio async function :class:`outcome.Outcome`
     """
 
     qt: typing.Optional[outcome.Outcome] = None

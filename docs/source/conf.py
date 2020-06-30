@@ -50,6 +50,7 @@ extensions = [
 ]
 
 intersphinx_mapping = {
+    "outcome": ("https://outcome.readthedocs.io/en/latest", None),
     "python": ("https://docs.python.org/3", None),
     "PyQt5": ("https://www.riverbankcomputing.com/static/Docs/PyQt5", None),
     "trio": ("https://trio.readthedocs.io/en/stable", None),
