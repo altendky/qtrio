@@ -50,7 +50,7 @@ extensions = [
 
 intersphinx_mapping = {
     "python": ('https://docs.python.org/3', None),
-    # "PySide2": ("https://doc.qt.io/qtforpython/PySide2/", None),
+    'PyQt5': ('https://www.riverbankcomputing.com/static/Docs/PyQt5', None),
     "trio": ('https://trio.readthedocs.io/en/stable', None),
 }
 
