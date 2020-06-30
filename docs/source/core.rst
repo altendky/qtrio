@@ -12,3 +12,5 @@ Core
 .. autofunction:: qtrio.wait_signal
 .. autofunction:: qtrio.wait_signal_context
 .. autofunction:: qtrio.open_emissions_channel
+.. autoclass:: qtrio.Emission
+.. autoclass:: qtrio.Emissions
