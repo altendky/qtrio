@@ -44,13 +44,17 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.coverage',
     'sphinx.ext.napoleon',
+    'sphinx_qt_documentation',
     'sphinxcontrib_trio',
 ]
 
 intersphinx_mapping = {
     "python": ('https://docs.python.org/3', None),
+    # "PySide2": ("https://doc.qt.io/qtforpython/PySide2/", None),
     "trio": ('https://trio.readthedocs.io/en/stable', None),
 }
+
+qt_documentation = "Qt5"
 
 autodoc_member_order = "bysource"
 

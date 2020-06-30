@@ -21,6 +21,7 @@ setup(
         "checks": ["black", "flake8"],
         "docs": [
             "sphinx >= 1.7.0",
+            "sphinx-qt-documentation",
             "sphinx_rtd_theme",
             "sphinxcontrib-trio",
             "towncrier",
