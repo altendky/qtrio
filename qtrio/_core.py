@@ -212,7 +212,7 @@ class Outcomes:
     def unwrap(self):
         """Unwrap either the Trio or Qt outcome.  First, errors are given priority over
         success values.  Second, the Trio outcome gets priority over the Qt outcome.  If
-        both are still None a :class:`NoOutcomesError` is raised.
+        both are still None a :class:`qtrio.NoOutcomesError` is raised.
         """
 
         if self.trio is not None:
