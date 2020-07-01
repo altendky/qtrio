@@ -694,3 +694,84 @@ def test_open_emissions_channel_with_three_receives_first(testdir):
 
     result = testdir.runpytest_subprocess(timeout=timeout)
     result.assert_outcomes(passed=1)
+
+
+def test_open_emissions_channel_iterates_in_order(testdir):
+    """Emissions channel yields signal emissions in order (pretty probably...)."""
+    test_file = r"""
+    from qtpy import QtCore
+    import qtrio
+    import trio.testing
+
+
+    class MyQObject(QtCore.QObject):
+        signal = QtCore.Signal(int)
+
+
+    @qtrio.host
+    async def test(request):
+        instance = MyQObject()
+        values = list(range(100))
+        results = []
+
+        async with qtrio.open_emissions_channel(
+            signals=[instance.signal], max_buffer_size=len(values),
+        ) as emissions:
+            for i, v in enumerate(values):
+                if i % 2 == 0:
+                    await trio.testing.wait_all_tasks_blocked(cushion=0.001)
+
+                instance.signal.emit(v)
+
+            await emissions.aclose()
+
+            async with emissions.channel:
+                async for emission in emissions.channel:
+                    [value] = emission.args
+                    results.append(value)
+
+        assert results == values
+    """
+    testdir.makepyfile(test_file)
+
+    result = testdir.runpytest_subprocess(timeout=timeout)
+    result.assert_outcomes(passed=1)
+
+
+def test_open_emissions_channel_limited_buffer(testdir):
+    """Emissions channel throws away beyond buffer limit."""
+    test_file = r"""
+    from qtpy import QtCore
+    import qtrio
+
+
+    class MyQObject(QtCore.QObject):
+        signal = QtCore.Signal(int)
+
+
+    @qtrio.host
+    async def test(request):
+        instance = MyQObject()
+        max_buffer_size = 10
+        values = list(range(2 * max_buffer_size))
+        results = []
+
+        async with qtrio.open_emissions_channel(
+            signals=[instance.signal], max_buffer_size=max_buffer_size,
+        ) as emissions:
+            for v in values:
+                instance.signal.emit(v)
+
+            await emissions.aclose()
+
+            async with emissions.channel:
+                async for emission in emissions.channel:
+                    [value] = emission.args
+                    results.append(value)
+
+        assert results == values[:max_buffer_size]
+    """
+    testdir.makepyfile(test_file)
+
+    result = testdir.runpytest_subprocess(timeout=timeout)
+    result.assert_outcomes(passed=1)
