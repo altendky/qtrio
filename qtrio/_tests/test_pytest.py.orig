@@ -1,7 +1,11 @@
 import qtrio._pytest
 
 
+<<<<<<< HEAD
+def test_wait_signal_returns_the_value(testdir):
+=======
 def test_overrunning_test_times_out(testdir):
+>>>>>>> master
     """The overrunning test is timed out."""
 
     test_file = rf"""
@@ -16,7 +20,11 @@ def test_overrunning_test_times_out(testdir):
 
     timeout = qtrio._pytest.timeout
 
+<<<<<<< HEAD
+    result = testdir.runpytest_subprocess(timeout=10)
+=======
     result = testdir.runpytest_subprocess(timeout=2 * qtrio._pytest.timeout)
+>>>>>>> master
     result.assert_outcomes(failed=1)
     result.stdout.re_match_lines(
         lines2=[f"E       AssertionError: test not finished within {timeout} seconds"],

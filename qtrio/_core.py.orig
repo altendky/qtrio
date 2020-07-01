@@ -156,9 +156,13 @@ async def open_emissions_channel(
     emission will be converted to a :class:`qtrio.Emission` object.
 
     Args:
+<<<<<<< HEAD
         signals: A collection of signals which will be monitored for emissions.
+=======
+        signals: A collection of signals from which :class:`Emission`s will be created.
         max_buffer_size: When the number of unhandled emissions in the channel reaches
             this limit then additional emissions will be thrown out the window.
+>>>>>>> master
     """
 
     # Infinite buffer because I don't think there's any use in storing the emission

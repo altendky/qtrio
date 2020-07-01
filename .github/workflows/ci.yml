@@ -47,7 +47,7 @@ jobs:
           JOB_NAME: '${{ matrix.name }}'
           # TODO: needs some Qt library but I'm not clear the implications of
           #       choosing one over the other
-          INSTALL_EXTRAS: '[PyQt5]'
+          INSTALL_EXTRAS: '[pyside2,checks,docs]'
 
   Windows:
     name: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_library }})'
@@ -73,7 +73,8 @@ jobs:
         env:
           # Should match 'name:' up above
           JOB_NAME: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_library }})'
-          INSTALL_EXTRAS: '[${{ matrix.qt_library }}]'
+          INSTALL_EXTRAS: '[${{ matrix.qt_library }},tests]'
+          QT_QPA_PLATFORM: 'offscreen'
 
   Ubuntu:
     name: 'Ubuntu (${{ matrix.python }}, ${{ matrix.qt_library }})'
@@ -105,7 +106,7 @@ jobs:
         env:
           # Should match 'name:' up above
           JOB_NAME: 'Ubuntu (${{ matrix.python }}, ${{ matrix.qt_library }})'
-          INSTALL_EXTRAS: '[${{ matrix.qt_library }}]'
+          INSTALL_EXTRAS: '[${{ matrix.qt_library }},tests]'
 
   macOS:
     name: 'macOS (${{ matrix.python }}, ${{matrix.qt_library}})'
@@ -128,7 +129,7 @@ jobs:
         env:
           # Should match 'name:' up above
           JOB_NAME: 'macOS (${{ matrix.python }}, ${{matrix.qt_library}})'
-          INSTALL_EXTRAS: '[${{ matrix.qt_library }}]'
+          INSTALL_EXTRAS: '[${{ matrix.qt_library }},tests]'
 
   all:
     name: All

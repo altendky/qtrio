@@ -1,24 +1,56 @@
+import pathlib
+
 from setuptools import setup, find_packages
 
-exec(open("qtrio/_version.py", encoding="utf-8").read())
 
-LONG_DESC = open("README.rst", encoding="utf-8").read()
+here = pathlib.Path(__file__).parent
+
+exec((here / "qtrio" / "_version.py").read_text(encoding="utf-8"))
+
+LONG_DESC = (here / "README.rst").read_text(encoding="utf-8")
 
 setup(
     name="qtrio",
     version=__version__,
-    description="A Qt host for running Trio in guest mode",
+    description=(
+        "a library bringing Qt GUIs together with ``async`` and ``await`` via Trio"
+    ),
     url="https://github.com/python-trio/qtrio",
     long_description=LONG_DESC,
     author="Kyle Altendorf",
     author_email="sda@fstab.net",
     license="MIT -or- Apache License 2.0",
     packages=find_packages(),
-    install_requires=["async_generator", "attrs", "outcome", "pytest", "qtpy", "trio"],
+    install_requires=[
+        "async_generator",
+        "attrs",
+        "outcome",
+        "pytest",
+        "qtpy",
+        "trio>=0.16",
+    ],
     extras_require={
+        "checks": ["black", "flake8"],
+        "docs": [
+            "sphinx >= 1.7.0",
+            "sphinx-autodoc-typehints",
+            "sphinx-qt-documentation",
+            "sphinx_rtd_theme",
+            "sphinxcontrib-trio",
+            "towncrier",
+        ],
+        "examples": ["click", "httpcore", "httpx", "hyperlink"],
         "pyqt5": ["pyqt5"],
         "pyside2": ["pyside2"],
-        "examples": ["click", "httpcore", "httpx", "hyperlink"],
+        "tests": [
+            "click",
+            "coverage",
+            "pytest",
+            "pytest-cov",
+            "pytest-faulthandler",
+            "pytest-qt",
+            'pytest-xvfb; sys_platform == "linux"',
+        ],
     },
     entry_points={"console_scripts": ["qtrio = qtrio._cli:cli"]},
     keywords=["async", "io", "Trio", "GUI", "Qt", "PyQt5", "PySide2"],
