@@ -7,7 +7,9 @@ LONG_DESC = open("README.rst", encoding="utf-8").read()
 setup(
     name="qtrio",
     version=__version__,
-    description="A Qt host for running Trio in guest mode",
+    description=(
+        "a library bringing Qt GUIs together with ``async`` and ``await`` via Trio"
+    ),
     url="https://github.com/python-trio/qtrio",
     long_description=LONG_DESC,
     author="Kyle Altendorf",
@@ -21,6 +23,8 @@ setup(
         "checks": ["black", "flake8"],
         "docs": [
             "sphinx >= 1.7.0",
+            "sphinx-autodoc-typehints",
+            "sphinx-qt-documentation",
             "sphinx_rtd_theme",
             "sphinxcontrib-trio",
             "towncrier",

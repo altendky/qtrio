@@ -60,6 +60,10 @@ class Reenter(QtCore.QObject):
 async def wait_signal(signal: SignalInstance) -> typing.Tuple[typing.Any, ...]:
     """Block for the next emission of `signal` and return the emitted arguments.
 
+    Warning:
+        In many cases this can result in a race condition since you are unable to
+        first connect the signal and then wait for it.
+
     Args:
         signal: The signal instance to wait for emission of.
     """
@@ -148,10 +152,11 @@ class Emissions:
 async def open_emissions_channel(
     signals: typing.Collection[SignalInstance], max_buffer_size=math.inf,
 ) -> typing.Iterator[trio.MemoryReceiveChannel]:
-    """Create a memory channel fed by the emissions of the `signals`.
+    """Create a memory channel fed by the emissions of the signals.  Each signal
+    emission will be converted to a :class:`qtrio.Emission` object.
 
     Args:
-        signals: A collection of signals from which :class:`Emission`s will be created.
+        signals: A collection of signals which will be monitored for emissions.
         max_buffer_size: When the number of unhandled emissions in the channel reaches
             this limit then additional emissions will be thrown out the window.
     """
@@ -184,6 +189,12 @@ async def open_emissions_channel(
 
 @async_generator.asynccontextmanager
 async def wait_signal_context(signal: SignalInstance) -> None:
+    """Connect a signal during the context and wait for it on exit.  Presently no
+    mechanism is provided for retrieving the emitted arguments.
+
+    Args:
+        signal: The signal to connect to and wait for.
+    """
     event = trio.Event()
 
     with qtrio.connection(signal=signal, slot=lambda *args, **kwargs: event.set()):
@@ -193,12 +204,12 @@ async def wait_signal_context(signal: SignalInstance) -> None:
 
 @attr.s(auto_attribs=True, frozen=True, slots=True)
 class Outcomes:
-    """This class holds the :class:`outcomes.Outcome`s of both the Trio and the Qt
+    """This class holds an :class:`outcome.Outcome` from each of the Trio and the Qt
     application execution.
 
-    Args:
-        qt: The Qt application :class:`outcomes.Outcome`
-        trio: The Trio async function :class:`outcomes.Outcome`
+    Attributes:
+        qt: The Qt application :class:`outcome.Outcome`
+        trio: The Trio async function :class:`outcome.Outcome`
     """
 
     qt: typing.Optional[outcome.Outcome] = None
@@ -207,7 +218,7 @@ class Outcomes:
     def unwrap(self):
         """Unwrap either the Trio or Qt outcome.  First, errors are given priority over
         success values.  Second, the Trio outcome gets priority over the Qt outcome.  If
-        both are still None a :class:`NoOutcomesError` is raised.
+        both are still None a :class:`qtrio.NoOutcomesError` is raised.
         """
 
         if self.trio is not None:
@@ -227,17 +238,27 @@ class Outcomes:
         # neither Trio nor Qt outcomes have been set so we have nothing to unwrap()
         raise qtrio.NoOutcomesError()
 
+    # TODO: this is a workaround for these sphinx warnings.  unaroundwork this...
+    # /home/altendky/repos/qtrio/qtrio/_core.py:docstring of qtrio.run:8: WARNING: py:class reference target not found: qtrio._core.Outcomes
+    # /home/altendky/repos/qtrio/qtrio/_core.py:docstring of qtrio.run:11: WARNING: py:class reference target not found: qtrio._core.Outcomes
+    __module__ = "qtrio"
 
-def run(async_fn, *args, done_callback=None) -> Outcomes:
+
+def run(
+    async_fn: typing.Callable[[], typing.Awaitable[None]],
+    *args: typing.Tuple[typing.Any, ...],
+    done_callback: typing.Optional[typing.Callable[[Outcomes], None]] = None,
+) -> Outcomes:
     """Run a Trio-flavored async function in guest mode on a Qt host application, and
     return the outcomes.
 
     Args:
         async_fn: The async function to run.
         args: Positional arguments to pass to `async_fn`.
+        done_callback: See :class:`qtrio.Runner.done_callback`.
 
     Returns:
-        The :class:`Outcomes` with both the Trio and Qt outcomes.
+        The :class:`qtrio.Outcomes` with both the Trio and Qt outcomes.
     """
     runner = Runner(done_callback=done_callback)
     runner.run(async_fn, *args)
@@ -263,16 +284,17 @@ def outcome_from_application_return_code(return_code: int) -> outcome.Outcome:
 class Runner:
     """This class helps run Trio in guest mode on a Qt host application.
 
-    Args:
+    Attributes:
 
         application: The Qt application object to run as the host.  If not set before
             calling :meth:`run` the application will be created as
             `QtWidgets.QApplication(sys.argv[1:])` and
             `.setQuitOnLastWindowClosed(False)` will be called on it to allow the
             application to continue throughout the lifetime of the async function passed
-            to :meth:`run`.
+            to :meth:`qtrio.Runner.run`.
         quit_application: When true, the :meth:`done_callback` method will quit the
-            application when the async function passed to :meth:`run` has completed.
+            application when the async function passed to :meth:`qtrio.Runner.run` has
+            completed.
         reenter: The `QObject` instance which will receive the events requesting
             execution of the needed Trio and user code in the host's event loop and
             thread.
