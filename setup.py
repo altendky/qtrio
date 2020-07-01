@@ -1,8 +1,13 @@
+import pathlib
+
 from setuptools import setup, find_packages
 
-exec(open("qtrio/_version.py", encoding="utf-8").read())
 
-LONG_DESC = open("README.rst", encoding="utf-8").read()
+here = pathlib.Path(__file__).parent
+
+exec((here / "qtrio" / "_version.py").read_text(encoding="utf-8"))
+
+LONG_DESC = (here / "README.rst").read_text(encoding="utf-8")
 
 setup(
     name="qtrio",
@@ -16,10 +21,15 @@ setup(
     author_email="sda@fstab.net",
     license="MIT -or- Apache License 2.0",
     packages=find_packages(),
-    install_requires=["async_generator", "attrs", "outcome", "pytest", "qtpy", "trio"],
+    install_requires=[
+        "async_generator",
+        "attrs",
+        "outcome",
+        "pytest",
+        "qtpy",
+        "trio>=0.16",
+    ],
     extras_require={
-        "pyqt5": ["pyqt5"],
-        "pyside2": ["pyside2"],
         "checks": ["black", "flake8"],
         "docs": [
             "sphinx >= 1.7.0",
@@ -30,6 +40,8 @@ setup(
             "towncrier",
         ],
         "examples": ["click"],
+        "pyqt5": ["pyqt5"],
+        "pyside2": ["pyside2"],
         "tests": [
             "click",
             "coverage",

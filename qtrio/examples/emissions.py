@@ -1,10 +1,8 @@
 import attr
 from qtpy import QtCore
 from qtpy import QtWidgets
-import trio
 
 import qtrio
-import qtrio._qt
 
 
 class QSignaledWidget(QtWidgets.QWidget):
