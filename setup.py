@@ -21,7 +21,14 @@ setup(
     author_email="sda@fstab.net",
     license="MIT -or- Apache License 2.0",
     packages=find_packages(),
-    install_requires=["async_generator", "attrs", "outcome", "pytest", "qtpy", "trio>=0.16"],
+    install_requires=[
+        "async_generator",
+        "attrs",
+        "outcome",
+        "pytest",
+        "qtpy",
+        "trio>=0.16",
+    ],
     extras_require={
         "checks": ["black", "flake8"],
         "docs": [
