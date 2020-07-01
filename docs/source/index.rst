@@ -4,13 +4,15 @@
    contain the root `toctree` directive.
 
 
-===============================================
-QTrio: A Qt host for running Trio in guest mode
-===============================================
+.. include:: ../../README.rst
 
 .. toctree::
    :maxdepth: 2
 
+   tutorial.rst
+   core.rst
+   testing.rst
+   exceptions.rst
    history.rst
 
 ====================

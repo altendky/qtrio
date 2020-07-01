@@ -43,11 +43,11 @@ of Qt concurrency.
 
         def before(self):
             self.file = open(some_path, 'w')
+            self.signal.connect(self.after)
             self.file.write('before')
-            self.a_signal.connect(self.after)
 
         def after(self, value):
-            self.a_signal.disconnect(self.after)
+            self.signal.disconnect(self.after)
             self.file.write(f'after {value!r}')
             self.file.close()
 
@@ -55,9 +55,12 @@ of Qt concurrency.
 
     async def together(a_signal):
         with open(self.some_path, 'w') as file:
-            file.write('before')
-            value = await qtrio.wait_signal(a_signal)
-            file.write(f'after {value!r}')
+            with qtrio.open_emissions_channel(signals=[a_signal]) as emissions:
+                with emissions.channel:
+                    file.write('before')
+                    emission = await emissions.channel.receive()
+                    [value] = emission.args
+                    file.write(f'after {value!r}')
 
 Note how by using ``async`` and ``await`` we are not only able to more clearly and
 concisely describe the sequenced activity, we also get to use ``with`` to manage the

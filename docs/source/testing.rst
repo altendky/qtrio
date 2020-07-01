@@ -1,0 +1,4 @@
+Testing
+=======
+
+.. autofunction:: qtrio.host

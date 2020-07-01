@@ -21,8 +21,8 @@ def host(test_function: typing.Callable[..., typing.Awaitable[None]]):
         decorator can intercept and use it.
 
     Warning:
-        The interface for specifying tests to run with in this way will likely change a
-        lot.  Try to keep up.
+        The interface for specifying tests to run in this way will likely change a lot.
+        Try to keep up.  ``:|``
 
     Args:
         test_function: The pytest function to be tested.
