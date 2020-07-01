@@ -15,7 +15,6 @@ async def main(
         label = QtWidgets.QLabel()
     # start big enough to fit the whole message
     label.setText(message)
-    await trio.sleep(change_delay)
     label.show()
     label.setText("")
 
