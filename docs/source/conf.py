@@ -196,7 +196,7 @@ texinfo_documents = [
         "QTrio Documentation",
         author,
         "QTrio",
-        "A Qt host for running Trio in guest mode",
+        "a library bringing Qt GUIs together with ``async`` and ``await`` via Trio",
         "Miscellaneous",
     ),
 ]
