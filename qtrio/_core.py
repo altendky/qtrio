@@ -146,34 +146,40 @@ class Emissions:
 
 @async_generator.asynccontextmanager
 async def open_emissions_channel(
-    signals: typing.Collection[SignalInstance],
+    signals: typing.Collection[SignalInstance], max_buffer_size=math.inf,
 ) -> typing.Iterator[trio.MemoryReceiveChannel]:
     """Create a memory channel fed by the emissions of the `signals`.
 
     Args:
         signals: A collection of signals from which :class:`Emission`s will be created.
+        max_buffer_size: When the number of unhandled emissions in the channel reaches
+            this limit then additional emissions will be thrown out the window.
     """
 
     # Infinite buffer because I don't think there's any use in storing the emission
     # info in a `slot()` stack frame rather than in the memory channel.  Perhaps in the
     # future we can implement a limit beyond which events are thrown away to avoid
     # infinite queueing.  Maybe trio.MemorySendChannel.send_nowait() instead.
-    send_channel, receive_channel = trio.open_memory_channel(max_buffer_size=math.inf)
-
-    async def slot(signal, *args):
-        await send_channel.send(Emission(signal=signal, args=args))
+    send_channel, receive_channel = trio.open_memory_channel(
+        max_buffer_size=max_buffer_size
+    )
 
     async with send_channel:
-        async with trio.open_nursery() as nursery:
-            with contextlib.ExitStack() as stack:
-                for signal in signals:
-                    stack.enter_context(
-                        qtrio.connection(
-                            signal, functools.partial(nursery.start_soon, slot, signal)
-                        ),
-                    )
+        with contextlib.ExitStack() as stack:
+            for signal in signals:
 
-                yield Emissions(channel=receive_channel, aclose=send_channel.aclose)
+                def slot(*args, internal_signal=signal):
+                    try:
+                        send_channel.send_nowait(
+                            Emission(signal=internal_signal, args=args)
+                        )
+                    except trio.WouldBlock:
+                        # TODO: log this or... ?
+                        pass
+
+                stack.enter_context(qtrio.connection(signal, slot))
+
+            yield Emissions(channel=receive_channel, aclose=send_channel.aclose)
 
 
 @async_generator.asynccontextmanager
