@@ -307,6 +307,7 @@ class Runner:
 
     application: typing.Optional[QtGui.QGuiApplication] = None
     quit_application: bool = True
+    timeout: typing.Optional[float] = None
 
     reenter: Reenter = attr.ib(factory=Reenter)
 
@@ -384,6 +385,9 @@ class Runner:
                 host's thread.
             args: Positional arguments to be passed to `async_fn`
         """
+        result = None
+        timeout_cancel_scope = None
+
         with trio.CancelScope() as self.cancel_scope:
             with contextlib.ExitStack() as exit_stack:
                 if self.application.quitOnLastWindowClosed():
@@ -393,8 +397,17 @@ class Runner:
                             slot=self.cancel_scope.cancel,
                         )
                     )
+                if self.timeout is not None:
+                    timeout_cancel_scope = exit_stack.enter_context(
+                        trio.move_on_after(self.timeout)
+                    )
 
-                return await async_fn(*args)
+                result = await async_fn(*args)
+
+        if timeout_cancel_scope is not None and timeout_cancel_scope.cancelled_caught:
+            raise qtrio.TestTimedOutError()
+
+        return result
 
     def trio_done(self, run_outcome: outcome.Outcome) -> None:
         """Will be called after the Trio guest run has finished.  This allows collection

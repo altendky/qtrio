@@ -31,3 +31,7 @@ class UserCancelledError(QTrioException):
     """Raised when a user requested cancellation of an operation."""
 
     pass
+
+
+class TestTimedOutError(QTrioException):
+    pass
