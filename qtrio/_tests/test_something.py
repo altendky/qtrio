@@ -82,6 +82,7 @@ def test_overrunning_test_times_out_02(testdir):
 
     import faulthandler
     faulthandler.enable()
+    faulthandler.dump_traceback()
     faulthandler.dump_traceback_later(3 + 1)
     # faulthandler.dump_traceback_later(qtrio._pytest.timeout + 1)
 
