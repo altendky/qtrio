@@ -94,7 +94,7 @@ def test_overrunning_test_times_out_03(testdir):
     # faulthandler.dump_traceback_later(qtrio._pytest.timeout + 1)
 
     def test():
-       pass
+       assert False, "test not finished within 3 seconds"
     """
     testdir.makepyfile(test_file)
 
@@ -103,7 +103,7 @@ def test_overrunning_test_times_out_03(testdir):
     result = testdir.runpytest_subprocess("--capture", "no", timeout=subprocess_timeout)
     result.assert_outcomes(failed=1)
     result.stdout.re_match_lines(
-        lines2=[f"E       AssertionError: test not finished within {timeout} seconds"],
+        lines2=[rf"E\s+AssertionError: test not finished within {timeout} seconds"],
     )
 
 
