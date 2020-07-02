@@ -10,7 +10,7 @@ def test_overrunning_test_times_out(testdir):
 
     test_file = r"""
     import time
-    print("blueredgreen ----------", time.monotonic())
+    print("blueredgreen ----------", time.monotonic(), flush=True)
 
     import faulthandler
     faulthandler.dump_traceback_later(3 + 1)
@@ -24,7 +24,7 @@ def test_overrunning_test_times_out(testdir):
     @qtrio.host
     async def test(request):
         while True:
-            print("blueredgreen ----------", time.monotonic())
+            print("blueredgreen ----------", time.monotonic(), flush=True)
             await trio.sleep(0.1)
     """
     testdir.makepyfile(test_file)
