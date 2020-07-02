@@ -4,19 +4,24 @@ import qtrio._pytest
 def test_overrunning_test_times_out(testdir):
     """The overrunning test is timed out."""
 
+    # Be really sure this is longer than the intended test timeout plus some extra
+    # to account for random process startup variations in CI.
+    subprocess_timeout = (2 * qtrio._pytest.timeout) + 10
+
     test_file = rf"""
     import qtrio
     import trio
 
     @qtrio.host
     async def test(request):
-        await trio.sleep({2 * qtrio._pytest.timeout})
+        while True:
+            await trio.sleep(1)
     """
     testdir.makepyfile(test_file)
 
     timeout = qtrio._pytest.timeout
 
-    result = testdir.runpytest_subprocess(timeout=2 * qtrio._pytest.timeout)
+    result = testdir.runpytest_subprocess(timeout=subprocess_timeout)
     result.assert_outcomes(failed=1)
     result.stdout.re_match_lines(
         lines2=[f"E       AssertionError: test not finished within {timeout} seconds"],
