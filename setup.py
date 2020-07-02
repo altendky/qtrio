@@ -15,7 +15,7 @@ setup(
     description=(
         "a library bringing Qt GUIs together with ``async`` and ``await`` via Trio"
     ),
-    url="https://github.com/python-trio/qtrio",
+    url="https://github.com/altendky/qtrio",
     long_description=LONG_DESC,
     author="Kyle Altendorf",
     author_email="sda@fstab.net",
