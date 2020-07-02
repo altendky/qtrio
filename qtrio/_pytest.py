@@ -28,7 +28,7 @@ def host(test_function: typing.Callable[..., typing.Awaitable[None]]):
         test_function: The pytest function to be tested.
     """
 
-    @pytest.mark.usefixtures("qapp", "qtbot")
+    @pytest.mark.usefixtures("request", "qapp", "qtbot")
     @functools.wraps(test_function)
     def wrapper(*args, **kwargs):
         request = kwargs["request"]
