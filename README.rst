@@ -22,6 +22,13 @@
 QTrio - a library bringing Qt GUIs together with ``async`` and ``await`` via Trio
 =================================================================================
 
+Note:
+    This library is in early development.  It works.  It has tests.  It has
+    documentation.  Expect breaking changes as we explore a clean API.  By paying this
+    price you get the privilege to provide feedback via
+    `GitHub issues <https://github.com/altendky/qtrio/issues>`__ to help shape our
+    future.  ``:]``
+
 The QTrio project's goal is to bring the friendly concurrency of Trio using Python's
 ``async`` and ``await`` syntax together with the GUI features of Qt to enable more
 correct code and a more pleasant developer experience.  QTrio is `permissively licensed
