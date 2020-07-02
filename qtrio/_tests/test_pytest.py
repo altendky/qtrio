@@ -13,7 +13,8 @@ def test_overrunning_test_times_out(testdir):
     print("blueredgreen ----------", time.monotonic())
 
     import faulthandler
-    faulthandler.dump_traceback_later(qtrio._pytest.timeout + 1)
+    faulthandler.dump_traceback_later(3 + 1)
+    # faulthandler.dump_traceback_later(qtrio._pytest.timeout + 1)
 
     import qtrio
     import qtrio._pytest
