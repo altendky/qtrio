@@ -14,6 +14,7 @@ def test_overrunning_test_times_out_03(testdir):
 
     import faulthandler
     faulthandler.enable()
+    faulthandler.dump_traceback()
     faulthandler.dump_traceback_later(3 + 1)
     # faulthandler.dump_traceback_later(qtrio._pytest.timeout + 1)
 
@@ -44,6 +45,7 @@ def test_overrunning_test_times_out_01(testdir):
 
     import faulthandler
     faulthandler.enable()
+    faulthandler.dump_traceback()
     faulthandler.dump_traceback_later(3 + 1)
     # faulthandler.dump_traceback_later(qtrio._pytest.timeout + 1)
 
@@ -106,23 +108,3 @@ def test_overrunning_test_times_out_02(testdir):
     result.stdout.re_match_lines(
         lines2=[f"E       AssertionError: test not finished within {timeout} seconds"],
     )
-
-
-# TODO: test that the timeout case doesn't leave trio active...  like
-#       it was doing five minutes ago.
-
-
-def test_hosted_assertion_failure_fails(testdir):
-    """QTrio hosted test which fails an assertion fails the test."""
-
-    test_file = r"""
-    import qtrio
-
-    @qtrio.host
-    async def test(request):
-        assert False
-    """
-    testdir.makepyfile(test_file)
-
-    result = testdir.runpytest_subprocess(timeout=10)
-    result.assert_outcomes(failed=1)
