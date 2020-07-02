@@ -14,8 +14,8 @@
    :target: https://pypi.org/project/qtrio
    :alt: Latest PyPi version
 
-.. image:: https://codecov.io/gh/python-trio/qtrio/branch/master/graph/badge.svg
-   :target: https://codecov.io/gh/python-trio/qtrio
+.. image:: https://codecov.io/gh/altendky/qtrio/branch/master/graph/badge.svg
+   :target: https://codecov.io/gh/altendky/qtrio
    :alt: Test coverage
 
 
@@ -32,7 +32,7 @@ Note:
 The QTrio project's goal is to bring the friendly concurrency of Trio using Python's
 ``async`` and ``await`` syntax together with the GUI features of Qt to enable more
 correct code and a more pleasant developer experience.  QTrio is `permissively licensed
-<https://github.com/python-trio/qtrio/blob/master/LICENSE>`__ to avoid introducing
+<https://github.com/altendky/qtrio/blob/master/LICENSE>`__ to avoid introducing
 restrictions beyond those of the underlying Python Qt library you choose.  Both PySide2
 and PyQt5 are supported.
 
