@@ -295,6 +295,8 @@ class Runner:
         quit_application: When true, the :meth:`done_callback` method will quit the
             application when the async function passed to :meth:`qtrio.Runner.run` has
             completed.
+        timeout: If not :py:object`None`, use :func:`trio.move_on_after()` to cancel
+            after ``timeout`` seconds and raise.
         reenter: The `QObject` instance which will receive the events requesting
             execution of the needed Trio and user code in the host's event loop and
             thread.
@@ -307,6 +309,7 @@ class Runner:
 
     application: typing.Optional[QtGui.QGuiApplication] = None
     quit_application: bool = True
+    timeout: typing.Optional[float] = None
 
     reenter: Reenter = attr.ib(factory=Reenter)
 
@@ -384,6 +387,9 @@ class Runner:
                 host's thread.
             args: Positional arguments to be passed to `async_fn`
         """
+        result = None
+        timeout_cancel_scope = None
+
         with trio.CancelScope() as self.cancel_scope:
             with contextlib.ExitStack() as exit_stack:
                 if self.application.quitOnLastWindowClosed():
@@ -393,8 +399,17 @@ class Runner:
                             slot=self.cancel_scope.cancel,
                         )
                     )
+                if self.timeout is not None:
+                    timeout_cancel_scope = exit_stack.enter_context(
+                        trio.move_on_after(self.timeout)
+                    )
 
-                return await async_fn(*args)
+                result = await async_fn(*args)
+
+        if timeout_cancel_scope is not None and timeout_cancel_scope.cancelled_caught:
+            raise qtrio.RunnerTimedOutError()
+
+        return result
 
     def trio_done(self, run_outcome: outcome.Outcome) -> None:
         """Will be called after the Trio guest run has finished.  This allows collection

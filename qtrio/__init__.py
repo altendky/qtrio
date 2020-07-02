@@ -8,6 +8,7 @@ from ._exceptions import (
     RegisterEventTypeError,
     ReturnCodeError,
     UserCancelledError,
+    RunnerTimedOutError,
 )
 
 from ._core import (
