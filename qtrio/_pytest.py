@@ -36,9 +36,7 @@ def host(test_function: typing.Callable[..., typing.Awaitable[None]]):
         qapp = request.getfixturevalue("qapp")
         qtbot = request.getfixturevalue("qtbot")
 
-        test_outcomes_sentinel = qtrio.Outcomes(
-            qt=outcome.Value(0), trio=outcome.Value(29),
-        )
+        test_outcomes_sentinel = object()
         test_outcomes = test_outcomes_sentinel
 
         def done_callback(outcomes):
@@ -46,7 +44,10 @@ def host(test_function: typing.Callable[..., typing.Awaitable[None]]):
             test_outcomes = outcomes
 
         runner = qtrio._core.Runner(
-            application=qapp, done_callback=done_callback, quit_application=False, timeout=timeout,
+            application=qapp,
+            done_callback=done_callback,
+            quit_application=False,
+            timeout=timeout,
         )
 
         runner.run(
@@ -55,12 +56,10 @@ def host(test_function: typing.Callable[..., typing.Awaitable[None]]):
             execute_application=False,
         )
 
-        def result_ready():
-            message = f"test not finished within {timeout} seconds"
-            assert test_outcomes is not test_outcomes_sentinel, message
-
         # TODO: probably increases runtime of fast tests a lot due to polling
-        qtbot.wait_until(result_ready, timeout=None)
+        qtbot.wait_until(
+            lambda: test_outcomes is not test_outcomes_sentinel, timeout=999999999
+        )
         test_outcomes.unwrap()
 
     return wrapper

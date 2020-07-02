@@ -385,6 +385,12 @@ class Runner:
                 host's thread.
             args: Positional arguments to be passed to `async_fn`
         """
+        # if self.timeout is not None:
+        #     cancel_scope_manager = trio.fail_after(self.timeout)
+        # else:
+        #     cancel_scope_manager = trio.CancelScope()
+        timeout_cancel_scope = None
+
         with trio.CancelScope() as self.cancel_scope:
             with contextlib.ExitStack() as exit_stack:
                 if self.application.quitOnLastWindowClosed():
@@ -395,9 +401,14 @@ class Runner:
                         )
                     )
                 if self.timeout is not None:
-                    exit_stack.enter_context(trio.move_on_after(timeout))
+                    timeout_cancel_scope = exit_stack.enter_context(trio.move_on_after(self.timeout))
 
-                return await async_fn(*args)
+                result = await async_fn(*args)
+
+        if timeout_cancel_scope.cancelled_caught:
+            raise qtrio.TestTimedOutError()
+
+        return result
 
     def trio_done(self, run_outcome: outcome.Outcome) -> None:
         """Will be called after the Trio guest run has finished.  This allows collection
