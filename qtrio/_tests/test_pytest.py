@@ -9,6 +9,9 @@ def test_overrunning_test_times_out(testdir):
     subprocess_timeout = (2 * qtrio._pytest.timeout) + 10
 
     test_file = r"""
+    import time
+    print("blueredgreen ----------", time.monotonic())
+
     import faulthandler
 
     import qtrio
@@ -22,7 +25,8 @@ def test_overrunning_test_times_out(testdir):
     @qtrio.host
     async def test(request):
         while True:
-            await trio.sleep(1)
+            print("blueredgreen ----------", time.monotonic())
+            await trio.sleep(0.1)
     """
     testdir.makepyfile(test_file)
 
