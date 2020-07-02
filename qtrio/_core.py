@@ -295,8 +295,8 @@ class Runner:
         quit_application: When true, the :meth:`done_callback` method will quit the
             application when the async function passed to :meth:`qtrio.Runner.run` has
             completed.
-        timeout: If not :py:object`None`, use :class:`trio.move_on_after()` to cancel
-            after ``timeout`` seconds and raise :class:`qtrio.RunnerTimedOutError`.
+        timeout: If not :py:object`None`, use :func:`trio.move_on_after()` to cancel
+            after ``timeout`` seconds and raise.
         reenter: The `QObject` instance which will receive the events requesting
             execution of the needed Trio and user code in the host's event loop and
             thread.
