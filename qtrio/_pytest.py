@@ -46,7 +46,7 @@ def host(test_function: typing.Callable[..., typing.Awaitable[None]]):
             test_outcomes = outcomes
 
         runner = qtrio._core.Runner(
-            application=qapp, done_callback=done_callback, quit_application=False,
+            application=qapp, done_callback=done_callback, quit_application=False, timeout=timeout,
         )
 
         runner.run(
@@ -60,13 +60,7 @@ def host(test_function: typing.Callable[..., typing.Awaitable[None]]):
             assert test_outcomes is not test_outcomes_sentinel, message
 
         # TODO: probably increases runtime of fast tests a lot due to polling
-        try:
-            qtbot.wait_until(result_ready, timeout=timeout * 1000)
-        except AssertionError:
-            runner.cancel_scope.cancel()
-            qtbot.wait_until(result_ready)
-            raise
-
+        qtbot.wait_until(result_ready, timeout=None)
         test_outcomes.unwrap()
 
     return wrapper

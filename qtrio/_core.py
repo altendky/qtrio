@@ -307,6 +307,7 @@ class Runner:
 
     application: typing.Optional[QtGui.QGuiApplication] = None
     quit_application: bool = True
+    timeout: typing.Optional[float] = None
 
     reenter: Reenter = attr.ib(factory=Reenter)
 
@@ -393,6 +394,8 @@ class Runner:
                             slot=self.cancel_scope.cancel,
                         )
                     )
+                if self.timeout is not None:
+                    exit_stack.enter_context(trio.move_on_after(timeout))
 
                 return await async_fn(*args)
 
