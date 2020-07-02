@@ -3,4 +3,4 @@ package = "qtrio"
 filename = "docs/source/history.rst"
 directory = "newsfragments"
 underlines = ["-", "~", "^"]
-issue_format = "`#{issue} <https://github.com/python-trio/qtrio/issues/{issue}>`__"
+issue_format = "`#{issue} <https://github.com/altendky/qtrio/issues/{issue}>`__"
