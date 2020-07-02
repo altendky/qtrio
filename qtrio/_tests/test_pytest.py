@@ -28,7 +28,7 @@ def test_overrunning_test_times_out(testdir):
 
     timeout = qtrio._pytest.timeout
 
-    result = testdir.runpytest_subprocess(timeout=subprocess_timeout)
+    result = testdir.runpytest_subprocess("--capture", "no", timeout=subprocess_timeout)
     result.assert_outcomes(failed=1)
     result.stdout.re_match_lines(
         lines2=[f"E       AssertionError: test not finished within {timeout} seconds"],
