@@ -16,7 +16,7 @@ def test_overrunning_test_times_out(testdir):
 
     result = testdir.runpytest_subprocess(timeout=2 * qtrio._pytest.timeout)
     result.assert_outcomes(failed=1)
-    result.stdout.re_match_lines(lines2=[r"E\s+qtrio\._exceptions\.TestTimedOutError"])
+    result.stdout.re_match_lines(lines2=[r"E\s+qtrio\._exceptions\.RunnerTimedOutError"])
 
 
 # TODO: test that the timeout case doesn't leave trio active...  like
