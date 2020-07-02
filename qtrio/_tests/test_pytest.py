@@ -9,8 +9,15 @@ def test_overrunning_test_times_out(testdir):
     subprocess_timeout = (2 * qtrio._pytest.timeout) + 10
 
     test_file = r"""
+    import faulthandler
+
     import qtrio
+    import qtrio._pytest
     import trio
+
+
+    faulthandler.dump_traceback_later(qtrio._pytest.timeout + 1)
+
 
     @qtrio.host
     async def test(request):
