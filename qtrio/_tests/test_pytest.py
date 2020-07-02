@@ -8,7 +8,7 @@ def test_overrunning_test_times_out(testdir):
     # to account for random process startup variations in CI.
     subprocess_timeout = (2 * qtrio._pytest.timeout) + 10
 
-    test_file = rf"""
+    test_file = r"""
     import qtrio
     import trio
 
