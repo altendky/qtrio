@@ -788,7 +788,7 @@ def test_emissions_channel_limited_buffer(testdir, emissions_channel_string):
 
 def test_enter_emissions_channel_closes(testdir):
     """Emissions channel throws away beyond buffer limit."""
-    test_file = rf"""
+    test_file = r"""
     from qtpy import QtCore
     import qtrio
 
