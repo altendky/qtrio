@@ -34,12 +34,13 @@ def test_main(testdir):
 
 
         async with trio.open_nursery() as nursery:
-            async with qtrio.open_emissions_channel(
+            with qtrio.open_emissions_channel(
                 signals=[button.shown],
             ) as emissions:
-                nursery.start_soon(user)
-
-                await qtrio.examples.buildingrespect.main(button=button)
+                async with emissions.send_channel:
+                    nursery.start_soon(user)
+    
+                    await qtrio.examples.buildingrespect.main(button=button)
     """
     testdir.makepyfile(test_file)
 

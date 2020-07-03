@@ -148,12 +148,17 @@ class Emissions:
         return await self.send_channel.aclose()
 
 
-@async_generator.asynccontextmanager
-async def open_emissions_channel(
+@contextlib.contextmanager
+def open_emissions_channel(
     signals: typing.Collection[SignalInstance], max_buffer_size=math.inf,
 ) -> typing.Iterator[trio.MemoryReceiveChannel]:
     """Create a memory channel fed by the emissions of the signals.  Each signal
     emission will be converted to a :class:`qtrio.Emission` object.
+
+    Note:
+        Neither the send nor the receive signal are managed.  Sometimes you need the
+        flexibility to manage them yourself.  If not, consider letting
+        :func:`qtrio.enter_emissions_channel` manage both channels for you.
 
     Args:
         signals: A collection of signals which will be monitored for emissions.
@@ -169,22 +174,37 @@ async def open_emissions_channel(
         max_buffer_size=max_buffer_size
     )
 
-    async with send_channel:
-        with contextlib.ExitStack() as stack:
-            for signal in signals:
+    with contextlib.ExitStack() as stack:
+        for signal in signals:
 
-                def slot(*args, internal_signal=signal):
-                    try:
-                        send_channel.send_nowait(
-                            Emission(signal=internal_signal, args=args)
-                        )
-                    except trio.WouldBlock:
-                        # TODO: log this or... ?
-                        pass
+            def slot(*args, internal_signal=signal):
+                try:
+                    send_channel.send_nowait(
+                        Emission(signal=internal_signal, args=args)
+                    )
+                except trio.WouldBlock:
+                    # TODO: log this or... ?
+                    pass
 
-                stack.enter_context(qtrio.connection(signal, slot))
+            stack.enter_context(qtrio.connection(signal, slot))
 
-            yield Emissions(channel=receive_channel, send_channel=send_channel)
+        yield Emissions(channel=receive_channel, send_channel=send_channel)
+
+
+@async_generator.asynccontextmanager
+async def enter_emissions_channel(
+    signals: typing.Collection[SignalInstance], max_buffer_size=math.inf,
+) -> typing.Iterator[trio.MemoryReceiveChannel]:
+    """Create a memory channel fed by the emissions of the signals and enter both the
+    send and receive channels' context managers.  See
+    :func:`qtrio.open_emissions_channel`.
+    """
+    with open_emissions_channel(
+        signals=signals, max_buffer_size=max_buffer_size
+    ) as emissions:
+        async with emissions.channel:
+            async with emissions.send_channel:
+                yield emissions
 
 
 @async_generator.asynccontextmanager

@@ -32,17 +32,18 @@ def test_main(testdir):
                     results.append(text)
 
         async with trio.open_nursery() as nursery:
-            async with qtrio.open_emissions_channel(
+            with qtrio.open_emissions_channel(
                 signals=[label.text_changed],
             ) as emissions:
-                nursery.start_soon(user)
-
-                await qtrio.examples.crossingpaths.main(
-                    label=label,
-                    message="test world",
-                    change_delay=0.01,
-                    close_delay=0.01,
-                )
+                async with emissions.send_channel:
+                    nursery.start_soon(user)
+    
+                    await qtrio.examples.crossingpaths.main(
+                        label=label,
+                        message="test world",
+                        change_delay=0.01,
+                        close_delay=0.01,
+                    )
 
         assert results == [
             "test world",
