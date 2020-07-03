@@ -188,6 +188,21 @@ async def open_emissions_channel(
 
 
 @async_generator.asynccontextmanager
+async def enter_emissions_channel(
+    signals: typing.Collection[SignalInstance], max_buffer_size=math.inf,
+) -> typing.Iterator[trio.MemoryReceiveChannel]:
+    """Create a memory channel fed by the emissions of the signals and enter the
+    channel's context manager.  See :func:`qtrio.open_emissions_channel`.
+    """
+    async with open_emissions_channel(
+        signals=signals, max_buffer_size=max_buffer_size
+    ) as emissions:
+        async with emissions.channel:
+            async with emissions.send_channel:
+                yield emissions
+
+
+@async_generator.asynccontextmanager
 async def wait_signal_context(signal: SignalInstance) -> None:
     """Connect a signal during the context and wait for it on exit.  Presently no
     mechanism is provided for retrieving the emitted arguments.

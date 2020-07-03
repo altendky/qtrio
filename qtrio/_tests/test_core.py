@@ -6,6 +6,15 @@ from qtpy import QtCore
 import qtrio._core
 
 
+@pytest.fixture(
+    name='emissions_channel_string',
+    params=['qtrio.open_emissions_channel', 'qtrio.enter_emissions_channel'],
+    ids=['qtrio.open_emissions_channel', 'qtrio.enter_emissions_channel'],
+)
+def emissions_channel_string_fixture(request):
+    return request.param
+
+
 def test_reenter_event_triggers_in_main_thread(qapp):
     """Reenter events posted in another thread result in the function being run in the
     main thread.
@@ -595,9 +604,9 @@ def test_emissions_unequal_by_args():
     ) != qtrio._core.Emission(signal=instance.signal, args=(14,))
 
 
-def test_open_emissions_channel_iterates_one(testdir):
+def test_emissions_channel_iterates_one(testdir, emissions_channel_string):
     """Emissions channel yields one emission as expected."""
-    test_file = r"""
+    test_file = rf"""
     from qtpy import QtCore
     import qtrio
     import trio.testing
@@ -611,7 +620,7 @@ def test_open_emissions_channel_iterates_one(testdir):
     async def test(request):
         instance = MyQObject()
 
-        async with qtrio.open_emissions_channel(signals=[instance.signal]) as emissions:
+        async with {emissions_channel_string}(signals=[instance.signal]) as emissions:
             instance.signal.emit(93)
             await trio.testing.wait_all_tasks_blocked(cushion=0.01)
             await emissions.aclose()
@@ -627,9 +636,9 @@ def test_open_emissions_channel_iterates_one(testdir):
     result.assert_outcomes(passed=1)
 
 
-def test_open_emissions_channel_iterates_three(testdir):
+def test_emissions_channel_iterates_three(testdir, emissions_channel_string):
     """Emissions channel yields three emissions as expected."""
-    test_file = r"""
+    test_file = rf"""
     from qtpy import QtCore
     import qtrio
     import trio.testing
@@ -643,7 +652,7 @@ def test_open_emissions_channel_iterates_three(testdir):
     async def test(request):
         instance = MyQObject()
 
-        async with qtrio.open_emissions_channel(signals=[instance.signal]) as emissions:
+        async with {emissions_channel_string}(signals=[instance.signal]) as emissions:
             for v in [93, 56, 27]:
                 instance.signal.emit(v)
                 await trio.testing.wait_all_tasks_blocked(cushion=0.01)
@@ -663,9 +672,9 @@ def test_open_emissions_channel_iterates_three(testdir):
     result.assert_outcomes(passed=1)
 
 
-def test_open_emissions_channel_with_three_receives_first(testdir):
+def test_emissions_channel_with_three_receives_first(testdir, emissions_channel_string):
     """Emissions channel yields receives first item when requested."""
-    test_file = r"""
+    test_file = rf"""
     from qtpy import QtCore
     import qtrio
     import trio.testing
@@ -679,7 +688,7 @@ def test_open_emissions_channel_with_three_receives_first(testdir):
     async def test(request):
         instance = MyQObject()
 
-        async with qtrio.open_emissions_channel(signals=[instance.signal]) as emissions:
+        async with {emissions_channel_string}(signals=[instance.signal]) as emissions:
             for v in [93, 56, 27]:
                 instance.signal.emit(v)
                 await trio.testing.wait_all_tasks_blocked(cushion=0.01)
@@ -696,9 +705,9 @@ def test_open_emissions_channel_with_three_receives_first(testdir):
     result.assert_outcomes(passed=1)
 
 
-def test_open_emissions_channel_iterates_in_order(testdir):
+def test_emissions_channel_iterates_in_order(testdir, emissions_channel_string):
     """Emissions channel yields signal emissions in order (pretty probably...)."""
-    test_file = r"""
+    test_file = rf"""
     from qtpy import QtCore
     import qtrio
     import trio.testing
@@ -714,7 +723,7 @@ def test_open_emissions_channel_iterates_in_order(testdir):
         values = list(range(100))
         results = []
 
-        async with qtrio.open_emissions_channel(
+        async with {emissions_channel_string}(
             signals=[instance.signal], max_buffer_size=len(values),
         ) as emissions:
             for i, v in enumerate(values):
@@ -738,9 +747,9 @@ def test_open_emissions_channel_iterates_in_order(testdir):
     result.assert_outcomes(passed=1)
 
 
-def test_open_emissions_channel_limited_buffer(testdir):
+def test_emissions_channel_limited_buffer(testdir, emissions_channel_string):
     """Emissions channel throws away beyond buffer limit."""
-    test_file = r"""
+    test_file = rf"""
     from qtpy import QtCore
     import qtrio
 
@@ -756,7 +765,7 @@ def test_open_emissions_channel_limited_buffer(testdir):
         values = list(range(2 * max_buffer_size))
         results = []
 
-        async with qtrio.open_emissions_channel(
+        async with {emissions_channel_string}(
             signals=[instance.signal], max_buffer_size=max_buffer_size,
         ) as emissions:
             for v in values:
@@ -771,6 +780,38 @@ def test_open_emissions_channel_limited_buffer(testdir):
 
         assert results == values[:max_buffer_size]
     """
+    testdir.makepyfile(test_file)
+
+    result = testdir.runpytest_subprocess(timeout=timeout)
+    result.assert_outcomes(passed=1)
+
+
+def test_enter_emissions_channel_closes(testdir):
+    """Emissions channel throws away beyond buffer limit."""
+    test_file = rf"""
+    from qtpy import QtCore
+    import qtrio
+
+
+    class MyQObject(QtCore.QObject):
+        signal = QtCore.Signal(int)
+
+
+    @qtrio.host
+    async def test(request):
+        instance = MyQObject()
+        max_buffer_size = 10
+        values = list(range(2 * max_buffer_size))
+        results = []
+
+        async with qtrio.enter_emissions_channel(
+            signals=[instance.signal], max_buffer_size=max_buffer_size,
+        ) as emissions:
+            pass
+
+        assert emissions.channel._closed and emissions.send_channel._closed
+    """
+    # TODO: any public way to check the channels are closed?
     testdir.makepyfile(test_file)
 
     result = testdir.runpytest_subprocess(timeout=timeout)
