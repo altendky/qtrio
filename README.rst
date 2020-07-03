@@ -62,8 +62,8 @@ of Qt concurrency.
 
     async def together(a_signal):
         with open(self.some_path, 'w') as file:
-            with qtrio.open_emissions_channel(signals=[a_signal]) as emissions:
-                with emissions.channel:
+            async with qtrio.open_emissions_channel(signals=[a_signal]) as emissions:
+                async with emissions.channel:
                     file.write('before')
                     emission = await emissions.channel.receive()
                     [value] = emission.args
