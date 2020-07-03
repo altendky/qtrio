@@ -135,17 +135,17 @@ class Emissions:
 
     Attributes:
         channel: A memory receive channel to be fed by signal emissions.
-        _aclose: The send channel's `.aclose()` method.
+        send_channel: A memory send channel collecting signal emissions.
     """
 
     channel: trio.MemoryReceiveChannel
-    _aclose: typing.Callable[[], typing.Awaitable[typing.Any]]
+    send_channel: trio.MemorySendChannel
 
     async def aclose(self):
         """Asynchronously close the send channel when signal emissions are no longer of
         interest.
         """
-        return await self._aclose()
+        return await self.send_channel.aclose()
 
 
 @async_generator.asynccontextmanager
@@ -184,7 +184,7 @@ async def open_emissions_channel(
 
                 stack.enter_context(qtrio.connection(signal, slot))
 
-            yield Emissions(channel=receive_channel, aclose=send_channel.aclose)
+            yield Emissions(channel=receive_channel, send_channel=send_channel)
 
 
 @async_generator.asynccontextmanager
