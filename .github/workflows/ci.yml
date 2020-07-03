@@ -39,7 +39,6 @@ jobs:
         with:
           python-version: '${{ matrix.python }}'
       - name: Build
-      - name: Run tests
         run: |-
           python -m venv venv
           venv/bin/python -m pip install --quiet --upgrade pip setuptools wheel
