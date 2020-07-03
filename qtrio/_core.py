@@ -135,7 +135,7 @@ class Emissions:
 
     Attributes:
         channel: A memory receive channel to be fed by signal emissions.
-        channel: A memory send channel collecting signal emissions.
+        send_channel: A memory send channel collecting signal emissions.
     """
 
     channel: trio.MemoryReceiveChannel
