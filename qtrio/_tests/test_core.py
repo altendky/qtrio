@@ -7,9 +7,9 @@ import qtrio._core
 
 
 @pytest.fixture(
-    name='emissions_channel_string',
-    params=['qtrio.open_emissions_channel', 'qtrio.enter_emissions_channel'],
-    ids=['qtrio.open_emissions_channel', 'qtrio.enter_emissions_channel'],
+    name="emissions_channel_string",
+    params=["qtrio.open_emissions_channel", "qtrio.enter_emissions_channel"],
+    ids=["qtrio.open_emissions_channel", "qtrio.enter_emissions_channel"],
 )
 def emissions_channel_string_fixture(request):
     return request.param
