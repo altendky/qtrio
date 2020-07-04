@@ -1,5 +1,3 @@
-.. _example/emissions:
-
 Emissions
 =========
 
