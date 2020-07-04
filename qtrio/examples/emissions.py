@@ -108,7 +108,7 @@ async def main(window=None):
         window.show()
 
         async with emissions.channel:
-            async for emission in emissions.channel:
+            async for emission in emissions:
                 if emission.is_from(window.decrement.clicked):
                     window.decrement_count()
                 elif emission.is_from(window.increment.clicked):

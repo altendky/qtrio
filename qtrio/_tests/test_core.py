@@ -726,7 +726,7 @@ def test_open_emissions_channel_iterates_in_order(testdir):
             await emissions.aclose()
 
             async with emissions.channel:
-                async for emission in emissions.channel:
+                async for emission in emissions:
                     [value] = emission.args
                     results.append(value)
 
@@ -765,7 +765,7 @@ def test_open_emissions_channel_limited_buffer(testdir):
             await emissions.aclose()
 
             async with emissions.channel:
-                async for emission in emissions.channel:
+                async for emission in emissions:
                     [value] = emission.args
                     results.append(value)
 
