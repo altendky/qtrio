@@ -1,6 +1,9 @@
 Core
 ====
 
+Running
+-------
+
 .. autofunction:: qtrio.run
 
 .. autoclass:: qtrio.Runner
@@ -9,8 +12,22 @@ Core
 .. autoclass:: qtrio.Outcomes
    :members:
 
-.. autofunction:: qtrio.wait_signal
-.. autofunction:: qtrio.wait_signal_context
+Emissions
+---------
+
+The basics of handling Qt GUIs is to respond to the widgets' signals being emitted.
+:func:`qtrio.enter_emissions_channel` is the primary tool for handling this.  It allows
+for connection of signals prior to showing a window and subsequent iteration of the
+emissions.  See :ref:`example/emissions` for an example usage.
+
+.. autofunction:: qtrio.enter_emissions_channel
 .. autofunction:: qtrio.open_emissions_channel
 .. autoclass:: qtrio.Emission
 .. autoclass:: qtrio.Emissions
+
+Individual Signals
+------------------
+
+.. autofunction:: qtrio.wait_signal
+.. autofunction:: qtrio.wait_signal_context
+
