@@ -5,4 +5,5 @@ Developing
    :maxdepth: 2
 
    contributing.rst
+   reviewing.rst
    releasing.rst
