@@ -10,10 +10,10 @@
    :maxdepth: 2
 
    tutorial.rst
-   contributing.rst
    core.rst
    testing.rst
    exceptions.rst
+   development/index.rst
    history.rst
 
 ====================
