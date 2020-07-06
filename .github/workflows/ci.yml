@@ -67,7 +67,7 @@ jobs:
             check_formatting: '1'
             name: 'Check formatting'
           - python: '3.8'
-            check_typehints: '1'
+            check_type_hints: '1'
             name: 'Check type hints'
     steps:
       - name: Checkout
