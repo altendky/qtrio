@@ -143,7 +143,7 @@ class Emissions:
     send_channel: trio.MemorySendChannel
 
     # TODO: for Sphinx...
-    __module__ = 'qtrio'
+    __module__ = "qtrio"
 
     async def aclose(self):
         """Asynchronously close the send channel when signal emissions are no longer of
