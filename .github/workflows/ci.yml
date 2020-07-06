@@ -66,6 +66,9 @@ jobs:
           - python: '3.8'
             check_formatting: '1'
             name: 'Check formatting'
+          - python: '3.8'
+            check_typehints: '1'
+            name: 'Check type hints'
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -78,6 +81,7 @@ jobs:
         env:
           CHECK_DOCS: '${{ matrix.check_docs }}'
           CHECK_FORMATTING: '${{ matrix.check_formatting }}'
+          CHECK_TYPE_HINTS: '${{ matrix.check_type_hints }}'
           # Should match 'name:' up above
           JOB_NAME: '${{ matrix.name }}'
           # TODO: needs some Qt library but I'm not clear the implications of
