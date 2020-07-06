@@ -787,7 +787,7 @@ def test_emissions_channel_limited_buffer(testdir, emissions_channel_string):
 
 
 def test_open_emissions_channel_does_not_close_read_channel(testdir):
-    """Exitin open_emissions_channel() closes send channel and does not close
+    """Exiting open_emissions_channel() closes send channel and does not close
     read channel on exit.
     """
     test_file = r"""
@@ -819,7 +819,6 @@ def test_open_emissions_channel_does_not_close_read_channel(testdir):
         with pytest.raises(trio.ClosedResourceError):
             emissions.send_channel.send_nowait(None)
     """
-    # TODO: any public way to check the channels are closed?
     testdir.makepyfile(test_file)
 
     result = testdir.runpytest_subprocess(timeout=timeout)
@@ -857,7 +856,6 @@ def test_enter_emissions_channel_closes_both_channels(testdir):
         with pytest.raises(trio.ClosedResourceError):
             emissions.send_channel.send_nowait(None)
     """
-    # TODO: any public way to check the channels are closed?
     testdir.makepyfile(test_file)
 
     result = testdir.runpytest_subprocess(timeout=timeout)
