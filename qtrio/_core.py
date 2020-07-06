@@ -157,12 +157,15 @@ async def open_emissions_channel(
     signals: typing.Collection[SignalInstance], max_buffer_size=math.inf,
 ) -> typing.AsyncGenerator[Emissions, None]:
     """Create a memory channel fed by the emissions of the signals.  Each signal
-    emission will be converted to a :class:`qtrio.Emission` object.
+    emission will be converted to a :class:`qtrio.Emission` object.  On exit the send
+    channel is closed.  Management of the receive channel is left to the caller.
+    Use this only if you need to process emissions *after* exiting the context manager.
+    Otherwise use :func:`qtrio.enter_emissions_channel`.
 
     Args:
         signals: A collection of signals which will be monitored for emissions.
         max_buffer_size: When the number of unhandled emissions in the channel reaches
-            this limit then additional emissions will be thrown out the window.
+            this limit then additional emissions will be silently thrown out the window.
     """
 
     # Infinite buffer because I don't think there's any use in storing the emission
@@ -189,6 +192,28 @@ async def open_emissions_channel(
                 stack.enter_context(qtrio.connection(signal, slot))
 
             yield Emissions(channel=receive_channel, send_channel=send_channel)
+
+
+@async_generator.asynccontextmanager
+async def enter_emissions_channel(
+    signals: typing.Collection[SignalInstance], max_buffer_size=math.inf,
+) -> typing.Iterator[trio.MemoryReceiveChannel]:
+    """Create a memory channel fed by the emissions of the signals and enter both the
+    send and receive channels' context managers.  If you need to process emissions after
+    exiting the context then see :func:`qtrio.open_emissions_channel` for just send
+    channel management.
+
+    Args:
+        signals: A collection of signals which will be monitored for emissions.
+        max_buffer_size: When the number of unhandled emissions in the channel reaches
+            this limit then additional emissions will be silently thrown out the window.
+    """
+    async with open_emissions_channel(
+        signals=signals, max_buffer_size=max_buffer_size
+    ) as emissions:
+        async with emissions.channel:
+            async with emissions.send_channel:
+                yield emissions
 
 
 @async_generator.asynccontextmanager
