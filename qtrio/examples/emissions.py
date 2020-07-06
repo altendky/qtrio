@@ -104,16 +104,15 @@ async def main(window=None):
         window.widget.closed,
     ]
 
-    async with qtrio.open_emissions_channel(signals=signals) as emissions:
+    async with qtrio.enter_emissions_channel(signals=signals) as emissions:
         window.show()
 
-        async with emissions.channel:
-            async for emission in emissions:
-                if emission.is_from(window.decrement.clicked):
-                    window.decrement_count()
-                elif emission.is_from(window.increment.clicked):
-                    window.increment_count()
-                elif emission.is_from(window.widget.closed):
-                    break
-                else:  # pragma: no cover
-                    raise qtrio.QTrioException(f"Unexpected emission: {emission}")
+        async for emission in emissions:
+            if emission.is_from(window.decrement.clicked):
+                window.decrement_count()
+            elif emission.is_from(window.increment.clicked):
+                window.increment_count()
+            elif emission.is_from(window.widget.closed):
+                break
+            else:  # pragma: no cover
+                raise qtrio.QTrioException(f"Unexpected emission: {emission}")

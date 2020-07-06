@@ -15,6 +15,7 @@ from ._core import (
     wait_signal,
     wait_signal_context,
     open_emissions_channel,
+    enter_emissions_channel,
     Emissions,
     Emission,
     Outcomes,
