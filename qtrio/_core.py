@@ -320,7 +320,7 @@ class Runner:
             this callback.
     """
 
-    application: QtGui.QGuiApplication = attr.ib(factory=QtGui.QGuiApplication)
+    application: QtGui.QGuiApplication = attr.ib(factory=build_application)
     quit_application: bool = True
     timeout: typing.Optional[float] = None
 
@@ -379,7 +379,6 @@ class Runner:
             fn: A no parameter callable.
         """
         event = create_reenter_event(fn=fn)
-        assert self.application is not None
         self.application.postEvent(self.reenter, event)
 
     async def trio_main(
@@ -397,6 +396,7 @@ class Runner:
                 host's thread.
             args: Positional arguments to be passed to `async_fn`
         """
+        result = None
         timeout_cancel_scope = None
 
         with trio.CancelScope() as self.cancel_scope:
