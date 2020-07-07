@@ -1,6 +1,7 @@
 # Add any project-specific files here:
 venv/
 .idea/
+empty/
 
 # Sphinx docs
 docs/build/

@@ -1,0 +1,1 @@
+Instructions are provided for running :doc:`tests and checks <development/testing>`.
