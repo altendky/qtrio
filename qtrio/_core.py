@@ -24,6 +24,7 @@ import qtrio
 
 
 # https://github.com/spyder-ide/qtpy/pull/214
+SignalInstance: typing.Any
 if qtpy.API in qtpy.PYQT5_API and not hasattr(QtCore, "SignalInstance"):
     SignalInstance = QtCore.pyqtBoundSignal
 else:
@@ -119,7 +120,8 @@ class Emission:
                 signal
             )
         elif qtpy.PYSIDE2:
-            return self.signal == signal
+            # TODO: get this to work properly.
+            return bool(self.signal == signal)
 
         raise qtrio.QTrioException()  # pragma: no cover
 
@@ -197,7 +199,7 @@ async def open_emissions_channel(
 @async_generator.asynccontextmanager
 async def enter_emissions_channel(
     signals: typing.Collection[SignalInstance], max_buffer_size=math.inf,
-) -> typing.Iterator[trio.MemoryReceiveChannel]:
+) -> typing.AsyncGenerator[trio.MemoryReceiveChannel, None]:
     """Create a memory channel fed by the emissions of the signals and enter both the
     send and receive channels' context managers.  If you need to process emissions after
     exiting the context then see :func:`qtrio.open_emissions_channel` for just send
