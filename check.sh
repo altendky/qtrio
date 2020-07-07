@@ -25,8 +25,7 @@ if ! black --check ${BLACK_FILES}; then
 fi
 
 # Run flake8 without pycodestyle and import-related errors
-flake8 setup.py docs ${PACKAGE_NAME}/ \
-    || EXIT_STATUS=$?
+flake8 setup.py docs ${PACKAGE_NAME}/ || EXIT_STATUS=$?
 
 # Finally, leave a really clear warning of any issues and exit
 if [ $EXIT_STATUS -ne 0 ]; then
