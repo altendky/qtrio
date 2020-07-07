@@ -1,0 +1,2 @@
+[flake8]
+ignore = D,E,W,F401,F403,F405,F821,F822
