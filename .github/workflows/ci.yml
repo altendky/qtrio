@@ -13,9 +13,6 @@ on:
     # Daily at 05:47
     - cron: '47 5 * * *'
 
-env:
-  PACKAGE_NAME: 'qtrio'
-
 jobs:
   Builds:
     name: '${{ matrix.name }}'
