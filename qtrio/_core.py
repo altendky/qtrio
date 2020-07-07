@@ -69,7 +69,7 @@ async def wait_signal(signal: SignalInstance) -> typing.Tuple[typing.Any, ...]:
         signal: The signal instance to wait for emission of.
     """
     event = trio.Event()
-    results: typing.List[typing.Tuple[typing.Any, ...]] = []
+    result: typing.Tuple[typing.Any, ...] = ()
 
     def slot(*args):
         """Receive and store the emitted arguments and set the event so we can continue.
@@ -77,13 +77,12 @@ async def wait_signal(signal: SignalInstance) -> typing.Tuple[typing.Any, ...]:
         Args:
             args: The arguments emitted from the signal.
         """
-        results.append(args)
+        nonlocal result
+        result = args
         event.set()
 
     with qtrio.connection(signal, slot):
         await event.wait()
-
-    [result] = results
 
     return result
 
