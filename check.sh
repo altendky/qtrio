@@ -2,6 +2,14 @@
 
 set -ex
 
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+set -o allexport
+source ${DIR}/.env
+set +o allexport
+
+# Log some general info about the environment
+env | sort
+
 EXIT_STATUS=0
 
 BLACK_FILES="setup.py docs ${PACKAGE_NAME}"
