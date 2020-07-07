@@ -37,7 +37,9 @@ python -m pip install ${INSTALL_ARTIFACT}${INSTALL_EXTRAS}
 if [ "$CHECK_DOCS" = "1" ]; then
     python -m pip list
     python -m pip freeze
-    towncrier --yes  # catch errors in newsfragments
+    git fetch --depth=1 origin master
+    towncrier check
+    towncrier build --yes  # catch errors in newsfragments
     cd docs
     # -n (nit-picky): warn on missing references
     # -W: turn warnings into errors
