@@ -22,12 +22,11 @@ Manual checks
    * For feature additions consider if prose in the docs should be updated in addition
      to the docstrings.
 
-* A newsfragment file has been provided
-   * The file name has the proper issue or PR number and change type
-   * The contents describe the change well
+* The change is described for the user
+   * Newsfragment file name has the proper issue or PR number and change type
+   * The contents describe the change well for users
    * Proper `Sphinx references <https://www.sphinx-doc.org/en/3.x/usage/restructuredtext/basics.html>`_
      are used where appropriate
-   * Exception: typo and documentation fixes do not require a newsfragment
 
 Automatic checks
 ----------------
@@ -42,3 +41,4 @@ Automatic checks
 * Code passes `flake8 <https://flake8.pycqa.org/en/latest/>`_ checks
 * Docs build successfully including newsfragment
 * Branch is up to date with master
+* A newsfragment file is present

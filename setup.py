@@ -30,14 +30,13 @@ setup(
         "trio>=0.16",
     ],
     extras_require={
-        "checks": ["black", "flake8", "mypy"],
+        "checks": ["black", "flake8", "mypy", "towncrier>=19.9.0rc1"],
         "docs": [
             "sphinx >= 1.7.0",
             "sphinx-autodoc-typehints",
             "sphinx-qt-documentation",
             "sphinx_rtd_theme",
             "sphinxcontrib-trio",
-            "towncrier",
         ],
         "examples": ["click"],
         "pyqt5": ["pyqt5", "pyqt5-stubs"],
