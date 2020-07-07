@@ -1,0 +1,1 @@
+CI checks type hints with mypy.

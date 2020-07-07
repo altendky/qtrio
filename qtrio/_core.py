@@ -24,6 +24,7 @@ import qtrio
 
 
 # https://github.com/spyder-ide/qtpy/pull/214
+SignalInstance: typing.Any
 if qtpy.API in qtpy.PYQT5_API and not hasattr(QtCore, "SignalInstance"):
     SignalInstance = QtCore.pyqtBoundSignal
 else:
@@ -41,7 +42,7 @@ if REENTER_EVENT_HINT == -1:
 REENTER_EVENT: QtCore.QEvent.Type = QtCore.QEvent.Type(REENTER_EVENT_HINT)
 
 
-def create_reenter_event(fn):
+def create_reenter_event(fn) -> QtCore.QEvent:
     """Create a proper `QtCore.QEvent` for reentering into the Qt host loop."""
     event = QtCore.QEvent(REENTER_EVENT)
     event.fn = fn
@@ -68,7 +69,7 @@ async def wait_signal(signal: SignalInstance) -> typing.Tuple[typing.Any, ...]:
         signal: The signal instance to wait for emission of.
     """
     event = trio.Event()
-    result = None
+    result: typing.Tuple[typing.Any, ...] = ()
 
     def slot(*args):
         """Receive and store the emitted arguments and set the event so we can continue.
@@ -118,7 +119,8 @@ class Emission:
                 signal
             )
         elif qtpy.PYSIDE2:
-            return self.signal == signal
+            # TODO: get this to work properly.
+            return bool(self.signal == signal)
 
         raise qtrio.QTrioException()  # pragma: no cover
 
@@ -141,6 +143,9 @@ class Emissions:
     channel: trio.MemoryReceiveChannel
     send_channel: trio.MemorySendChannel
 
+    # TODO: for Sphinx...
+    __module__ = "qtrio"
+
     async def aclose(self):
         """Asynchronously close the send channel when signal emissions are no longer of
         interest.
@@ -151,7 +156,7 @@ class Emissions:
 @async_generator.asynccontextmanager
 async def open_emissions_channel(
     signals: typing.Collection[SignalInstance], max_buffer_size=math.inf,
-) -> typing.Iterator[trio.MemoryReceiveChannel]:
+) -> typing.AsyncGenerator[Emissions, None]:
     """Create a memory channel fed by the emissions of the signals.  Each signal
     emission will be converted to a :class:`qtrio.Emission` object.  On exit the send
     channel is closed.  Management of the receive channel is left to the caller.
@@ -193,7 +198,7 @@ async def open_emissions_channel(
 @async_generator.asynccontextmanager
 async def enter_emissions_channel(
     signals: typing.Collection[SignalInstance], max_buffer_size=math.inf,
-) -> typing.Iterator[trio.MemoryReceiveChannel]:
+) -> typing.AsyncGenerator[trio.MemoryReceiveChannel, None]:
     """Create a memory channel fed by the emissions of the signals and enter both the
     send and receive channels' context managers.  If you need to process emissions after
     exiting the context then see :func:`qtrio.open_emissions_channel` for just send
@@ -213,7 +218,9 @@ async def enter_emissions_channel(
 
 
 @async_generator.asynccontextmanager
-async def wait_signal_context(signal: SignalInstance) -> None:
+async def wait_signal_context(
+    signal: SignalInstance,
+) -> typing.AsyncGenerator[None, None]:
     """Connect a signal during the context and wait for it on exit.  Presently no
     mechanism is provided for retrieving the emitted arguments.
 
@@ -305,6 +312,13 @@ def outcome_from_application_return_code(return_code: int) -> outcome.Outcome:
     return outcome.Error(qtrio.ReturnCodeError(return_code))
 
 
+def build_application() -> QtGui.QGuiApplication:
+    application = QtWidgets.QApplication(sys.argv[1:])
+    application.setQuitOnLastWindowClosed(False)
+
+    return application
+
+
 @attr.s(auto_attribs=True, slots=True)
 class Runner:
     """This class helps run Trio in guest mode on a Qt host application.
@@ -332,7 +346,7 @@ class Runner:
             this callback.
     """
 
-    application: typing.Optional[QtGui.QGuiApplication] = None
+    application: QtGui.QGuiApplication = attr.ib(factory=build_application)
     quit_application: bool = True
     timeout: typing.Optional[float] = None
 
@@ -365,10 +379,6 @@ class Runner:
             from the Qt application and `async_fn` will be returned.  Otherwise, an
             empty :class:`Outcomes`.
         """
-        if self.application is None:
-            self.application = QtWidgets.QApplication(sys.argv[1:])
-            self.application.setQuitOnLastWindowClosed(False)
-
         trio.lowlevel.start_guest_run(
             self.trio_main,
             async_fn,

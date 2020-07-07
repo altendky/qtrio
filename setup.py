@@ -30,7 +30,7 @@ setup(
         "trio>=0.16",
     ],
     extras_require={
-        "checks": ["black", "flake8", "towncrier>=19.9.0rc1"],
+        "checks": ["black", "flake8", "mypy", "towncrier>=19.9.0rc1"],
         "docs": [
             "sphinx >= 1.7.0",
             "sphinx-autodoc-typehints",
@@ -39,7 +39,7 @@ setup(
             "sphinxcontrib-trio",
         ],
         "examples": ["click"],
-        "pyqt5": ["pyqt5"],
+        "pyqt5": ["pyqt5", "pyqt5-stubs"],
         "pyside2": ["pyside2"],
         "tests": [
             "click",

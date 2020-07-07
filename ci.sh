@@ -39,9 +39,10 @@ python setup.py sdist --formats=zip
 INSTALL_ARTIFACT=$(ls dist/*.zip)
 python -m pip install ${INSTALL_ARTIFACT}${INSTALL_EXTRAS}
 
+python -m pip list
+python -m pip freeze
+
 if [ "$CHECK_DOCS" = "1" ]; then
-    python -m pip list
-    python -m pip freeze
     git fetch --depth=1 origin master
     towncrier check
     towncrier build --yes  # catch errors in newsfragments
@@ -50,13 +51,11 @@ if [ "$CHECK_DOCS" = "1" ]; then
     # -W: turn warnings into errors
     sphinx-build -nW  -b html source build
 elif [ "$CHECK_FORMATTING" = "1" ]; then
-    python -m pip list
-    python -m pip freeze
     source check.sh
+elif [ "$CHECK_TYPE_HINTS" = "1" ]; then
+    mypy --package ${PACKAGE_NAME}
 else
     # Actual tests
-    python -m pip list
-    python -m pip freeze
 
     # We run the tests from inside an empty directory, to make sure Python
     # doesn't pick up any .py files from our working dir. Might have been
