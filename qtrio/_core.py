@@ -115,7 +115,7 @@ class Emission:
             )
         elif qtpy.PYSIDE2:
             # TODO: get this to work properly.
-            return bool(self.signal == signal)
+            return self.signal == signal
 
         raise qtrio.QTrioException()  # pragma: no cover
 
