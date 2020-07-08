@@ -65,7 +65,12 @@ jobs:
             name: 'Check formatting'
           - python: '3.8'
             check_type_hints: '1'
-            name: 'Check type hints'
+            name: 'Check type hints (PySide2)'
+            qt_library: 'PySide2'
+          - python: '3.8'
+            check_type_hints: '1'
+            name: 'Check type hints (PyQt5)'
+            qt_library: 'PyQt5'
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -83,7 +88,7 @@ jobs:
           JOB_NAME: '${{ matrix.name }}'
           # TODO: needs some Qt library but I'm not clear the implications of
           #       choosing one over the other
-          INSTALL_EXTRAS: '[pyside2,checks,docs]'
+          INSTALL_EXTRAS: '[${{ matrix.qt_library }},checks,docs]'
 
   Windows:
     name: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_library }})'

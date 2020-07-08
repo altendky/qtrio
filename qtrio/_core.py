@@ -23,14 +23,6 @@ import trio
 import qtrio
 
 
-# https://github.com/spyder-ide/qtpy/pull/214
-SignalInstance: typing.Any
-if qtpy.API in qtpy.PYQT5_API and not hasattr(QtCore, "SignalInstance"):
-    SignalInstance = QtCore.pyqtBoundSignal
-else:
-    SignalInstance = QtCore.SignalInstance
-
-
 REENTER_EVENT_HINT: int = QtCore.QEvent.registerEventType()
 if REENTER_EVENT_HINT == -1:
     message = (
@@ -42,11 +34,12 @@ if REENTER_EVENT_HINT == -1:
 REENTER_EVENT: QtCore.QEvent.Type = QtCore.QEvent.Type(REENTER_EVENT_HINT)
 
 
-def create_reenter_event(fn) -> QtCore.QEvent:
-    """Create a proper `QtCore.QEvent` for reentering into the Qt host loop."""
-    event = QtCore.QEvent(REENTER_EVENT)
-    event.fn = fn
-    return event
+class ReenterEvent(QtCore.QEvent):
+    """A proper `ReenterEvent` for reentering into the Qt host loop."""
+
+    def __init__(self, fn: typing.Callable[[], typing.Any]):
+        super().__init__(REENTER_EVENT)
+        self.fn = fn
 
 
 class Reenter(QtCore.QObject):
@@ -54,11 +47,13 @@ class Reenter(QtCore.QObject):
 
     def event(self, event: QtCore.QEvent) -> bool:
         """Qt calls this when the object receives an event."""
-        event.fn()
+
+        reenter_event = typing.cast(Reenter, event)
+        reenter_event.fn()
         return False
 
 
-async def wait_signal(signal: SignalInstance) -> typing.Tuple[typing.Any, ...]:
+async def wait_signal(signal: QtCore.SignalInstance) -> typing.Tuple[typing.Any, ...]:
     """Block for the next emission of `signal` and return the emitted arguments.
 
     Warning:
@@ -103,10 +98,10 @@ class Emission:
         args: A tuple of the arguments emitted by the signal.
     """
 
-    signal: SignalInstance
+    signal: QtCore.SignalInstance
     args: typing.Tuple[typing.Any, ...]
 
-    def is_from(self, signal: SignalInstance) -> bool:
+    def is_from(self, signal: QtCore.SignalInstance) -> bool:
         """Check if this emission came from `signal`.
 
         Args:
@@ -155,7 +150,7 @@ class Emissions:
 
 @async_generator.asynccontextmanager
 async def open_emissions_channel(
-    signals: typing.Collection[SignalInstance], max_buffer_size=math.inf,
+    signals: typing.Collection[QtCore.SignalInstance], max_buffer_size=math.inf,
 ) -> typing.AsyncGenerator[Emissions, None]:
     """Create a memory channel fed by the emissions of the signals.  Each signal
     emission will be converted to a :class:`qtrio.Emission` object.  On exit the send
@@ -197,7 +192,7 @@ async def open_emissions_channel(
 
 @async_generator.asynccontextmanager
 async def enter_emissions_channel(
-    signals: typing.Collection[SignalInstance], max_buffer_size=math.inf,
+    signals: typing.Collection[QtCore.SignalInstance], max_buffer_size=math.inf,
 ) -> typing.AsyncGenerator[trio.MemoryReceiveChannel, None]:
     """Create a memory channel fed by the emissions of the signals and enter both the
     send and receive channels' context managers.  If you need to process emissions after
@@ -219,7 +214,7 @@ async def enter_emissions_channel(
 
 @async_generator.asynccontextmanager
 async def wait_signal_context(
-    signal: SignalInstance,
+    signal: QtCore.SignalInstance,
 ) -> typing.AsyncGenerator[None, None]:
     """Connect a signal during the context and wait for it on exit.  Presently no
     mechanism is provided for retrieving the emitted arguments.
@@ -404,7 +399,7 @@ class Runner:
         Args:
             fn: A no parameter callable.
         """
-        event = create_reenter_event(fn=fn)
+        event = ReenterEvent(fn=fn)
         self.application.postEvent(self.reenter, event)
 
     async def trio_main(

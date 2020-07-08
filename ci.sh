@@ -39,6 +39,10 @@ python setup.py sdist --formats=zip
 INSTALL_ARTIFACT=$(ls dist/*.zip)
 python -m pip install ${INSTALL_ARTIFACT}${INSTALL_EXTRAS}
 
+if [ "$CHECK_TYPE_HINTS" = "1" ]; then
+    pip install https://github.com/altendky/qtpy/archive/mypy.zip
+end
+
 python -m pip list
 python -m pip freeze
 
@@ -53,7 +57,7 @@ if [ "$CHECK_DOCS" = "1" ]; then
 elif [ "$CHECK_FORMATTING" = "1" ]; then
     source check.sh
 elif [ "$CHECK_TYPE_HINTS" = "1" ]; then
-    mypy --package ${PACKAGE_NAME}
+    mypy --package ${PACKAGE_NAME} $(qtpy mypy args)
 else
     # Actual tests
 
