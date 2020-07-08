@@ -14,6 +14,10 @@
    :target: https://pypi.org/project/qtrio
    :alt: Latest PyPi version
 
+.. image:: https://img.shields.io/github/last-commit/altendky/qtrio.svg
+   :target: https://github.com/altendky/qtrio
+   :alt: Repository
+
 .. image:: https://codecov.io/gh/altendky/qtrio/branch/master/graph/badge.svg
    :target: https://codecov.io/gh/altendky/qtrio
    :alt: Test coverage
