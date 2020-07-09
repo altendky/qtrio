@@ -42,7 +42,7 @@ python -m pip install ${INSTALL_ARTIFACT}${INSTALL_EXTRAS}
 if [ "$CHECK_TYPE_HINTS" = "1" ]; then
     pip install https://github.com/altendky/qtpy/archive/mypy.zip
     pip install https://github.com/altendky/PyQt5-stubs/archive/pyqtBoundSignal.signal.zip
-end
+fi
 
 python -m pip list
 python -m pip freeze
