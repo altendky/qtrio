@@ -39,10 +39,8 @@ python setup.py sdist --formats=zip
 INSTALL_ARTIFACT=$(ls dist/*.zip)
 python -m pip install ${INSTALL_ARTIFACT}${INSTALL_EXTRAS}
 
-if [ "$CHECK_TYPE_HINTS" = "1" ]; then
-    pip install --upgrade https://github.com/altendky/qtpy/archive/mypy.zip
-    pip install --upgrade https://github.com/altendky/PyQt5-stubs/archive/pyqtBoundSignal.signal.zip
-fi
+pip install --upgrade https://github.com/altendky/qtpy/archive/mypy.zip
+pip install --upgrade https://github.com/altendky/PyQt5-stubs/archive/pyqtBoundSignal.signal.zip
 
 python -m pip list
 python -m pip freeze
