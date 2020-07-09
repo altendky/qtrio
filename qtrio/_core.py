@@ -31,7 +31,11 @@ if REENTER_EVENT_HINT == -1:
     )
     raise qtrio.RegisterEventTypeError(message)
 
-REENTER_EVENT: QtCore.QEvent.Type = QtCore.QEvent.Type(REENTER_EVENT_HINT)
+
+# https://bugreports.qt.io/browse/PYSIDE-1347
+REENTER_EVENT: QtCore.QEvent.Type = (
+    QtCore.QEvent.Type(REENTER_EVENT_HINT)  # type: ignore
+)
 
 
 class ReenterEvent(QtCore.QEvent):
