@@ -7,14 +7,10 @@ from ._exceptions import (
     NoOutcomesError,
     RegisterEventTypeError,
     ReturnCodeError,
-    UserCancelledError,
     RunnerTimedOutError,
 )
 
 from ._core import (
-    wait_signal,
-    wait_signal_context,
-    open_emissions_channel,
     enter_emissions_channel,
     Emissions,
     Emission,
@@ -24,4 +20,3 @@ from ._core import (
 )
 
 from ._pytest import host
-from ._qt import connection
