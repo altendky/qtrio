@@ -1,1 +1,0 @@
-Pull requests are now required to have a newsfragment.
