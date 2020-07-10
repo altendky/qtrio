@@ -42,11 +42,12 @@ if REENTER_EVENT_HINT == -1:
 REENTER_EVENT: QtCore.QEvent.Type = QtCore.QEvent.Type(REENTER_EVENT_HINT)
 
 
-def create_reenter_event(fn) -> QtCore.QEvent:
-    """Create a proper `QtCore.QEvent` for reentering into the Qt host loop."""
-    event = QtCore.QEvent(REENTER_EVENT)
-    event.fn = fn
-    return event
+class ReenterEvent(QtCore.QEvent):
+    """A proper `ReenterEvent` for reentering into the Qt host loop."""
+
+    def __init__(self, fn: typing.Callable[[], typing.Any]):
+        super().__init__(REENTER_EVENT)
+        self.fn = fn
 
 
 class Reenter(QtCore.QObject):
@@ -54,7 +55,9 @@ class Reenter(QtCore.QObject):
 
     def event(self, event: QtCore.QEvent) -> bool:
         """Qt calls this when the object receives an event."""
-        event.fn()
+
+        reenter_event = typing.cast(Reenter, event)
+        reenter_event.fn()
         return False
 
 
@@ -410,7 +413,7 @@ class Runner:
         Args:
             fn: A no parameter callable.
         """
-        event = create_reenter_event(fn=fn)
+        event = ReenterEvent(fn=fn)
         self.application.postEvent(self.reenter, event)
 
     async def trio_main(
