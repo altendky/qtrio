@@ -72,7 +72,7 @@ def test_connection_connects(qtbot):
 
     instance.signal.emit(1)
 
-    with qtrio.connection(instance.signal, collect_result):
+    with qtrio._qt.connection(instance.signal, collect_result):
         instance.signal.emit(2)
 
     assert results == [2]
@@ -91,7 +91,7 @@ def test_connection_disconnects(qtbot):
     def collect_result(value):
         results.append(value)
 
-    with qtrio.connection(instance.signal, collect_result):
+    with qtrio._qt.connection(instance.signal, collect_result):
         instance.signal.emit(1)
 
     instance.signal.emit(2)
@@ -112,7 +112,7 @@ def test_connection_yield_can_be_disconnected(qtbot):
     def collect_result(value):
         results.append(value)
 
-    with qtrio.connection(instance.signal, collect_result) as connection:
+    with qtrio._qt.connection(instance.signal, collect_result) as connection:
         instance.signal.emit(1)
         instance.signal.disconnect(connection)
         instance.signal.emit(2)
@@ -130,5 +130,5 @@ def test_failed_connection_raises():
 
     # TODO: get more specific about the exception
     with pytest.raises(TypeError):
-        with qtrio.connection(instance.signal, 2):
+        with qtrio._qt.connection(instance.signal, 2):
             pass  # pragma: no cover
