@@ -29,7 +29,11 @@ Things to do for releasing:
 
       - ``git rm`` changes
 
-   + correct QTrio capitalization in `docs/source/history.rst`
+   + fixup `docs/source/history.rst`
+
+      - correct QTrio capitalization
+
+      - remove empty misc changelog entries from the history
 
    + commit
 
