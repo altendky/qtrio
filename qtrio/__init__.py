@@ -12,6 +12,7 @@ from ._exceptions import (
 
 from ._core import (
     enter_emissions_channel,
+    open_emissions_nursery,
     Emissions,
     Emission,
     Outcomes,

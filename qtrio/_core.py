@@ -5,6 +5,7 @@ Attributes:
     REENTER_EVENT: The QtCore.QEvent.Type enumerator for our reenter events.
 """
 import contextlib
+import functools
 import math
 import sys
 import traceback
@@ -220,6 +221,32 @@ async def enter_emissions_channel(
         async with emissions.channel:
             async with emissions.send_channel:
                 yield emissions
+
+
+@attr.s(auto_attribs=True)
+class EmissionsNursery:
+    nursery: trio.Nursery
+    exit_stack: contextlib.ExitStack
+
+    def connect(self, signal, slot):
+        def starter(*args):
+            self.nursery.start_soon(slot, *args)
+
+        self.exit_stack.enter_context(qtrio._qt.connection(signal, starter))
+
+
+@async_generator.asynccontextmanager
+async def open_emissions_nursery(
+    until: typing.Optional[SignalInstance] = None,
+) -> typing.AsyncGenerator[trio.MemoryReceiveChannel, None]:
+    async with trio.open_nursery() as nursery:
+        with contextlib.ExitStack() as exit_stack:
+            emissions_nursery = EmissionsNursery(nursery=nursery, exit_stack=exit_stack)
+
+            if until is not None:
+                exit_stack.enter_context(wait_signal_context(until))
+
+            yield emissions_nursery
 
 
 @async_generator.asynccontextmanager

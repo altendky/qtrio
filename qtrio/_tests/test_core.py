@@ -860,3 +860,43 @@ def test_enter_emissions_channel_closes_both_channels(testdir):
 
     result = testdir.runpytest_subprocess(timeout=timeout)
     result.assert_outcomes(passed=1)
+
+
+def test_open_emissions_nursery(testdir):
+    test_file = r"""
+    from qtpy import QtCore
+    import qtrio
+    import trio
+    import trio.testing
+
+
+    class SignalHost(QtCore.QObject):
+        signal = QtCore.Signal(int)
+        
+
+    @qtrio.host
+    async def test(request):
+        results = set()
+        event = trio.Event()
+        
+        async def slot(number):
+            results.add(number)
+            if len(results) == 5:
+                event.set()
+        
+        async with qtrio.open_emissions_nursery() as emissions_nursery:
+            signal_host = SignalHost()
+            
+            emissions_nursery.connect(signal_host.signal, slot)
+
+            for i in range(5):
+                signal_host.signal.emit(i)
+
+            await event.wait()
+
+        assert results == {0, 1, 2, 3, 4}
+    """
+    testdir.makepyfile(test_file)
+
+    result = testdir.runpytest_subprocess(timeout=timeout)
+    result.assert_outcomes(passed=1)
