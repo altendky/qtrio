@@ -227,10 +227,23 @@ async def enter_emissions_channel(
 class EmissionsNursery:
     nursery: trio.Nursery
     exit_stack: contextlib.ExitStack
+    wrapper: typing.Optional[
+        typing.Callable[
+            [typing.Callable[..., typing.Awaitable[typing.Any]]],  # , ...],
+            typing.Awaitable[typing.Any],
+        ]
+    ] = None
 
     def connect(self, signal, slot):
-        def starter(*args):
-            self.nursery.start_soon(slot, *args)
+        if self.wrapper is not None:
+
+            def starter(*args):
+                self.nursery.start_soon(self.wrapper, slot, *args)
+
+        else:
+
+            def starter(*args):
+                self.nursery.start_soon(slot, *args)
 
         self.exit_stack.enter_context(qtrio._qt.connection(signal, starter))
 
@@ -238,15 +251,19 @@ class EmissionsNursery:
 @async_generator.asynccontextmanager
 async def open_emissions_nursery(
     until: typing.Optional[SignalInstance] = None,
-) -> typing.AsyncGenerator[trio.MemoryReceiveChannel, None]:
+    wrapper: typing.Optional[typing.Any] = None,
+) -> typing.AsyncGenerator[EmissionsNursery, None]:
     async with trio.open_nursery() as nursery:
         with contextlib.ExitStack() as exit_stack:
-            emissions_nursery = EmissionsNursery(nursery=nursery, exit_stack=exit_stack)
+            emissions_nursery = EmissionsNursery(
+                nursery=nursery, exit_stack=exit_stack, wrapper=wrapper,
+            )
 
             if until is not None:
-                exit_stack.enter_context(wait_signal_context(until))
-
-            yield emissions_nursery
+                async with wait_signal_context(until):
+                    yield emissions_nursery
+            else:
+                yield emissions_nursery
 
 
 @async_generator.asynccontextmanager
