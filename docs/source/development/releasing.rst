@@ -29,6 +29,12 @@ Things to do for releasing:
 
       - ``git rm`` changes
 
+   + fixup `docs/source/history.rst`
+
+      - correct QTrio capitalization
+
+      - remove empty misc changelog entries from the history
+
    + commit
 
 * push to your personal repository

@@ -1,1 +1,0 @@
-Read The Docs YAML documentation link refers to v2.
