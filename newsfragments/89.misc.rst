@@ -1,0 +1,1 @@
+Specify project name in towncrier config.
