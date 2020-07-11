@@ -1,0 +1,1 @@
+Use --name to specify property QTrio capitalization to towncrier.
