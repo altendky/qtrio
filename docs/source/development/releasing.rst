@@ -25,6 +25,11 @@ Things to do for releasing:
 
    + run ``towncrier``
 
+..
+   https://github.com/twisted/towncrier/pull/271
+
+      - ``towncrier build --yes --name QTrio``
+
       - review history change
 
       - ``git rm`` changes

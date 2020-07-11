@@ -45,7 +45,8 @@ python -m pip freeze
 if [ "$CHECK_DOCS" = "1" ]; then
     git fetch --depth=1 origin master
     towncrier check
-    towncrier build --yes  # catch errors in newsfragments
+    # https://github.com/twisted/towncrier/pull/271
+    towncrier build --yes --name QTrio  # catch errors in newsfragments
     cd docs
     # -n (nit-picky): warn on missing references
     # -W: turn warnings into errors

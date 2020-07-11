@@ -1,5 +1,7 @@
 [tool.towncrier]
 package = "qtrio"
+# https://github.com/twisted/towncrier/pull/271
+# name = "QTrio"
 filename = "docs/source/history.rst"
 directory = "newsfragments"
 underlines = ["-", "~", "^"]
