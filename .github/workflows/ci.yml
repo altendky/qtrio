@@ -13,9 +13,6 @@ on:
     # Daily at 05:47
     - cron: '47 5 * * *'
 
-env:
-  PACKAGE_NAME: 'qtrio'
-
 jobs:
   Builds:
     name: '${{ matrix.name }}'
@@ -66,6 +63,9 @@ jobs:
           - python: '3.8'
             check_formatting: '1'
             name: 'Check formatting'
+          - python: '3.8'
+            check_type_hints: '1'
+            name: 'Check type hints'
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -78,6 +78,7 @@ jobs:
         env:
           CHECK_DOCS: '${{ matrix.check_docs }}'
           CHECK_FORMATTING: '${{ matrix.check_formatting }}'
+          CHECK_TYPE_HINTS: '${{ matrix.check_type_hints }}'
           # Should match 'name:' up above
           JOB_NAME: '${{ matrix.name }}'
           # TODO: needs some Qt library but I'm not clear the implications of

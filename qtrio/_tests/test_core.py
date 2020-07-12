@@ -8,8 +8,8 @@ import qtrio._core
 
 @pytest.fixture(
     name="emissions_channel_string",
-    params=["qtrio.open_emissions_channel", "qtrio.enter_emissions_channel",],
-    ids=["qtrio.open_emissions_channel", "qtrio.enter_emissions_channel"],
+    params=["qtrio._core.open_emissions_channel", "qtrio.enter_emissions_channel",],
+    ids=["qtrio._core.open_emissions_channel", "qtrio.enter_emissions_channel"],
 )
 def emissions_channel_string_fixture(request):
     return request.param
@@ -24,7 +24,7 @@ def test_reenter_event_triggers_in_main_thread(qapp):
     reenter = qtrio._core.Reenter()
 
     def post():
-        event = qtrio._core.create_reenter_event(fn=handler)
+        event = qtrio._core.ReenterEvent(fn=handler)
         qapp.postEvent(reenter, event)
 
     def handler():
@@ -311,7 +311,7 @@ def test_wait_signal_waits(testdir):
     import time
 
     from qtpy import QtCore
-    import qtrio
+    import qtrio._core
 
 
     @qtrio.host
@@ -323,7 +323,7 @@ def test_wait_signal_waits(testdir):
 
         timer.start(100)
         
-        await qtrio.wait_signal(timer.timeout)
+        await qtrio._core.wait_signal(timer.timeout)
 
         end = time.monotonic()
         
@@ -339,7 +339,7 @@ def test_wait_signal_returns_the_value(testdir):
     """wait_signal() waits for the signal."""
     test_file = r"""
     from qtpy import QtCore
-    import qtrio
+    import qtrio._core
     import trio
 
 
@@ -356,7 +356,7 @@ def test_wait_signal_returns_the_value(testdir):
 
         async with trio.open_nursery() as nursery:
             nursery.start_soon(emit, instance.signal, 17)
-            result = await qtrio.wait_signal(instance.signal)
+            result = await qtrio._core.wait_signal(instance.signal)
 
         assert result == (17,)
     """
@@ -373,7 +373,7 @@ def test_wait_signal_context_waits(testdir):
     import time
 
     from qtpy import QtCore
-    import qtrio
+    import qtrio._core
 
 
     @qtrio.host
@@ -381,7 +381,7 @@ def test_wait_signal_context_waits(testdir):
         timer = QtCore.QTimer()
         timer.setSingleShot(True)
 
-        async with qtrio.wait_signal_context(signal=timer.timeout):
+        async with qtrio._core.wait_signal_context(signal=timer.timeout):
             start = time.monotonic()
             timer.start(100)
 
@@ -793,7 +793,7 @@ def test_open_emissions_channel_does_not_close_read_channel(testdir):
     test_file = r"""
     import pytest
     from qtpy import QtCore
-    import qtrio
+    import qtrio._core
     import trio
 
 
@@ -808,7 +808,7 @@ def test_open_emissions_channel_does_not_close_read_channel(testdir):
         values = list(range(2 * max_buffer_size))
         results = []
 
-        async with qtrio.open_emissions_channel(
+        async with qtrio._core.open_emissions_channel(
             signals=[instance.signal], max_buffer_size=max_buffer_size,
         ) as emissions:
             pass
