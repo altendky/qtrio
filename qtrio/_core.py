@@ -229,8 +229,8 @@ class EmissionsNursery:
     exit_stack: contextlib.ExitStack
     wrapper: typing.Optional[
         typing.Callable[
-            [typing.Callable[..., typing.Awaitable[typing.Any]]],  # , ...],
-            typing.Awaitable[typing.Any],
+            [typing.Callable[..., typing.Awaitable[object]]],
+            typing.Awaitable[object],
         ]
     ] = None
 
@@ -251,7 +251,7 @@ class EmissionsNursery:
 @async_generator.asynccontextmanager
 async def open_emissions_nursery(
     until: typing.Optional[SignalInstance] = None,
-    wrapper: typing.Optional[typing.Any] = None,
+    wrapper: typing.Optional[object] = None,
 ) -> typing.AsyncGenerator[EmissionsNursery, None]:
     async with trio.open_nursery() as nursery:
         with contextlib.ExitStack() as exit_stack:
