@@ -235,6 +235,7 @@ class EmissionsNursery:
         wrapper: The wrapper for handling the slots.  This could, for example, handle
             exceptions and present a dialog to avoid cancelling the entire nursery.
     """
+
     nursery: trio.Nursery
     exit_stack: contextlib.ExitStack
     wrapper: typing.Optional[
@@ -243,7 +244,11 @@ class EmissionsNursery:
         ]
     ] = None
 
-    def connect(self, signal: SignalInstance, slot: typing.Callable[..., typing.Awaitable[object]]) -> None:
+    def connect(
+        self,
+        signal: SignalInstance,
+        slot: typing.Callable[..., typing.Awaitable[object]],
+    ) -> None:
         if self.wrapper is not None:
 
             def starter(*args):
@@ -256,7 +261,9 @@ class EmissionsNursery:
 
         self.exit_stack.enter_context(qtrio._qt.connection(signal, starter))
 
-    def connect_sync(self, signal: SignalInstance, slot: typing.Callable[..., object]) -> None:
+    def connect_sync(
+        self, signal: SignalInstance, slot: typing.Callable[..., object]
+    ) -> None:
         async def async_slot(*args):
             slot(*args)
 
