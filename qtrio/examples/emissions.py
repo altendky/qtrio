@@ -107,7 +107,7 @@ async def main(window=None):
     async with qtrio.enter_emissions_channel(signals=signals) as emissions:
         window.show()
 
-        async for emission in emissions.channel:
+        async for emission in emissions:
             if emission.is_from(window.decrement.clicked):
                 window.decrement_count()
             elif emission.is_from(window.increment.clicked):

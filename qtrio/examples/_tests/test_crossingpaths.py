@@ -26,7 +26,7 @@ def test_main(testdir):
         results = []
 
         async def user():
-            async for emission in emissions.channel:
+            async for emission in emissions:
                 [text] = emission.args
                 results.append(text)
 

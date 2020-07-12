@@ -159,6 +159,9 @@ class Emissions:
         """
         return await self.send_channel.aclose()
 
+    def __aiter__(self):
+        return self.channel.__aiter__()
+
 
 @async_generator.asynccontextmanager
 async def open_emissions_channel(
