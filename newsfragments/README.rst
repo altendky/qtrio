@@ -28,13 +28,3 @@ reflow your text, so don't try to do any fancy formatting. You can
 install ``towncrier`` and then run ``towncrier --draft`` if you want
 to get a preview of how your change will look in the final release
 notes.
-
-
-Making releases
-===============
-
-``pip install towncrier``, then run ``towncrier``. (You can use
-``towncrier --draft`` to get a preview of what this will do.)
-
-You can configure ``towncrier`` (for example: customizing the
-different types of changes) by modifying ``pyproject.toml``.
