@@ -225,6 +225,16 @@ async def enter_emissions_channel(
 
 @attr.s(auto_attribs=True)
 class EmissionsNursery:
+    """Holds the nursery, exit stack, and wrapper needed to support connecting signals
+    to both async and sync slots in the nursery.
+
+    Attributes:
+        nursery: The Trio nursery that will handle execution of the slots.
+        exit_stack: The exit stack that will manage the connections so they get
+            disconnected.
+        wrapper: The wrapper for handling the slots.  This could, for example, handle
+            exceptions and present a dialog to avoid cancelling the entire nursery.
+    """
     nursery: trio.Nursery
     exit_stack: contextlib.ExitStack
     wrapper: typing.Optional[
@@ -233,7 +243,7 @@ class EmissionsNursery:
         ]
     ] = None
 
-    def connect(self, signal, slot):
+    def connect(self, signal: SignalInstance, slot: typing.Callable[..., typing.Awaitable[object]]) -> None:
         if self.wrapper is not None:
 
             def starter(*args):
@@ -246,11 +256,11 @@ class EmissionsNursery:
 
         self.exit_stack.enter_context(qtrio._qt.connection(signal, starter))
 
-    def connect_sync(self, signal, slot):
+    def connect_sync(self, signal: SignalInstance, slot: typing.Callable[..., object]) -> None:
         async def async_slot(*args):
             slot(*args)
 
-        return self.connect(signal=signal, slot=async_slot)
+        self.connect(signal=signal, slot=async_slot)
 
 
 @async_generator.asynccontextmanager
@@ -258,6 +268,16 @@ async def open_emissions_nursery(
     until: typing.Optional[SignalInstance] = None,
     wrapper: typing.Optional[typing.Callable[..., typing.Awaitable[object]]] = None,
 ) -> typing.AsyncGenerator[EmissionsNursery, None]:
+    """Open a nursery for handling callbacks triggered by signal emissions.  This allows
+    a 'normal' Qt callback structure while still executing the callbacks within a Trio
+    nursery such that errors have a place to go.  Both async and sync callbacks can be
+    connected.  Sync callbacks will be wrapped in an async call to allow execution in
+    the nursery.
+
+    Arguments:
+        until: Keep the nursery open until this signal is emitted.
+        wrapper: A wrapper for the callbacks such as to process exceptions.
+    """
     async with trio.open_nursery() as nursery:
         with contextlib.ExitStack() as exit_stack:
             emissions_nursery = EmissionsNursery(
