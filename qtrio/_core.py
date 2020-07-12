@@ -269,6 +269,10 @@ class EmissionsNursery:
 
         self.connect(signal=signal, slot=async_slot)
 
+    # TODO: this is a workaround for these sphinx warnings.  unaroundwork this...
+    # /home/altendky/repos/preqtrio/qtrio/_core.py:docstring of qtrio.open_emissions_nursery:13: WARNING: py:class reference target not found: qtrio._core.EmissionsNursery
+    __module__ = "qtrio"
+
 
 @async_generator.asynccontextmanager
 async def open_emissions_nursery(

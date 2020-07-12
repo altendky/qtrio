@@ -15,6 +15,7 @@ from ._core import (
     open_emissions_nursery,
     Emissions,
     Emission,
+    EmissionsNursery,
     Outcomes,
     run,
     Runner,
