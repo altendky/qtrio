@@ -24,7 +24,7 @@ class ReturnCodeError(QTrioException):
     """Wraps a QApplication return code as an exception."""
 
     def __eq__(self, other):
-        return isinstance(other, type(self)) and self.args == other.args
+        return type(self) == type(other) and self.args == other.args
 
 
 class UserCancelledError(QTrioException):

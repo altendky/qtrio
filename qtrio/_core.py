@@ -5,7 +5,6 @@ Attributes:
     REENTER_EVENT: The QtCore.QEvent.Type enumerator for our reenter events.
 """
 import contextlib
-import functools
 import math
 import sys
 import traceback
@@ -21,6 +20,7 @@ from qtpy import QtWidgets
 import trio
 
 import qtrio
+import qtrio._qt
 
 
 REENTER_EVENT_HINT: int = QtCore.QEvent.registerEventType()
@@ -80,7 +80,7 @@ async def wait_signal(signal: QtCore.SignalInstance) -> typing.Tuple[typing.Any,
         result = args
         event.set()
 
-    with qtrio.connection(signal, slot):
+    with qtrio._qt.connection(signal, slot):
         await event.wait()
 
     return result
@@ -89,7 +89,9 @@ async def wait_signal(signal: QtCore.SignalInstance) -> typing.Tuple[typing.Any,
 @attr.s(auto_attribs=True, frozen=True, slots=True, eq=False)
 class Emission:
     """Stores the emission of a signal including the emitted arguments.  Can be
-    compared against a signal instance to check the source.
+    compared against a signal instance to check the source.  Do not construct this class
+    directly.  Instead, instances will be received through a channel created by
+    :func:`qtrio.enter_emissions_channel`.
 
     Note:
         Each time you access a signal such as `a_qobject.some_signal` you get a
@@ -133,6 +135,8 @@ class Emission:
 @attr.s(auto_attribs=True)
 class Emissions:
     """Hold elements useful for the application to work with emissions from signals.
+    Do not construct this class directly.  Instead, use
+    :func:`qtrio.enter_emissions_channel`.
 
     Attributes:
         channel: A memory receive channel to be fed by signal emissions.
@@ -189,7 +193,7 @@ async def open_emissions_channel(
                         # TODO: log this or... ?
                         pass
 
-                stack.enter_context(qtrio.connection(signal, slot))
+                stack.enter_context(qtrio._qt.connection(signal, slot))
 
             yield Emissions(channel=receive_channel, send_channel=send_channel)
 
@@ -199,9 +203,7 @@ async def enter_emissions_channel(
     signals: typing.Collection[QtCore.SignalInstance], max_buffer_size=math.inf,
 ) -> typing.AsyncGenerator[trio.MemoryReceiveChannel, None]:
     """Create a memory channel fed by the emissions of the signals and enter both the
-    send and receive channels' context managers.  If you need to process emissions after
-    exiting the context then see :func:`qtrio.open_emissions_channel` for just send
-    channel management.
+    send and receive channels' context managers.
 
     Args:
         signals: A collection of signals which will be monitored for emissions.
@@ -228,7 +230,7 @@ async def wait_signal_context(
     """
     event = trio.Event()
 
-    with qtrio.connection(signal=signal, slot=lambda *args, **kwargs: event.set()):
+    with qtrio._qt.connection(signal=signal, slot=lambda *args, **kwargs: event.set()):
         yield
         await event.wait()
 
@@ -236,7 +238,9 @@ async def wait_signal_context(
 @attr.s(auto_attribs=True, frozen=True, slots=True)
 class Outcomes:
     """This class holds an :class:`outcome.Outcome` from each of the Trio and the Qt
-    application execution.
+    application execution.  Do not construct instances directly.  Instead, an instance
+    will be returned from :func:`qtrio.run` or available on instances of
+    :attr:`qtrio.Runner.outcomes`.
 
     Attributes:
         qt: The Qt application :class:`outcome.Outcome`
@@ -343,6 +347,8 @@ class Runner:
             before (maybe) quitting the application.  The :class:`outcome.Outcome` from
             the completion of the async function passed to :meth:`run` will be passed to
             this callback.
+        outcomes: The outcomes from the Qt and Trio runs.
+        cancel_scope: An all encompassing cancellation scope for the Trio execution.
     """
 
     application: QtGui.QGuiApplication = attr.ib(factory=build_application)
@@ -363,7 +369,7 @@ class Runner:
         async_fn: typing.Callable[[], typing.Awaitable[None]],
         *args,
         execute_application: bool = True,
-    ) -> outcome.Outcome:
+    ) -> Outcomes:
         """Start the guest loop executing `async_fn`.
 
         Args:
@@ -408,7 +414,7 @@ class Runner:
 
     async def trio_main(
         self,
-        async_fn: typing.Callable[[], typing.Awaitable[None]],
+        async_fn: typing.Callable[..., typing.Awaitable[None]],
         args: typing.Tuple[typing.Any, ...],
     ) -> None:
         """Will be run as the main async function by the Trio guest.  It creates a
@@ -428,7 +434,7 @@ class Runner:
             with contextlib.ExitStack() as exit_stack:
                 if self.application.quitOnLastWindowClosed():
                     exit_stack.enter_context(
-                        qtrio.connection(
+                        qtrio._qt.connection(
                             signal=self.application.lastWindowClosed,
                             slot=self.cancel_scope.cancel,
                         )
