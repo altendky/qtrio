@@ -3,7 +3,10 @@ import threading
 import outcome
 import pytest
 from qtpy import QtCore
+import qtrio
 import qtrio._core
+import trio
+import trio.testing
 
 
 @pytest.fixture(
@@ -860,3 +863,218 @@ def test_enter_emissions_channel_closes_both_channels(testdir):
 
     result = testdir.runpytest_subprocess(timeout=timeout)
     result.assert_outcomes(passed=1)
+
+
+def emissions_nursery_connect_maybe_async(is_async, nursery, signal, slot):
+    if is_async:
+
+        async def async_slot(*args):
+            return slot(*args)
+
+        nursery.connect(signal, async_slot)
+    else:
+        nursery.connect_sync(signal, slot)
+
+
+@pytest.fixture(name="is_async", params=[False, True], ids=["sync", "async"])
+def is_async_fixture(request):
+    yield request.param
+
+
+@qtrio.host
+async def test_emissions_nursery_runs_callbacks(request, is_async):
+    """Callbacks connected to an emissions nursery get run."""
+
+    class SignalHost(QtCore.QObject):
+        signal = QtCore.Signal(int)
+
+    results = set()
+    event = trio.Event()
+
+    def slot(number):
+        results.add(number)
+        if len(results) == 5:
+            event.set()
+
+    async with qtrio.open_emissions_nursery() as emissions_nursery:
+        signal_host = SignalHost()
+
+        emissions_nursery_connect_maybe_async(
+            is_async=is_async,
+            nursery=emissions_nursery,
+            signal=signal_host.signal,
+            slot=slot,
+        )
+
+        for i in range(5):
+            signal_host.signal.emit(i)
+
+        await event.wait()
+
+    assert results == {0, 1, 2, 3, 4}
+
+
+@qtrio.host
+async def test_emissions_nursery_disconnects(request, is_async):
+    """Callbacks are disconnected when exiting the context and aren't run for emissions
+    after leaving.
+    """
+
+    class SignalHost(QtCore.QObject):
+        signal = QtCore.Signal(int)
+
+    results = set()
+
+    def slot(number):
+        results.add(number)  # pragma: no cover
+
+    async with qtrio.open_emissions_nursery() as emissions_nursery:
+        signal_host = SignalHost()
+
+        emissions_nursery_connect_maybe_async(
+            is_async=is_async,
+            nursery=emissions_nursery,
+            signal=signal_host.signal,
+            slot=slot,
+        )
+
+    for i in range(5):
+        signal_host.signal.emit(i)
+
+    await trio.testing.wait_all_tasks_blocked(cushion=0.01)
+
+    assert results == set()
+
+
+@qtrio.host
+async def test_emissions_nursery_cancellation_cancels_callbacks(request):
+    """Callbacks are cancelled when the nursery is cancelled."""
+
+    class SignalHost(QtCore.QObject):
+        signal = QtCore.Signal(int)
+
+    event = trio.Event()
+    results = set()
+    waiting = set()
+
+    async def slot(number):
+        try:
+            waiting.add(number)
+
+            if len(waiting) == 5:
+                event.set()
+
+            while True:
+                await trio.sleep(1)
+        except trio.Cancelled:
+            results.add(number)
+            raise
+
+    async with qtrio.open_emissions_nursery() as emissions_nursery:
+        signal_host = SignalHost()
+
+        emissions_nursery.connect(signal_host.signal, slot)
+
+        for i in range(5):
+            signal_host.signal.emit(i)
+
+        await event.wait()
+        emissions_nursery.nursery.cancel_scope.cancel()
+
+    assert results == {0, 1, 2, 3, 4}
+
+
+@qtrio.host
+async def test_emissions_nursery_receives_exceptions(request, is_async):
+    """Callbacks that raise exceptions will feed them out to the nursery."""
+
+    class SignalHost(QtCore.QObject):
+        signal = QtCore.Signal()
+
+    class LocalUniqueException(Exception):
+        pass
+
+    def slot():
+        raise LocalUniqueException()
+
+    with pytest.raises(LocalUniqueException):
+        async with qtrio.open_emissions_nursery() as emissions_nursery:
+            signal_host = SignalHost()
+
+            emissions_nursery_connect_maybe_async(
+                is_async=is_async,
+                nursery=emissions_nursery,
+                signal=signal_host.signal,
+                slot=slot,
+            )
+
+            signal_host.signal.emit()
+
+
+@qtrio.host
+async def test_emissions_nursery_waits_for_until_signal(request):
+    """Emissions nursery waits to exit until `until` signal is emitted."""
+
+    class SignalHost(QtCore.QObject):
+        signal = QtCore.Signal()
+
+    results = []
+
+    signal_host = SignalHost()
+
+    async def emit_later():
+        results.append(1)
+        await trio.testing.wait_all_tasks_blocked(cushion=0.01)
+        results.append(2)
+        signal_host.signal.emit()
+
+    async with trio.open_nursery() as nursery:
+        async with qtrio.open_emissions_nursery(until=signal_host.signal):
+            nursery.start_soon(emit_later)
+            results.append(0)
+
+        results.append(3)
+
+    assert results == [0, 1, 2, 3]
+
+
+@qtrio.host
+async def test_emissions_nursery_wraps(request, is_async):
+    """Emissions nursery wraps callbacks as requested."""
+
+    class SignalHost(QtCore.QObject):
+        signal = QtCore.Signal()
+
+    class LocalUniqueException(Exception):
+        pass
+
+    result = None
+
+    event = trio.Event()
+    signal_host = SignalHost()
+
+    async def wrapper(asyncfn, *args):
+        nonlocal result
+
+        try:
+            await asyncfn(*args)
+        except Exception as e:
+            result = outcome.Error(e)
+            event.set()
+
+    def slot():
+        raise LocalUniqueException()
+
+    async with qtrio.open_emissions_nursery(wrapper=wrapper) as emissions_nursery:
+        emissions_nursery_connect_maybe_async(
+            is_async=is_async,
+            nursery=emissions_nursery,
+            signal=signal_host.signal,
+            slot=slot,
+        )
+
+        signal_host.signal.emit()
+        await event.wait()
+
+    with pytest.raises(LocalUniqueException):
+        result.unwrap()
