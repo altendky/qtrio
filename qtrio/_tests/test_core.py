@@ -905,7 +905,7 @@ async def test_emissions_nursery_disconnects(request):
     results = set()
 
     async def slot(number):
-        results.add(number)
+        results.add(number)  # pragma: no cover
 
     async with qtrio.open_emissions_nursery() as emissions_nursery:
         signal_host = SignalHost()
