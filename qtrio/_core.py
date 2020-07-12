@@ -246,6 +246,12 @@ class EmissionsNursery:
 
         self.exit_stack.enter_context(qtrio._qt.connection(signal, starter))
 
+    def connect_sync(self, signal, slot):
+        async def async_slot(*args):
+            slot(*args)
+
+        return self.connect(signal=signal, slot=async_slot)
+
 
 @async_generator.asynccontextmanager
 async def open_emissions_nursery(
