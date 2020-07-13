@@ -357,8 +357,27 @@ def test_requesting_available_event_type_succeeds(testdir):
 
     def test():
         qtrio.register_requested_event_type(QtCore.QEvent.User)
-        
+
         assert qtrio.registered_event_type() == QtCore.QEvent.User
+    """
+    testdir.makepyfile(test_file)
+
+    result = testdir.runpytest_subprocess(timeout=timeout)
+    result.assert_outcomes(passed=1)
+
+
+def test_registering_event_type_when_already_registered(testdir):
+    """Requesting an available event type succeeds."""
+    test_file = r"""
+    import pytest
+    import qtrio
+
+
+    def test():
+        qtrio.register_event_type()
+
+        with pytest.raises(qtrio.EventTypeAlreadyRegisteredError):
+            qtrio.register_event_type()
     """
     testdir.makepyfile(test_file)
 
