@@ -1,2 +1,2 @@
-Provide more control over the reentry event type via :func:`register_event_type`,
-:func:`register_requested_event_type`, and :func:`registered_event_type`.
+Provide more control over the reentry event type via :func:`qtrio.register_event_type`,
+:func:`qtrio.register_requested_event_type`, and :func:`qtrio.registered_event_type`.
