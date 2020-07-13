@@ -385,6 +385,25 @@ def test_registering_event_type_when_already_registered(testdir):
     result.assert_outcomes(passed=1)
 
 
+def test_registering_requested_event_type_when_already_registered(testdir):
+    """Requesting an available event type succeeds."""
+    test_file = r"""
+    import pytest
+    import qtrio
+
+
+    def test():
+        qtrio.register_event_type()
+
+        with pytest.raises(qtrio.EventTypeAlreadyRegisteredError):
+            qtrio.register_requested_event_type(qtrio.registered_event_type())
+    """
+    testdir.makepyfile(test_file)
+
+    result = testdir.runpytest_subprocess(timeout=timeout)
+    result.assert_outcomes(passed=1)
+
+
 def test_wait_signal_waits(testdir):
     """wait_signal() waits for the signal.
     """
