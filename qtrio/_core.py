@@ -35,6 +35,9 @@ _reenter_event_type: typing.Optional[QtCore.QEvent.Type] = None
 
 
 def registered_event_type() -> typing.Optional[QtCore.QEvent.Type]:
+    """Get the registered event type.  :py:obj:`None` if no event type has been
+    registered.
+    """
     return _reenter_event_type
 
 

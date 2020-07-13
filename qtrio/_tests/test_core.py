@@ -277,8 +277,9 @@ def test_done_callback_gets_outcomes(testdir):
 
 
 def test_out_of_hints_raises(testdir):
-    """If there are no available Qt event types remaining RegisterEventTypeError is
-    raised when requesting a type without any specific requested value.
+    """If there are no available Qt event types remaining
+    EventTypeRegistrationFailedError is raised when requesting a type without any
+    specific requested value.
     """
     test_file = r"""
     import pytest
@@ -301,8 +302,9 @@ def test_out_of_hints_raises(testdir):
 
 
 def test_out_of_hints_raises_for_requested(testdir):
-    """If there are no available Qt event types remaining RegisterEventTypeError is
-    raised when requesting a type with a specific requested value.
+    """If there are no available Qt event types remaining
+    EventTypeRegistrationFailedError is raised when requesting a type with a specific
+    requested value.
     """
     test_file = r"""
     import pytest
