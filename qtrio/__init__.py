@@ -5,7 +5,10 @@ from ._version import __version__
 from ._exceptions import (
     QTrioException,
     NoOutcomesError,
-    RegisterEventTypeError,
+    EventTypeRegistrationError,
+    EventTypeRegistrationFailedError,
+    RequestedEventTypeUnavailableError,
+    EventTypeAlreadyRegisteredError,
     ReturnCodeError,
     RunnerTimedOutError,
 )
@@ -19,6 +22,9 @@ from ._core import (
     Outcomes,
     run,
     Runner,
+    registered_event_type,
+    register_event_type,
+    register_requested_event_type,
 )
 
 from ._pytest import host

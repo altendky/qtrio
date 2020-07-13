@@ -27,6 +27,7 @@ def test_reenter_event_triggers_in_main_thread(qapp):
     reenter = qtrio._core.Reenter()
 
     def post():
+        qtrio.register_event_type()
         event = qtrio._core.ReenterEvent(fn=handler)
         qapp.postEvent(reenter, event)
 
@@ -277,13 +278,12 @@ def test_done_callback_gets_outcomes(testdir):
 
 def test_out_of_hints_raises(testdir):
     """If there are no available Qt event types remaining RegisterEventTypeError is
-    raised.
+    raised when requesting a type without any specific requested value.
     """
     test_file = r"""
+    import pytest
     from qtpy import QtCore
-    # Must pre-import Trio to avoid triggering another error
-    # https://github.com/python-trio/trio/issues/1630
-    import trio
+    import qtrio
 
 
     def test():
@@ -291,15 +291,72 @@ def test_out_of_hints_raises(testdir):
             # use up all the event types
             pass
 
-        exception = None
+        with pytest.raises(qtrio.EventTypeRegistrationFailedError):
+            qtrio.register_event_type()
+    """
+    testdir.makepyfile(test_file)
 
-        try:
-            import qtrio._exceptions
-        except Exception as e:
-            exception = e
+    result = testdir.runpytest_subprocess(timeout=timeout)
+    result.assert_outcomes(passed=1)
 
-        assert exception is not None
-        assert type(exception).__name__ == "RegisterEventTypeError"
+
+def test_out_of_hints_raises_for_requested(testdir):
+    """If there are no available Qt event types remaining RegisterEventTypeError is
+    raised when requesting a type with a specific requested value.
+    """
+    test_file = r"""
+    import pytest
+    from qtpy import QtCore
+    import qtrio
+
+
+    def test():
+        while QtCore.QEvent.registerEventType() != -1:
+            # use up all the event types
+            pass
+
+        with pytest.raises(qtrio.EventTypeRegistrationFailedError):
+            qtrio.register_requested_event_type(QtCore.QEvent.User)
+    """
+    testdir.makepyfile(test_file)
+
+    result = testdir.runpytest_subprocess(timeout=timeout)
+    result.assert_outcomes(passed=1)
+
+
+def test_out_of_hints_raises_when_requesting_already_used_type(testdir):
+    """An error is raised when a request is made to register an already used event
+    type.
+    """
+    test_file = r"""
+    import pytest
+    from qtpy import QtCore
+    import qtrio
+
+
+    def test():
+        already_used = QtCore.QEvent.registerEventType()
+
+        with pytest.raises(qtrio.RequestedEventTypeUnavailableError):
+            qtrio.register_requested_event_type(already_used)
+    """
+    testdir.makepyfile(test_file)
+
+    result = testdir.runpytest_subprocess(timeout=timeout)
+    result.assert_outcomes(passed=1)
+
+
+def test_requesting_available_event_type_succeeds(testdir):
+    """Requesting an available event type succeeds."""
+    test_file = r"""
+    from qtpy import QtCore
+    import qtrio
+
+
+    def test():
+        qtrio.register_requested_event_type(QtCore.QEvent.User)
+        
+        assert qtrio.registered_event_type() == QtCore.QEvent.User
     """
     testdir.makepyfile(test_file)
 

@@ -1,8 +1,7 @@
 """The module holding the core features of QTrio.
 
 Attributes:
-    REENTER_EVENT_HINT: The registered event type hint for our reenter events.
-    REENTER_EVENT: The QtCore.QEvent.Type enumerator for our reenter events.
+    _reenter_event_type: The event type enumerator for our reenter events.
 """
 import contextlib
 import functools
@@ -32,22 +31,62 @@ else:
     SignalInstance = QtCore.SignalInstance
 
 
-REENTER_EVENT_HINT: int = QtCore.QEvent.registerEventType()
-if REENTER_EVENT_HINT == -1:
-    message = (
-        "Failed to register the event hint, either no available hints remain or the"
-        + " program is shutting down."
-    )
-    raise qtrio.RegisterEventTypeError(message)
+_reenter_event_type: typing.Optional[QtCore.QEvent.Type] = None
 
-REENTER_EVENT: QtCore.QEvent.Type = QtCore.QEvent.Type(REENTER_EVENT_HINT)
+
+def registered_event_type() -> typing.Optional[QtCore.QEvent.Type]:
+    return _reenter_event_type
+
+
+def register_event_type():
+    """Register a Qt event type for use by Trio to reenter into the Qt event loop.
+    Raises :class:`qtrio.EventTypeAlreadyRegisteredError` if an event type
+    has already been registered.  Raises :class:`qtrio.EventTypeRegistrationFailedError`
+    if a type was not able to be registered."""
+    global _reenter_event_type
+
+    if _reenter_event_type is not None:
+        raise qtrio.EventTypeAlreadyRegisteredError()
+
+    event_hint = QtCore.QEvent.registerEventType()
+
+    if event_hint == -1:
+        raise qtrio.EventTypeRegistrationFailedError()
+
+    # assign to the global
+    _reenter_event_type = QtCore.QEvent.Type(event_hint)
+
+
+def register_requested_event_type(requested_value: int):
+    """Register the requested Qt event type for use by Trio to reenter into the Qt event
+    loop.  Raises :class:`qtrio.EventTypeAlreadyRegisteredError` if an event type
+    has already been registered.  Raises :class:`qtrio.EventTypeRegistrationFailedError`
+    if a type was not able to be registered.  Raises
+    :class:`qtrio.RequestedEventTypeUnavailableError` if the type returned by Qt does
+    not match the requested type."""
+    global _reenter_event_type
+
+    if _reenter_event_type is not None:
+        raise qtrio.EventTypeAlreadyRegisteredError()
+
+    event_hint = QtCore.QEvent.registerEventType(requested_value)
+
+    if event_hint == -1:
+        raise qtrio.EventTypeRegistrationFailedError()
+    elif event_hint != requested_value:
+        raise qtrio.RequestedEventTypeUnavailableError(
+            requested_type=requested_value, returned_type=event_hint
+        )
+
+    # assign to the global
+    _reenter_event_type = QtCore.QEvent.Type(event_hint)
 
 
 class ReenterEvent(QtCore.QEvent):
     """A proper `ReenterEvent` for reentering into the Qt host loop."""
 
     def __init__(self, fn: typing.Callable[[], typing.Any]):
-        super().__init__(REENTER_EVENT)
+        super().__init__(_reenter_event_type)
         self.fn = fn
 
 
@@ -468,6 +507,9 @@ class Runner:
             from the Qt application and `async_fn` will be returned.  Otherwise, an
             empty :class:`Outcomes`.
         """
+        if _reenter_event_type is None:
+            register_event_type()
+
         trio.lowlevel.start_guest_run(
             self.trio_main,
             async_fn,
