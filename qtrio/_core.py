@@ -68,7 +68,11 @@ def register_requested_event_type(
     has already been registered.  Raises :class:`qtrio.EventTypeRegistrationFailedError`
     if a type was not able to be registered.  Raises
     :class:`qtrio.RequestedEventTypeUnavailableError` if the type returned by Qt does
-    not match the requested type."""
+    not match the requested type.
+
+    Arguments:
+        requested_value: The value to ask Qt to use for the event type being registered.
+    """
     global _reenter_event_type
 
     if _reenter_event_type is not None:
