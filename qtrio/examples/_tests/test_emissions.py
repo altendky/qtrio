@@ -38,13 +38,12 @@ def test_main(testdir):
             window.widget.close()
 
         async with trio.open_nursery() as nursery:
-            async with qtrio.open_emissions_channel(
+            async with qtrio.enter_emissions_channel(
                 signals=[window.widget.shown],
             ) as emissions:
-                async with emissions.channel:
-                    nursery.start_soon(user)
+                nursery.start_soon(user)
 
-                    await qtrio.examples.emissions.main(window=window)
+                await qtrio.examples.emissions.main(window=window)
 
         assert results == ["1", "2", "3", "2", "1", "0", "-1"]
     """

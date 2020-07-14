@@ -13,6 +13,8 @@
    core.rst
    testing.rst
    exceptions.rst
+   examples/examples.rst
+   development/index.rst
    history.rst
 
 ====================

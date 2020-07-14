@@ -26,13 +26,12 @@ def test_main(testdir):
         results = []
 
         async def user():
-            async with emissions.channel:
-                async for emission in emissions.channel:
-                    [text] = emission.args
-                    results.append(text)
+            async for emission in emissions.channel:
+                [text] = emission.args
+                results.append(text)
 
         async with trio.open_nursery() as nursery:
-            async with qtrio.open_emissions_channel(
+            async with qtrio.enter_emissions_channel(
                 signals=[label.text_changed],
             ) as emissions:
                 nursery.start_soon(user)

@@ -27,14 +27,13 @@ def test_main(testdir):
         qtbot.addWidget(button)
 
         async def user():
-            async with emissions.channel:
-                await emissions.channel.receive()
+            await emissions.channel.receive()
 
             button.click()
 
 
         async with trio.open_nursery() as nursery:
-            async with qtrio.open_emissions_channel(
+            async with qtrio.enter_emissions_channel(
                 signals=[button.shown],
             ) as emissions:
                 nursery.start_soon(user)

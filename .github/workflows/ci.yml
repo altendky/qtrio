@@ -13,10 +13,42 @@ on:
     # Daily at 05:47
     - cron: '47 5 * * *'
 
-env:
-  PACKAGE_NAME: 'qtrio'
-
 jobs:
+  Builds:
+    name: '${{ matrix.name }}'
+    timeout-minutes: 10
+    runs-on: 'ubuntu-latest'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - python: '3.8'
+            name: 'Build source'
+            pep517_option: '--source'
+          - python: '3.8'
+            name: 'Build binary'
+            pep517_option: '--binary'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup python
+        uses: actions/setup-python@v1
+        with:
+          python-version: '${{ matrix.python }}'
+      - name: Build
+        run: |-
+          python -m venv venv
+          venv/bin/python -m pip install --quiet --upgrade pip setuptools wheel
+          venv/bin/python -m pip install --quiet --upgrade pep517
+          venv/bin/python -m pip list
+          venv/bin/python -m pip freeze
+          venv/bin/python -m pep517.build ${{ matrix.pep517_option }} --out-dir dist/ .
+      - name: Publish
+        uses: actions/upload-artifact@v2
+        with:
+          name: dist
+          path: dist/
+
   Checks:
     name: '${{ matrix.name }}'
     timeout-minutes: 10
@@ -31,6 +63,9 @@ jobs:
           - python: '3.8'
             check_formatting: '1'
             name: 'Check formatting'
+          - python: '3.8'
+            check_type_hints: '1'
+            name: 'Check type hints'
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -43,6 +78,7 @@ jobs:
         env:
           CHECK_DOCS: '${{ matrix.check_docs }}'
           CHECK_FORMATTING: '${{ matrix.check_formatting }}'
+          CHECK_TYPE_HINTS: '${{ matrix.check_type_hints }}'
           # Should match 'name:' up above
           JOB_NAME: '${{ matrix.name }}'
           # TODO: needs some Qt library but I'm not clear the implications of
@@ -135,6 +171,7 @@ jobs:
     name: All
     runs-on: ubuntu-latest
     needs:
+      - Builds
       - Checks
       - Windows
       - Ubuntu

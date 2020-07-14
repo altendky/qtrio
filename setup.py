@@ -15,7 +15,7 @@ setup(
     description=(
         "a library bringing Qt GUIs together with ``async`` and ``await`` via Trio"
     ),
-    url="https://github.com/python-trio/qtrio",
+    url="https://github.com/altendky/qtrio",
     long_description=LONG_DESC,
     author="Kyle Altendorf",
     author_email="sda@fstab.net",
@@ -30,17 +30,16 @@ setup(
         "trio>=0.16",
     ],
     extras_require={
-        "checks": ["black", "flake8"],
+        "checks": ["black", "flake8", "mypy", "towncrier>=19.9.0rc1"],
         "docs": [
             "sphinx >= 1.7.0",
             "sphinx-autodoc-typehints",
             "sphinx-qt-documentation",
             "sphinx_rtd_theme",
             "sphinxcontrib-trio",
-            "towncrier",
         ],
         "examples": ["click", "httpcore", "httpx", "hyperlink"],
-        "pyqt5": ["pyqt5"],
+        "pyqt5": ["pyqt5", "pyqt5-stubs"],
         "pyside2": ["pyside2"],
         "tests": [
             "click",
