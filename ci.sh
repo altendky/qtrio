@@ -39,6 +39,8 @@ python setup.py sdist --formats=zip
 INSTALL_ARTIFACT=$(ls dist/*.zip)
 python -m pip install ${INSTALL_ARTIFACT}${INSTALL_EXTRAS}
 
+python -m pip install --upgrade https://github.com/altendky/sphinx-qt-documentation/archive/7-altendky-handle_qevent_type_enumeration.zip
+
 python -m pip list
 python -m pip freeze
 
