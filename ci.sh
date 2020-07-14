@@ -2,6 +2,11 @@
 
 set -ex -o pipefail
 
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+set -o allexport
+source ${DIR}/.env
+set +o allexport
+
 # Log some general info about the environment
 env | sort
 
@@ -25,7 +30,7 @@ function curl-harder() {
 # We have a Python environment!
 ################################################################
 
-python -c "import sys, struct, ssl; print('#' * 70); print('python:', sys.version); print('version_info:', sys.version_info); print('bits:', struct.calcsize('P') * 8); print('openssl:', ssl.OPENSSL_VERSION, ssl.OPENSSL_VERSION_INFO); print('#' * 70)"
+python -c "import sys, struct, ssl; print('#' * 70); print('executable:', sys.executable); print('python:', sys.version); print('version_info:', sys.version_info); print('bits:', struct.calcsize('P') * 8); print('openssl:', ssl.OPENSSL_VERSION, ssl.OPENSSL_VERSION_INFO); print('#' * 70)"
 
 python -m pip install -U pip setuptools wheel
 python -m pip --version
@@ -34,19 +39,24 @@ python setup.py sdist --formats=zip
 INSTALL_ARTIFACT=$(ls dist/*.zip)
 python -m pip install ${INSTALL_ARTIFACT}${INSTALL_EXTRAS}
 
+python -m pip list
+python -m pip freeze
+
 if [ "$CHECK_DOCS" = "1" ]; then
-    python -m pip install -r docs-requirements.txt
-    towncrier --yes  # catch errors in newsfragments
+    git fetch --depth=1 origin master
+    towncrier check
+    # https://github.com/twisted/towncrier/pull/271
+    towncrier build --yes --name QTrio  # catch errors in newsfragments
     cd docs
     # -n (nit-picky): warn on missing references
     # -W: turn warnings into errors
     sphinx-build -nW  -b html source build
 elif [ "$CHECK_FORMATTING" = "1" ]; then
-    python -m pip install -r test-requirements.txt
     source check.sh
+elif [ "$CHECK_TYPE_HINTS" = "1" ]; then
+    mypy --package ${PACKAGE_NAME}
 else
     # Actual tests
-    python -m pip install -r test-requirements.txt
 
     # We run the tests from inside an empty directory, to make sure Python
     # doesn't pick up any .py files from our working dir. Might have been
