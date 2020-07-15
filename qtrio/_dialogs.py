@@ -84,12 +84,12 @@ class IntegerDialog:
             with self.manage(finished_event=finished_event):
                 await finished_event.wait()
                 if self.dialog.result() != QtWidgets.QDialog.Accepted:
-                    raise qtrio.UserCancelledError()
-
-                try:
-                    self.result = int(self.dialog.textValue())
-                except ValueError:
-                    continue
+                    self.result = None
+                else:
+                    try:
+                        self.result = int(self.dialog.textValue())
+                    except ValueError:
+                        continue
 
                 return self.result
 
@@ -253,10 +253,10 @@ class FileDialog:
         with self.manage(finished_event=finished_event):
             await finished_event.wait()
             if self.dialog.result() != QtWidgets.QDialog.Accepted:
-                raise qtrio.UserCancelledError()
-
-            [path_string] = self.dialog.selectedFiles()
-            self.result = trio.Path(path_string)
+                self.result = None
+            else:
+                [path_string] = self.dialog.selectedFiles()
+                self.result = trio.Path(path_string)
 
             return self.result
 
