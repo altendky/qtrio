@@ -44,23 +44,9 @@ By enabling use of ``async`` and ``await`` it is possible in some cases to write
 code more concisely and clearly than you would get with the signal and slot mechanisms
 of Qt concurrency.
 
-.. code-block:: python
-
-    class TwoStep:
-        def __init__(self, a_signal, some_path):
-            self.signal = a_signal
-            self.file = None
-            self.some_path = some_path
-
-        def before(self):
-            self.file = open(some_path, 'w')
-            self.signal.connect(self.after)
-            self.file.write('before')
-
-        def after(self, value):
-            self.signal.disconnect(self.after)
-            self.file.write(f'after {value!r}')
-            self.file.close()
+.. literalinclude: qtrio/examples/twostep.py
+   :langauge: python
+   
 
 .. code-block:: python
 
