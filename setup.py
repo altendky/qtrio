@@ -37,6 +37,7 @@ setup(
             "sphinx-qt-documentation",
             "sphinx_rtd_theme",
             "sphinxcontrib-trio",
+            "sphinx-rst-builder",
         ],
         "examples": ["click"],
         "pyqt5": ["pyqt5", "pyqt5-stubs"],
