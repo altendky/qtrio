@@ -18,7 +18,7 @@
    :target: https://github.com/dr5801/qtrio
    :alt: Repository
    
-.. image:: https://codecov.io/gh/dr5801/qtrio/branch/master/graph/badge.svg
+.. image:: https://codecov.io/gh/dr5801/qtrio/branch/extract_readme_examples/graph/badge.svg
    :target: https://codecov.io/gh/dr5801/qtrio
    :alt: Test Coverage
    
