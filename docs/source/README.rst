@@ -44,19 +44,10 @@ By enabling use of ``async`` and ``await`` it is possible in some cases to write
 code more concisely and clearly than you would get with the signal and slot mechanisms
 of Qt concurrency.
 
-.. literalinclude: qtrio/examples/twostep.py
-   :langauge: python
+.. literalinclude:: ../../qtrio/examples/twostep.py
    
 
-.. code-block:: python
-
-    async def together(a_signal):
-        with open(self.some_path, 'w') as file:
-            async with qtrio.enter_emissions_channel(signals=[a_signal]) as emissions:
-                file.write('before')
-                emission = await emissions.channel.receive()
-                [value] = emission.args
-                file.write(f'after {value!r}')
+.. literalinclude:: ../../qtrio/examples/qtrio.py
 
 Note how by using ``async`` and ``await`` we are not only able to more clearly and
 concisely describe the sequenced activity, we also get to use ``with`` to manage the
