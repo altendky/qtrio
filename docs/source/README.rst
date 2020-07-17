@@ -44,7 +44,6 @@ By enabling use of ``async`` and ``await`` it is possible in some cases to write
 code more concisely and clearly than you would get with the signal and slot mechanisms
 of Qt concurrency.
 
-hello
 .. literalinclude:: ../../qtrio/examples/twostep.py
    
 
