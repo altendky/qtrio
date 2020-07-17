@@ -1,4 +1,4 @@
-`https://gitter.im/python-trio/general <https://gitter.im/python-trio/general>`_`https://trio.discourse.group <https://trio.discourse.group>`_`https://qtrio.readthedocs.io <https://qtrio.readthedocs.io>`_`https://pypi.org/project/qtrio <https://pypi.org/project/qtrio>`_`https://github.com/dr5801/qtrio <https://github.com/dr5801/qtrio>`_`https://codecov.io/gh/dr5801/qtrio <https://codecov.io/gh/dr5801/qtrio>`_
+`https://gitter.im/python-trio/general <https://gitter.im/python-trio/general>`_
 
 
 QTrio - a library bringing Qt GUIs together with ``async`` and ``await`` via Trio

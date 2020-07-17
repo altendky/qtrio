@@ -2,23 +2,28 @@
    :target: https://gitter.im/python-trio/general
    :alt: Join chatroom
    
-.. image:: https://img.shields.io/badge/forum-join%20now-blue.svg
+.. 
+    image:: https://img.shields.io/badge/forum-join%20now-blue.svg
    :target: https://trio.discourse.group
    :alt: Join forum
    
-.. image:: https://img.shields.io/badge/docs-read%20now-blue.svg
+.. 
+    image:: https://img.shields.io/badge/docs-read%20now-blue.svg
    :target: https://qtrio.readthedocs.io
    :alt: Documentation
    
-.. image:: https://img.shields.io/pypi/v/qtrio.svg
+.. 
+    image:: https://img.shields.io/pypi/v/qtrio.svg
    :target: https://pypi.org/project/qtrio
    :alt: Latest PyPi version
    
-.. image:: https://img.shields.io/github/last-commit/dr5801/qtrio.svg
+.. 
+    image:: https://img.shields.io/github/last-commit/dr5801/qtrio.svg
    :target: https://github.com/dr5801/qtrio
    :alt: Repository
    
-.. image:: https://codecov.io/gh/dr5801/qtrio/branch/extract_readme_examples/graph/badge.svg
+.. 
+    image:: https://codecov.io/gh/dr5801/qtrio/branch/extract_readme_examples/graph/badge.svg
    :target: https://codecov.io/gh/dr5801/qtrio
    :alt: Test Coverage
    
