@@ -37,7 +37,7 @@ python -m pip --version
 
 python setup.py sdist --formats=zip
 INSTALL_ARTIFACT=$(ls dist/*.zip)
-python -m pip install ${INSTALL_ARTIFACT}${INSTALL_EXTRAS}
+python -m pip install ${INSTALL_ARTIFACT}${INSTALL_EXTRAS} ${QT_LIBRARY_AND_VERSION}
 
 python -m pip list
 python -m pip freeze

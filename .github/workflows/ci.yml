@@ -86,7 +86,7 @@ jobs:
           INSTALL_EXTRAS: '[pyside2,checks,docs]'
 
   Windows:
-    name: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_library }})'
+    name: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_version }}, ${{ matrix.qt_library }})'
     timeout-minutes: 20
     runs-on: 'windows-latest'
     strategy:
@@ -94,6 +94,7 @@ jobs:
       matrix:
         python: ['3.6', '3.7', '3.8']
         arch: ['x86', 'x64']
+        qt_version: ['~=5.14.0', '~=5.15.0']
         qt_library: ['PyQt5', 'PySide2']
     steps:
       - name: Checkout
@@ -108,12 +109,13 @@ jobs:
         shell: bash
         env:
           # Should match 'name:' up above
-          JOB_NAME: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_library }})'
+          JOB_NAME: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_version }}, ${{ matrix.qt_library }})'
           INSTALL_EXTRAS: '[${{ matrix.qt_library }},tests]'
+          QT_LIBRARY_AND_VERSION: '${{ matrix.qt_library }}${{ matrix.qt_version }}'
           QT_QPA_PLATFORM: 'offscreen'
 
   Ubuntu:
-    name: 'Ubuntu (${{ matrix.python }}, ${{ matrix.qt_library }})'
+    name: 'Ubuntu (${{ matrix.python }}, ${{ matrix.qt_version }}, ${{ matrix.qt_library }})'
     timeout-minutes: 10
     runs-on: 'ubuntu-latest'
     container: 'docker://python:${{ matrix.python }}-buster'
@@ -121,6 +123,7 @@ jobs:
       fail-fast: false
       matrix:
         python: ['3.6', '3.7', '3.8']
+        qt_version: ['~=5.14.0', '~=5.15.0']
         qt_library: ['PyQt5', 'PySide2']
     steps:
       - name: Checkout
@@ -141,17 +144,19 @@ jobs:
         run: ./ci.sh
         env:
           # Should match 'name:' up above
-          JOB_NAME: 'Ubuntu (${{ matrix.python }}, ${{ matrix.qt_library }})'
+          JOB_NAME: 'Ubuntu (${{ matrix.python }}, ${{ matrix.qt_version }}, ${{ matrix.qt_library }})'
           INSTALL_EXTRAS: '[${{ matrix.qt_library }},tests]'
+          QT_LIBRARY_AND_VERSION: '${{ matrix.qt_library }}${{ matrix.qt_version }}'
 
   macOS:
-    name: 'macOS (${{ matrix.python }}, ${{matrix.qt_library}})'
+    name: 'macOS (${{ matrix.python }}, ${{ matrix.qt_version }}, ${{matrix.qt_library}})'
     timeout-minutes: 10
     runs-on: 'macos-latest'
     strategy:
       fail-fast: false
       matrix:
         python: ['3.6', '3.7', '3.8']
+        qt_version: ['~=5.14.0', '~=5.15.0']
         qt_library: ['PyQt5', 'PySide2']
     steps:
       - name: Checkout
@@ -164,8 +169,9 @@ jobs:
         run: ./ci.sh
         env:
           # Should match 'name:' up above
-          JOB_NAME: 'macOS (${{ matrix.python }}, ${{matrix.qt_library}})'
+          JOB_NAME: 'macOS (${{ matrix.python }}, ${{ matrix.qt_version }}, ${{matrix.qt_library}})'
           INSTALL_EXTRAS: '[${{ matrix.qt_library }},tests]'
+          QT_LIBRARY_AND_VERSION: '${{ matrix.qt_library }}${{ matrix.qt_version }}'
 
   all:
     name: All
