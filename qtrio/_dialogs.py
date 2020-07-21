@@ -199,7 +199,7 @@ class FileDialog:
             extras["directory"] = os.fspath(self.default_directory)
 
         options = self.options
-        if sys.platform == "darwin":
+        if True:#sys.platform == "darwin":
             # https://github.com/altendky/qtrio/issues/28
             options |= QtWidgets.QFileDialog.DontUseNativeDialog
 
