@@ -1,17 +1,15 @@
-    `https://gitter.im/python-trio/general <https://gitter.im/python-trio/general>`_
-
-    `https://trio.discourse.group <https://trio.discourse.group>`_
+Join chatroom `https://gitter.im/python-trio/general <https://gitter.im/python-trio/general>`_
 
 
 QTrio - a library bringing Qt GUIs together with ``async`` and ``await`` via Trio
 *********************************************************************************
 
 Note:
-    This library is in early development.  It works.  It has tests.  It has
-    documentation.  Expect breaking changes as we explore a clean API.  By paying this
-    price you get the privilege to provide feedback via
-    `GitHub issues <https://github.com/altendky/qtrio/issues>`_ to help shape our
-    future.  ``:]``
+   This library is in early development.  It works.  It has tests.  It has
+   documentation.  Expect breaking changes as we explore a clean API.  By paying this
+   price you get the privilege to provide feedback via
+   `GitHub issues <https://github.com/altendky/qtrio/issues>`_ to help shape our
+   future.  ``:]``
 
 The QTrio project’s goal is to bring the friendly concurrency of Trio using Python’s
 ``async`` and ``await`` syntax together with the GUI features of Qt to enable more
@@ -25,32 +23,32 @@ of Qt concurrency.
 
 .. code-block:: python3
 
-    class TwoStep:
-        def __init__(self, a_signal, some_path):
-            self.signal = a_signal
-            self.file = None
-            self.some_path = some_path
+   class TwoStep:
+       def __init__(self, a_signal, some_path):
+           self.signal = a_signal
+           self.file = None
+           self.some_path = some_path
 
-        def before(self):
-            self.file = open(some_path, 'w')
-            self.signal.connect(self.after)
-            self.file.write('before')
+       def before(self):
+           self.file = open(some_path, 'w')
+           self.signal.connect(self.after)
+           self.file.write('before')
 
-        def after(self, value):
-            self.signal.disconnect(self.after)
-            self.file.write(f'after {value!r}')
-            self.file.close()
-            
+       def after(self, value):
+           self.signal.disconnect(self.after)
+           self.file.write(f'after {value!r}')
+           self.file.close()
+           
 
 .. code-block:: python3
 
-    async def together(a_signal):
-            with open(self.some_path, 'w') as file:
-                async with qtrio.enter_emissions_channel(signals=[a_signal]) as emissions:
-                    file.write('before')
-                    emission = await emissions.channel.receive()
-                    [value] = emission.args
-                    file.write(f'after {value!r}') 
+   async def together(a_signal):
+           with open(self.some_path, 'w') as file:
+               async with qtrio.enter_emissions_channel(signals=[a_signal]) as emissions:
+                   file.write('before')
+                   emission = await emissions.channel.receive()
+                   [value] = emission.args
+                   file.write(f'after {value!r}') 
 
 Note how by using ``async`` and ``await`` we are not only able to more clearly and
 concisely describe the sequenced activity, we also get to use ``with`` to manage the

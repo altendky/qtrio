@@ -1,9 +1,15 @@
-.. image:: https://img.shields.io/badge/chat-join%20now-blue.svg
-   :target: https://gitter.im/python-trio/general
+Join chatroom |ChatroomImageLink|_
+
+.. |ChatroomImageLink| image:: https://img.shields.io/badge/chat-join%20now-blue.svg
+.. _ChatroomImageLink: https://gitter.im/python-trio/general
+
+.. 
+    image:: https://img.shields.io/badge/chat-join%20now-blue.svg
    :alt: Join chatroom
+   :target: https://gitter.im/python-trio/general
    
 .. 
-    image:: https://img.shields.io/badge/forum-join%20now-blue.svg
+    Image:: https://img.shields.io/badge/forum-join%20now-blue.svg
    :target: https://trio.discourse.group
    :alt: Join forum
    
