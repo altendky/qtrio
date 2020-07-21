@@ -1,4 +1,4 @@
-Join chatroom `https://gitter.im/python-trio/general <https://gitter.im/python-trio/general>`_
+[image: Join chatroom][image]
 
 
 QTrio - a library bringing Qt GUIs together with ``async`` and ``await`` via Trio
