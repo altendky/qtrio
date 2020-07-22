@@ -305,19 +305,20 @@ class MessageBox:
     def setup(self):
         self.result = None
 
-        self.dialog = QtWidgets.QMessageBox(
-            self.icon, self.title, self.text, self.buttons, self.parent
-        )
+        # self.dialog = QtWidgets.QMessageBox(
+        #     self.icon, self.title, self.text, self.buttons, self.parent
+        # )
+        self.dialog = QtWidgets.QDialog(self.parent)
 
         # TODO: adjust so we can use a context manager?
         self.dialog.finished.connect(self.finished)
 
-        # self.dialog.show()
-        import time
-        time.sleep(5)
+        self.dialog.show()
+        # import time
+        # time.sleep(5)
 
-        buttons = dialog_button_box_buttons_by_role(dialog=self.dialog)
-        self.accept_button = buttons[QtWidgets.QDialogButtonBox.AcceptRole]
+        # buttons = dialog_button_box_buttons_by_role(dialog=self.dialog)
+        # self.accept_button = buttons[QtWidgets.QDialogButtonBox.AcceptRole]
 
         self.shown.emit(self.dialog)
 
