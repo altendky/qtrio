@@ -96,7 +96,7 @@ jobs:
         python: ['3.8']
         arch: ['x64']
         qt_version: ['~=5.15.0']
-        qt_library: ['PySide2']
+        qt_library: ['PyQt5', 'PySide2']
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -137,8 +137,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.6', '3.7', '3.8']
-        qt_version: ['~=5.14.0', '~=5.15.0']
+        python: ['3.8']
+        qt_version: ['~=5.15.0']
         qt_library: ['PyQt5', 'PySide2']
     steps:
       - name: Checkout
@@ -170,8 +170,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.6', '3.7', '3.8']
-        qt_version: ['~=5.14.0', '~=5.15.0']
+        python: ['3.8']
+        qt_version: ['~=5.15.0']
         qt_library: ['PyQt5', 'PySide2']
     steps:
       - name: Checkout
