@@ -5,6 +5,7 @@ Attributes:
     REENTER_EVENT: The QtCore.QEvent.Type enumerator for our reenter events.
 """
 import contextlib
+import faulthandler
 import functools
 import math
 import sys
@@ -524,11 +525,15 @@ class Runner:
                         )
                     )
                 if self.timeout is not None:
+                    faulthandler.dump_traceback_later(self.timeout - 0.1)
+
                     timeout_cancel_scope = exit_stack.enter_context(
                         trio.move_on_after(self.timeout)
                     )
 
                 result = await async_fn(*args)
+
+            faulthandler.cancel_dump_traceback_later()
 
         if timeout_cancel_scope is not None and timeout_cancel_scope.cancelled_caught:
             raise qtrio.RunnerTimedOutError()
