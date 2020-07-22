@@ -113,6 +113,7 @@ jobs:
           JOB_NAME: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_version }}, ${{ matrix.qt_library }})'
           INSTALL_EXTRAS: '[${{ matrix.qt_library }},tests]'
           QT_LIBRARY_AND_VERSION: '${{ matrix.qt_library }}${{ matrix.qt_version }}'
+          QT_QPA_PLATFORM: 'offscreen'
       - name: Download
         run: Invoke-WebRequest https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-windows-amd64.zip -OutFile ngrok.zip
       - name: Extract
