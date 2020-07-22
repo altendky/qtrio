@@ -89,6 +89,7 @@ jobs:
     name: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_version }}, ${{ matrix.qt_library }})'
     timeout-minutes: 20
     runs-on: 'windows-latest'
+    continue-on-error: true
     strategy:
       fail-fast: false
       matrix:
