@@ -135,21 +135,30 @@ class TextInputDialog:
         self.reject_button = None
 
     @contextlib.contextmanager
-    def manage(self):
-        try:
-            self.setup()
-            yield self
-        finally:
-            self.teardown()
+    def manage(self, finished_event=None):
+        with contextlib.ExitStack() as exit_stack:
+            if finished_event is not None:
+                exit_stack.enter_context(
+                    qtrio._qt.connection(
+                        signal=self.finished,
+                        slot=lambda *args, **kwargs: finished_event.set(),
+                    )
+                )
+            try:
+                self.setup()
+                yield self
+            finally:
+                self.teardown()
 
     async def wait(self):
-        with self.manage():
-            [result] = await qtrio._core.wait_signal(self.dialog.finished)
-
-            if result == QtWidgets.QDialog.Rejected:
-                raise qtrio.UserCancelledError()
-
-            self.result = self.dialog.textValue()
+        finished_event = trio.Event()
+        with self.manage(finished_event=finished_event):
+            await finished_event.wait()
+            if self.dialog.result() != QtWidgets.QDialog.Accepted:
+                self.result = None
+            else:
+                [path_string] = self.dialog.selectedFiles()
+                self.result = trio.Path(path_string)
 
             return self.result
 
@@ -291,6 +300,7 @@ class MessageBox:
     result: typing.Optional[trio.Path] = None
 
     shown = qtrio._qt.Signal(QtWidgets.QMessageBox)
+    finished = qtrio._qt.Signal(int)  # QtWidgets.QDialog.DialogCode
 
     def setup(self):
         self.result = None
@@ -313,19 +323,32 @@ class MessageBox:
         self.accept_button = None
 
     @contextlib.contextmanager
-    def manage(self):
-        try:
-            self.setup()
-            yield self
-        finally:
-            self.teardown()
+    def manage(self, finished_event=None):
+        with contextlib.ExitStack() as exit_stack:
+            if finished_event is not None:
+                exit_stack.enter_context(
+                    qtrio._qt.connection(
+                        signal=self.finished,
+                        slot=lambda *args, **kwargs: finished_event.set(),
+                    )
+                )
+            try:
+                self.setup()
+                yield self
+            finally:
+                self.teardown()
 
     async def wait(self):
-        with self.manage():
-            [result] = await qtrio._core.wait_signal(self.dialog.finished)
+        finished_event = trio.Event()
+        with self.manage(finished_event=finished_event):
+            await finished_event.wait()
+            if self.dialog.result() != QtWidgets.QDialog.Accepted:
+                self.result = None
+            else:
+                [path_string] = self.dialog.selectedFiles()
+                self.result = trio.Path(path_string)
 
-            if result == QtWidgets.QDialog.Rejected:
-                raise qtrio.UserCancelledError()
+            return self.result
 
 
 def create_information_message_box(
