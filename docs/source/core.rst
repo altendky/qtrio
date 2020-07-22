@@ -37,7 +37,7 @@ Reentry Events
 
 Generally you should not need to use these functions.  If you want to either have
 control over when the Qt event type is registered, what value it gets, or handle any
-exceptions raise then you may like to call these directly.
+exceptions raised then you may like to call these directly.
 
 .. autofunction:: qtrio.register_event_type
 .. autofunction:: qtrio.register_requested_event_type
