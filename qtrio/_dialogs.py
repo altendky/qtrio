@@ -309,6 +309,9 @@ class MessageBox:
             self.icon, self.title, self.text, self.buttons, self.parent
         )
 
+        # TODO: adjust so we can use a context manager?
+        self.dialog.finished.connect(self.finished)
+
         self.dialog.show()
 
         buttons = dialog_button_box_buttons_by_role(dialog=self.dialog)
@@ -319,6 +322,7 @@ class MessageBox:
     def teardown(self):
         if self.dialog is not None:
             self.dialog.close()
+        self.dialog.finished.disconnect(self.finished)
         self.dialog = None
         self.accept_button = None
 
@@ -342,13 +346,6 @@ class MessageBox:
         finished_event = trio.Event()
         with self.manage(finished_event=finished_event):
             await finished_event.wait()
-            if self.dialog.result() != QtWidgets.QDialog.Accepted:
-                self.result = None
-            else:
-                [path_string] = self.dialog.selectedFiles()
-                self.result = trio.Path(path_string)
-
-            return self.result
 
 
 def create_information_message_box(
