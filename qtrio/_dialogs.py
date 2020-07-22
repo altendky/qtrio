@@ -312,9 +312,9 @@ class MessageBox:
         # TODO: adjust so we can use a context manager?
         self.dialog.finished.connect(self.finished)
 
-        self.dialog.show()
-        # import time
-        # time.sleep(5)
+        # self.dialog.show()
+        import time
+        time.sleep(5)
 
         buttons = dialog_button_box_buttons_by_role(dialog=self.dialog)
         self.accept_button = buttons[QtWidgets.QDialogButtonBox.AcceptRole]
