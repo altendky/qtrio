@@ -23,6 +23,8 @@ async def test_information_message_box(request, qtbot):
         async with qtrio._core.wait_signal_context(dialog.shown):
             task_status.started()
 
+        await trio.sleep(0)
+
         queried_text = dialog.dialog.text()
         dialog.dialog.accept()
 
