@@ -10,6 +10,8 @@ import qtrio._qt
 
 @qtrio.host
 async def test_information_message_box(request, qtbot):
+    import faulthandler
+    faulthandler.dump_traceback_later(2.5)
     text = "Consider yourself informed."
     queried_text = None
 
