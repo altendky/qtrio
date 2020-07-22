@@ -1,6 +1,6 @@
-[tool.towncrier]
-package = "qtrio"
-filename = "docs/source/history.rst"
-directory = "newsfragments"
-underlines = ["-", "~", "^"]
-issue_format = "`#{issue} <https://github.com/altendky/qtrio/issues/{issue}>`__"
+[build-system]
+requires = [
+    "setuptools >= 47.3.1",
+    "wheel >= 0.34.2",
+]
+build-backend = "setuptools.build_meta"

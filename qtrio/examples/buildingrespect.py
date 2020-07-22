@@ -10,11 +10,10 @@ async def main(button: typing.Optional[QtWidgets.QPushButton] = None):
 
     button.setText("Exit")
 
-    async with qtrio.open_emissions_channel(signals=[button.clicked]) as emissions:
-        async with emissions.channel:
-            button.show()
+    async with qtrio.enter_emissions_channel(signals=[button.clicked]) as emissions:
+        button.show()
 
-            await emissions.channel.receive()
+        await emissions.channel.receive()
 
 
 if __name__ == "__main__":  # pragma: no cover

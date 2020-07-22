@@ -1,4 +1,4 @@
-# https://docs.readthedocs.io/en/latest/yaml-config.html
+# https://docs.readthedocs.io/en/latest/config-file/v2.html
 version: 2
 
 formats:

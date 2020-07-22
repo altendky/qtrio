@@ -1,0 +1,43 @@
+[tool.towncrier]
+package = "qtrio"
+# https://github.com/twisted/towncrier/pull/271
+# name = "QTrio"
+filename = "docs/source/history.rst"
+directory = "newsfragments"
+underlines = ["-", "~", "^"]
+issue_format = "`#{issue} <https://github.com/altendky/qtrio/issues/{issue}>`__"
+
+[[tool.towncrier.type]]
+directory = "headline"
+name = "Headline features"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "breaking"
+name = "Breaking changes"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "feature"
+name = "Features"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "bugfix"
+name = "Bugfixes"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "doc"
+name = "Improved documentation"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "deprecated"
+name = "Deprecations and removals"
+showcontent = true
+
+[[tool.towncrier.type]]
+directory = "misc"
+name = "Miscellaneous internal changes"
+showcontent = true
