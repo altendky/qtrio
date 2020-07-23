@@ -374,6 +374,9 @@ class MessageBox:
 
             try:
                 await finished_event.wait()
+            except trio.Cancelled:
+                print('+++++', 'MessageBox.wait cancelled', threading.get_ident())
+                raise
             finally:
                 print('+++++', 'MessageBox.wait result after', self.dialog.result(), threading.get_ident())
 

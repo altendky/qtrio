@@ -35,6 +35,9 @@ async def test_information_message_box(request, qtbot):
             print('+++++', 'test user', 5, threading.get_ident())
             dialog.dialog.accept()
             print('+++++', 'test user', 6, threading.get_ident())
+        except trio.Cancelled:
+            print('+++++', 'test user cancelled', threading.get_ident())
+            raise
         finally:
             print('+++++', 'test user finally', threading.get_ident())
 
@@ -44,7 +47,11 @@ async def test_information_message_box(request, qtbot):
         print('+++++', 'test', 1, threading.get_ident())
         with qtrio._qt.connection(signal=dialog.shown, slot=qtbot.addWidget):
             print('+++++', 'test', 2, threading.get_ident())
-            await dialog.wait()
+            try:
+                await dialog.wait()
+            except trio.Cancelled:
+                print('+++++', 'test cancelled', threading.get_ident())
+                raise
 
         print('+++++', 'test', 3, threading.get_ident())
 
