@@ -320,9 +320,9 @@ class MessageBox:
         self.dialog.finished.connect(finished_emitted)
 
         self.dialog.show()
-        import time
+        # import time
         print('+++++', 'MessageBox.setup', 1, threading.get_ident())
-        time.sleep(5)
+        # time.sleep(5)
         print('+++++', 'MessageBox.setup', 2, threading.get_ident())
 
         buttons = dialog_button_box_buttons_by_role(dialog=self.dialog)
