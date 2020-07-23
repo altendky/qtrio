@@ -23,7 +23,7 @@ async def test_information_message_box(request, qtbot):
         async with qtrio._core.wait_signal_context(dialog.shown):
             task_status.started()
 
-        # queried_text = dialog.dialog.text()
+        queried_text = dialog.dialog.text()
         dialog.dialog.accept()
 
     async with trio.open_nursery() as nursery:
@@ -31,4 +31,4 @@ async def test_information_message_box(request, qtbot):
         with qtrio._qt.connection(signal=dialog.shown, slot=qtbot.addWidget):
             await dialog.wait()
 
-    # assert queried_text == text
+    assert queried_text == text
