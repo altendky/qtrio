@@ -304,6 +304,7 @@ class MessageBox:
     finished = qtrio._qt.Signal(int)  # QtWidgets.QDialog.DialogCode
 
     def setup(self):
+        print('+++++', 'MessageBox.setup', 0, threading.get_ident())
         self.result = None
 
         self.dialog = QtWidgets.QMessageBox(
@@ -315,21 +316,29 @@ class MessageBox:
 
         # self.dialog.show()
         import time
-        print('+++++ -')
+        print('+++++', 'MessageBox.setup', 1, threading.get_ident())
         time.sleep(5)
-        print('+++++ --')
+        print('+++++', 'MessageBox.setup', 2, threading.get_ident())
 
         buttons = dialog_button_box_buttons_by_role(dialog=self.dialog)
         self.accept_button = buttons[QtWidgets.QDialogButtonBox.AcceptRole]
 
+        print('+++++', 'MessageBox.setup', 3, threading.get_ident())
         self.shown.emit(self.dialog)
+        print('+++++', 'MessageBox.setup', 4, threading.get_ident())
 
     def teardown(self):
+        print('+++++', 'MessageBox.teardown', 0, threading.get_ident())
         if self.dialog is not None:
+            print('+++++', 'MessageBox.teardown', 1, threading.get_ident())
             self.dialog.close()
+        print('+++++', 'MessageBox.teardown', 2, threading.get_ident())
         self.dialog.finished.disconnect(self.finished)
+        print('+++++', 'MessageBox.teardown', 3, threading.get_ident())
         self.dialog = None
+        print('+++++', 'MessageBox.teardown', 4, threading.get_ident())
         self.accept_button = None
+        print('+++++', 'MessageBox.teardown', 5, threading.get_ident())
 
     @contextlib.contextmanager
     def manage(self, finished_event=None):
@@ -348,14 +357,13 @@ class MessageBox:
                 self.teardown()
 
     async def wait(self):
-        print('+++++ a', threading.get_ident())
+        print('+++++', 'MessageBox.wait', 0, threading.get_ident())
         finished_event = trio.Event()
-        print('+++++ b', threading.get_ident())
+        print('+++++', 'MessageBox.wait', 1, threading.get_ident())
         with self.manage(finished_event=finished_event):
-            print('+++++ c', threading.get_ident())
+            print('+++++', 'MessageBox.wait', 2, threading.get_ident())
             await finished_event.wait()
-            print('+++++ d', threading.get_ident())
-        print('+++++ e', threading.get_ident())
+        print('+++++', 'MessageBox.wait', 3, threading.get_ident())
 
 
 def create_information_message_box(

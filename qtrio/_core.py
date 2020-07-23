@@ -314,22 +314,22 @@ async def wait_signal_context(
     Args:
         signal: The signal to connect to and wait for.
     """
-    print('+++++ .', threading.get_ident())
+    print('+++++', 'wait_signal_context', 0, threading.get_ident())
     event = trio.Event()
-    print('+++++ ..', threading.get_ident())
+    print('+++++', 'wait_signal_context', 1, threading.get_ident())
 
     def slot(*args, **kwargs):
-        print('+++++ auauuaghghhhhhh')
+        print('+++++', 'wait_signal_context slot', 2, threading.get_ident())
         event.set()
 
     with qtrio._qt.connection(signal=signal, slot=slot):
-        print('+++++ ...', threading.get_ident())
+        print('+++++', 'wait_signal_context', 3, threading.get_ident())
         yield
-        print('+++++ ....', threading.get_ident())
+        print('+++++', 'wait_signal_context', 4, threading.get_ident())
         await event.wait()
-        print('+++++ .....', threading.get_ident())
+        print('+++++', 'wait_signal_context', 5, threading.get_ident())
 
-    print('+++++ ......', threading.get_ident())
+    print('+++++', 'wait_signal_context', 6, threading.get_ident())
 
 
 @attr.s(auto_attribs=True, frozen=True, slots=True)
