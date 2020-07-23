@@ -1,6 +1,7 @@
 import contextlib
 import os
 import sys
+import threading
 import typing
 
 import async_generator
@@ -314,7 +315,9 @@ class MessageBox:
 
         # self.dialog.show()
         import time
+        print('+++++ -')
         time.sleep(5)
+        print('+++++ --')
 
         buttons = dialog_button_box_buttons_by_role(dialog=self.dialog)
         self.accept_button = buttons[QtWidgets.QDialogButtonBox.AcceptRole]
@@ -345,9 +348,14 @@ class MessageBox:
                 self.teardown()
 
     async def wait(self):
+        print('+++++ a', threading.get_ident())
         finished_event = trio.Event()
+        print('+++++ b', threading.get_ident())
         with self.manage(finished_event=finished_event):
+            print('+++++ c', threading.get_ident())
             await finished_event.wait()
+            print('+++++ d', threading.get_ident())
+        print('+++++ e', threading.get_ident())
 
 
 def create_information_message_box(

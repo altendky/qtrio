@@ -9,6 +9,7 @@ import faulthandler
 import functools
 import math
 import sys
+import threading
 import traceback
 import typing
 
@@ -313,11 +314,22 @@ async def wait_signal_context(
     Args:
         signal: The signal to connect to and wait for.
     """
+    print('+++++ .', threading.get_ident())
     event = trio.Event()
+    print('+++++ ..', threading.get_ident())
 
-    with qtrio._qt.connection(signal=signal, slot=lambda *args, **kwargs: event.set()):
+    def slot(*args, **kwargs):
+        print('+++++ auauuaghghhhhhh')
+        event.set()
+
+    with qtrio._qt.connection(signal=signal, slot=slot):
+        print('+++++ ...', threading.get_ident())
         yield
+        print('+++++ ....', threading.get_ident())
         await event.wait()
+        print('+++++ .....', threading.get_ident())
+
+    print('+++++ ......', threading.get_ident())
 
 
 @attr.s(auto_attribs=True, frozen=True, slots=True)
