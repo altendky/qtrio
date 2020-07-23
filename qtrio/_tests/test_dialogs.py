@@ -29,6 +29,9 @@ async def test_information_message_box(request, qtbot):
                 print('+++++', 'test user', 2, threading.get_ident())
                 task_status.started()
                 print('+++++', 'test user', 3, threading.get_ident())
+            # add a checkpoint to allow cancellation even if the signal was sent before
+            # the cancellation was initiated.
+            await trio.sleep(0)
             print('+++++', 'test user', 4, threading.get_ident())
 
             queried_text = dialog.dialog.text()
