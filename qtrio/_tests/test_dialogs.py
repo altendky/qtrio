@@ -20,20 +20,23 @@ async def test_information_message_box(request, qtbot):
     )
 
     async def user(task_status):
-        print('+++++', 'test user', 0, threading.get_ident())
-        nonlocal queried_text
+        try:
+            print('+++++', 'test user', 0, threading.get_ident())
+            nonlocal queried_text
 
-        print('+++++', 'test user', 1, threading.get_ident())
-        async with qtrio._core.wait_signal_context(dialog.shown):
-            print('+++++', 'test user', 2, threading.get_ident())
-            task_status.started()
-            print('+++++', 'test user', 3, threading.get_ident())
-        print('+++++', 'test user', 4, threading.get_ident())
+            print('+++++', 'test user', 1, threading.get_ident())
+            async with qtrio._core.wait_signal_context(dialog.shown):
+                print('+++++', 'test user', 2, threading.get_ident())
+                task_status.started()
+                print('+++++', 'test user', 3, threading.get_ident())
+            print('+++++', 'test user', 4, threading.get_ident())
 
-        queried_text = dialog.dialog.text()
-        print('+++++', 'test user', 5, threading.get_ident())
-        dialog.dialog.accept()
-        print('+++++', 'test user', 6, threading.get_ident())
+            queried_text = dialog.dialog.text()
+            print('+++++', 'test user', 5, threading.get_ident())
+            dialog.dialog.accept()
+            print('+++++', 'test user', 6, threading.get_ident())
+        finally:
+            print('+++++', 'test user finally', threading.get_ident())
 
     async with trio.open_nursery() as nursery:
         print('+++++', 'test', 0, threading.get_ident())

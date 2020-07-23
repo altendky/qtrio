@@ -310,11 +310,16 @@ class MessageBox:
         self.dialog = QtWidgets.QMessageBox(
             self.icon, self.title, self.text, self.buttons, self.parent
         )
+        print('+++++', 'MessageBox.setup result', self.dialog.result(), threading.get_ident())
 
         # TODO: adjust so we can use a context manager?
         self.dialog.finished.connect(self.finished)
 
-        # self.dialog.show()
+        def finished_emitted(result):
+            print('+++++', 'MessageBox.setup finished_emitted result', result, threading.get_ident())
+        self.dialog.finished.connect(finished_emitted)
+
+        self.dialog.show()
         import time
         print('+++++', 'MessageBox.setup', 1, threading.get_ident())
         time.sleep(5)
@@ -344,12 +349,14 @@ class MessageBox:
     def manage(self, finished_event=None):
         with contextlib.ExitStack() as exit_stack:
             if finished_event is not None:
+                def slot(*args, **kwargs):
+                    print('+++++', 'MessageBox.manage slot', threading.get_ident())
+                    finished_event.set()
+
                 exit_stack.enter_context(
-                    qtrio._qt.connection(
-                        signal=self.finished,
-                        slot=lambda *args, **kwargs: finished_event.set(),
-                    )
+                    qtrio._qt.connection(signal=self.finished, slot=slot),
                 )
+
             try:
                 self.setup()
                 yield self
@@ -362,8 +369,17 @@ class MessageBox:
         print('+++++', 'MessageBox.wait', 1, threading.get_ident())
         with self.manage(finished_event=finished_event):
             print('+++++', 'MessageBox.wait', 2, threading.get_ident())
-            await finished_event.wait()
-        print('+++++', 'MessageBox.wait', 3, threading.get_ident())
+
+            print('+++++', 'MessageBox.wait result before', self.dialog.result(), threading.get_ident())
+
+            try:
+                await finished_event.wait()
+            finally:
+                print('+++++', 'MessageBox.wait result after', self.dialog.result(), threading.get_ident())
+
+            print('+++++', 'MessageBox.wait', 3, threading.get_ident())
+
+        print('+++++', 'MessageBox.wait', 4, threading.get_ident())
 
 
 def create_information_message_box(

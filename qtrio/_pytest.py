@@ -58,10 +58,11 @@ def host(test_function: typing.Callable[..., typing.Awaitable[None]]):
             execute_application=False,
         )
 
+        def outcomes_set():
+            return test_outcomes is not test_outcomes_sentinel
+
         # TODO: probably increases runtime of fast tests a lot due to polling
-        qtbot.wait_until(
-            lambda: test_outcomes is not test_outcomes_sentinel, timeout=3.14e8
-        )
+        qtbot.wait_until(outcomes_set, timeout=3.14e8)
         test_outcomes.unwrap()
 
     return wrapper
