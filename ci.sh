@@ -80,5 +80,5 @@ else
     curl-harder -o codecov.sh https://codecov.io/bash
     bash codecov.sh -n "${JOB_NAME}"
 
-#    $PASSED
+    $PASSED
 fi
