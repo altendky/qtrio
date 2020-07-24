@@ -21,3 +21,5 @@ def preshow_fixture(qapp):
         "FYI, the qtrio_preshow_workaround fixture widget show time was"
         + f" {show_time:0.3f} seconds..."
     )
+
+    yield
