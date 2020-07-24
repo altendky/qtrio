@@ -27,6 +27,7 @@ def test_reenter_event_triggers_in_main_thread(qapp):
     reenter = qtrio._core.Reenter()
 
     def post():
+        qtrio.register_event_type()
         event = qtrio._core.ReenterEvent(fn=handler)
         qapp.postEvent(reenter, event)
 
@@ -276,14 +277,14 @@ def test_done_callback_gets_outcomes(testdir):
 
 
 def test_out_of_hints_raises(testdir):
-    """If there are no available Qt event types remaining RegisterEventTypeError is
-    raised.
+    """If there are no available Qt event types remaining
+    EventTypeRegistrationFailedError is raised when requesting a type without any
+    specific requested value.
     """
     test_file = r"""
+    import pytest
     from qtpy import QtCore
-    # Must pre-import Trio to avoid triggering another error
-    # https://github.com/python-trio/trio/issues/1630
-    import trio
+    import qtrio
 
 
     def test():
@@ -291,15 +292,111 @@ def test_out_of_hints_raises(testdir):
             # use up all the event types
             pass
 
-        exception = None
+        with pytest.raises(qtrio.EventTypeRegistrationFailedError):
+            qtrio.register_event_type()
+    """
+    testdir.makepyfile(test_file)
 
-        try:
-            import qtrio._exceptions
-        except Exception as e:
-            exception = e
+    result = testdir.runpytest_subprocess(timeout=timeout)
+    result.assert_outcomes(passed=1)
 
-        assert exception is not None
-        assert type(exception).__name__ == "RegisterEventTypeError"
+
+def test_out_of_hints_raises_for_requested(testdir):
+    """If there are no available Qt event types remaining
+    EventTypeRegistrationFailedError is raised when requesting a type with a specific
+    requested value.
+    """
+    test_file = r"""
+    import pytest
+    from qtpy import QtCore
+    import qtrio
+
+
+    def test():
+        while QtCore.QEvent.registerEventType() != -1:
+            # use up all the event types
+            pass
+
+        with pytest.raises(qtrio.EventTypeRegistrationFailedError):
+            qtrio.register_requested_event_type(QtCore.QEvent.User)
+    """
+    testdir.makepyfile(test_file)
+
+    result = testdir.runpytest_subprocess(timeout=timeout)
+    result.assert_outcomes(passed=1)
+
+
+def test_out_of_hints_raises_when_requesting_already_used_type(testdir):
+    """An error is raised when a request is made to register an already used event
+    type.
+    """
+    test_file = r"""
+    import pytest
+    from qtpy import QtCore
+    import qtrio
+
+
+    def test():
+        already_used = QtCore.QEvent.registerEventType()
+
+        with pytest.raises(qtrio.RequestedEventTypeUnavailableError):
+            qtrio.register_requested_event_type(already_used)
+    """
+    testdir.makepyfile(test_file)
+
+    result = testdir.runpytest_subprocess(timeout=timeout)
+    result.assert_outcomes(passed=1)
+
+
+def test_requesting_available_event_type_succeeds(testdir):
+    """Requesting an available event type succeeds."""
+    test_file = r"""
+    from qtpy import QtCore
+    import qtrio
+
+
+    def test():
+        qtrio.register_requested_event_type(QtCore.QEvent.User)
+
+        assert qtrio.registered_event_type() == QtCore.QEvent.User
+    """
+    testdir.makepyfile(test_file)
+
+    result = testdir.runpytest_subprocess(timeout=timeout)
+    result.assert_outcomes(passed=1)
+
+
+def test_registering_event_type_when_already_registered(testdir):
+    """Requesting an available event type succeeds."""
+    test_file = r"""
+    import pytest
+    import qtrio
+
+
+    def test():
+        qtrio.register_event_type()
+
+        with pytest.raises(qtrio.EventTypeAlreadyRegisteredError):
+            qtrio.register_event_type()
+    """
+    testdir.makepyfile(test_file)
+
+    result = testdir.runpytest_subprocess(timeout=timeout)
+    result.assert_outcomes(passed=1)
+
+
+def test_registering_requested_event_type_when_already_registered(testdir):
+    """Requesting an available event type succeeds."""
+    test_file = r"""
+    import pytest
+    import qtrio
+
+
+    def test():
+        qtrio.register_event_type()
+
+        with pytest.raises(qtrio.EventTypeAlreadyRegisteredError):
+            qtrio.register_requested_event_type(qtrio.registered_event_type())
     """
     testdir.makepyfile(test_file)
 
@@ -338,7 +435,7 @@ def test_wait_signal_waits(testdir):
     result.assert_outcomes(passed=1)
 
 
-def test_wait_signal_returns_the_value(testdir):
+def test_wait_signal_returns_the_value(preshow_testdir):
     """wait_signal() waits for the signal."""
     test_file = r"""
     from qtpy import QtCore
@@ -363,13 +460,13 @@ def test_wait_signal_returns_the_value(testdir):
 
         assert result == (17,)
     """
-    testdir.makepyfile(test_file)
+    preshow_testdir.makepyfile(test_file)
 
-    result = testdir.runpytest_subprocess(timeout=timeout)
+    result = preshow_testdir.runpytest_subprocess(timeout=timeout)
     result.assert_outcomes(passed=1)
 
 
-def test_wait_signal_context_waits(testdir):
+def test_wait_signal_context_waits(preshow_testdir):
     """wait_signal_context() waits for the signal.
     """
     test_file = r"""
@@ -392,9 +489,9 @@ def test_wait_signal_context_waits(testdir):
 
         assert end - start > 0.090
     """
-    testdir.makepyfile(test_file)
+    preshow_testdir.makepyfile(test_file)
 
-    result = testdir.runpytest_subprocess(timeout=timeout)
+    result = preshow_testdir.runpytest_subprocess(timeout=timeout)
     result.assert_outcomes(passed=1)
 
 
@@ -512,7 +609,7 @@ def test_outcome_from_application_return_code_error():
     assert result == outcome.Error(qtrio.ReturnCodeError(-1))
 
 
-def test_failed_hosted_trio_prints_exception(testdir):
+def test_failed_hosted_trio_prints_exception(preshow_testdir):
     """Except is printed when main Trio function raises."""
     test_file = r"""
     from qtpy import QtCore
@@ -527,9 +624,9 @@ def test_failed_hosted_trio_prints_exception(testdir):
     async def test(request):
         raise UniqueLocalException()
     """
-    testdir.makepyfile(test_file)
+    preshow_testdir.makepyfile(test_file)
 
-    result = testdir.runpytest_subprocess(timeout=timeout)
+    result = preshow_testdir.runpytest_subprocess(timeout=timeout)
     result.assert_outcomes(failed=1)
     result.stdout.re_match_lines(lines2=["--- Error(UniqueLocalException())"])
 
@@ -607,7 +704,7 @@ def test_emissions_unequal_by_args():
     ) != qtrio._core.Emission(signal=instance.signal, args=(14,))
 
 
-def test_emissions_channel_iterates_one(testdir, emissions_channel_string):
+def test_emissions_channel_iterates_one(preshow_testdir, emissions_channel_string):
     """Emissions channel yields one emission as expected."""
     test_file = rf"""
     from qtpy import QtCore
@@ -633,13 +730,13 @@ def test_emissions_channel_iterates_one(testdir, emissions_channel_string):
 
         assert emissions == [qtrio._core.Emission(signal=instance.signal, args=(93,))]
     """
-    testdir.makepyfile(test_file)
+    preshow_testdir.makepyfile(test_file)
 
-    result = testdir.runpytest_subprocess(timeout=timeout)
+    result = preshow_testdir.runpytest_subprocess(timeout=timeout)
     result.assert_outcomes(passed=1)
 
 
-def test_emissions_channel_iterates_three(testdir, emissions_channel_string):
+def test_emissions_channel_iterates_three(preshow_testdir, emissions_channel_string):
     """Emissions channel yields three emissions as expected."""
     test_file = rf"""
     from qtpy import QtCore
@@ -669,13 +766,15 @@ def test_emissions_channel_iterates_three(testdir, emissions_channel_string):
             for v in [93, 56, 27]
         ]
     """
-    testdir.makepyfile(test_file)
+    preshow_testdir.makepyfile(test_file)
 
-    result = testdir.runpytest_subprocess(timeout=timeout)
+    result = preshow_testdir.runpytest_subprocess(timeout=timeout)
     result.assert_outcomes(passed=1)
 
 
-def test_emissions_channel_with_three_receives_first(testdir, emissions_channel_string):
+def test_emissions_channel_with_three_receives_first(
+    preshow_testdir, emissions_channel_string
+):
     """Emissions channel yields receives first item when requested."""
     test_file = rf"""
     from qtpy import QtCore
@@ -702,13 +801,13 @@ def test_emissions_channel_with_three_receives_first(testdir, emissions_channel_
 
         assert emission == qtrio._core.Emission(signal=instance.signal, args=(93,))
     """
-    testdir.makepyfile(test_file)
+    preshow_testdir.makepyfile(test_file)
 
-    result = testdir.runpytest_subprocess(timeout=timeout)
+    result = preshow_testdir.runpytest_subprocess(timeout=timeout)
     result.assert_outcomes(passed=1)
 
 
-def test_emissions_channel_iterates_in_order(testdir, emissions_channel_string):
+def test_emissions_channel_iterates_in_order(preshow_testdir, emissions_channel_string):
     """Emissions channel yields signal emissions in order (pretty probably...)."""
     test_file = rf"""
     from qtpy import QtCore
@@ -744,13 +843,13 @@ def test_emissions_channel_iterates_in_order(testdir, emissions_channel_string):
 
         assert results == values
     """
-    testdir.makepyfile(test_file)
+    preshow_testdir.makepyfile(test_file)
 
-    result = testdir.runpytest_subprocess(timeout=timeout)
+    result = preshow_testdir.runpytest_subprocess(timeout=timeout)
     result.assert_outcomes(passed=1)
 
 
-def test_emissions_channel_limited_buffer(testdir, emissions_channel_string):
+def test_emissions_channel_limited_buffer(preshow_testdir, emissions_channel_string):
     """Emissions channel throws away beyond buffer limit."""
     test_file = rf"""
     from qtpy import QtCore
@@ -783,13 +882,13 @@ def test_emissions_channel_limited_buffer(testdir, emissions_channel_string):
 
         assert results == values[:max_buffer_size]
     """
-    testdir.makepyfile(test_file)
+    preshow_testdir.makepyfile(test_file)
 
-    result = testdir.runpytest_subprocess(timeout=timeout)
+    result = preshow_testdir.runpytest_subprocess(timeout=timeout)
     result.assert_outcomes(passed=1)
 
 
-def test_open_emissions_channel_does_not_close_read_channel(testdir):
+def test_open_emissions_channel_does_not_close_read_channel(preshow_testdir):
     """Exiting open_emissions_channel() closes send channel and does not close
     read channel on exit.
     """
@@ -822,13 +921,13 @@ def test_open_emissions_channel_does_not_close_read_channel(testdir):
         with pytest.raises(trio.ClosedResourceError):
             emissions.send_channel.send_nowait(None)
     """
-    testdir.makepyfile(test_file)
+    preshow_testdir.makepyfile(test_file)
 
-    result = testdir.runpytest_subprocess(timeout=timeout)
+    result = preshow_testdir.runpytest_subprocess(timeout=timeout)
     result.assert_outcomes(passed=1)
 
 
-def test_enter_emissions_channel_closes_both_channels(testdir):
+def test_enter_emissions_channel_closes_both_channels(preshow_testdir):
     """Exiting enter_emissions_channel() closes send and receive channels on exit."""
     test_file = r"""
     import pytest
@@ -859,9 +958,9 @@ def test_enter_emissions_channel_closes_both_channels(testdir):
         with pytest.raises(trio.ClosedResourceError):
             emissions.send_channel.send_nowait(None)
     """
-    testdir.makepyfile(test_file)
+    preshow_testdir.makepyfile(test_file)
 
-    result = testdir.runpytest_subprocess(timeout=timeout)
+    result = preshow_testdir.runpytest_subprocess(timeout=timeout)
     result.assert_outcomes(passed=1)
 
 

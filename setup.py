@@ -34,7 +34,7 @@ setup(
         "docs": [
             "sphinx >= 1.7.0",
             "sphinx-autodoc-typehints",
-            "sphinx-qt-documentation",
+            "sphinx-qt-documentation>=0.3",
             "sphinx_rtd_theme",
             "sphinxcontrib-trio",
         ],
