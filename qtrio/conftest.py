@@ -17,6 +17,7 @@ def preshow_fixture(qapp):
     start = clock()
     widget.show()
     end = clock()
+    widget.hide()
 
     show_time = end - start
 
@@ -24,6 +25,8 @@ def preshow_fixture(qapp):
         "FYI, the qtrio_preshow_workaround fixture widget show time was"
         + f" {show_time:0.3f} seconds...  {os.getpid()}"
     )
+
+    yield
 
 
 @pytest.fixture(name="preshow_testdir")
