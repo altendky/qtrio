@@ -32,9 +32,9 @@ async def test_example(request, qtbot):
         # async with qtrio.enter_emissions_channel(
         #     signals=[button.shown],
         # ) as emissions:
+            nursery.start_soon(user)
+
             button.show()
             return
-
-            nursery.start_soon(user)
 
             await qtrio.examples.buildingrespect.main(button=button)
