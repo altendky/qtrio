@@ -26,17 +26,8 @@ async def test_example(request, qtbot):
         await trio.sleep(0)
         print('+++++', 'test_example user() after sleep')
 
-        button.click()
-        print('+++++', 'test_example user() after click')
-
     print('+++++', 'test_example before nursery')
-
     async with trio.open_nursery() as nursery:
-        print('+++++', 'test_example inside nursery')
-        button.show()
-        print('+++++', 'test_example after button.show()')
-        button.hide()
-        print('+++++', 'test_example after button.hide()')
         nursery.start_soon(user)
         print('+++++', 'test_example after nursery.start_soon()')
 
