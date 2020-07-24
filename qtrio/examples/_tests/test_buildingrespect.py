@@ -22,10 +22,12 @@ async def test_example(request, qtbot):
     qtbot.addWidget(button)
 
     async def user():
-        # await emissions.channel.receive()
+        print('+++++', 'test_example user() before sleep')
         await trio.sleep(2)
+        print('+++++', 'test_example user() after sleep')
 
         button.click()
+        print('+++++', 'test_example user() after click')
 
     print('+++++', 'test_example before nursery')
 
