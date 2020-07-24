@@ -91,6 +91,10 @@ async def test_file_save(request, qtbot, tmp_path):
         async with qtrio._core.wait_signal_context(dialog.shown):
             task_status.started()
 
+        # allow cancellation to occur even if the signal was received before the
+        # cancellation was requested.
+        await trio.sleep(0)
+
         dialog.dialog.accept()
 
     async with trio.open_nursery() as nursery:
