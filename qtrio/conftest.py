@@ -11,7 +11,7 @@ pytest_plugins = "pytester"
 
 @pytest.fixture(name="qtrio_preshow_workaround", scope="session", autouse=True)
 def preshow_fixture(qapp):
-    widget = QtWidgets.QWidget()
+    widget = QtWidgets.QPushButton()
 
     clock = time.monotonic
     start = clock()

@@ -3,9 +3,6 @@ timeout = 30
 
 def test_buildingrespect_outer(preshow_testdir):
     test_file = r"""
-    import os
-    import time
-
     import qtrio
     from qtpy import QtCore
     from qtpy import QtWidgets
@@ -23,23 +20,6 @@ def test_buildingrespect_outer(preshow_testdir):
             if event.isAccepted():
                 self.shown.emit()
 
-
-    def test_preshow(qapp):
-        widget = QtWidgets.QPushButton()
-    
-        clock = time.monotonic
-        start = clock()
-        widget.show()
-        end = clock()
-        widget.hide()
-    
-        show_time = end - start
-    
-        print(
-            "so yeah, the test_preshow widget show time was"
-            + f" {show_time:0.3f} seconds...  {os.getpid()}"
-        )
-    
 
     @qtrio.host
     async def test_buildingrespect_inner(request, qtbot):
