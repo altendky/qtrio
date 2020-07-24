@@ -60,5 +60,7 @@ def test_main(preshow_testdir):
     """
     preshow_testdir.makepyfile(test_file)
 
-    result = preshow_testdir.runpytest_subprocess("--capture=no", "-vv", timeout=timeout)
+    result = preshow_testdir.runpytest_subprocess(
+        "--capture=no", "-vv", timeout=timeout
+    )
     result.assert_outcomes(passed=1)
