@@ -1,3 +1,5 @@
+import time
+
 import qtrio
 from qtpy import QtCore
 from qtpy import QtWidgets
@@ -21,15 +23,24 @@ async def test_example(request, qtbot):
     button = SignaledButton()
     qtbot.addWidget(button)
 
+    clock = time.monotonic
+    start = clock()
+
+    def delta():
+        return f'{clock() - start:0.3f}'
+
     async def user():
-        print('+++++', 'test_example user() before sleep')
+        print('+++++', 'test_example user() before sleep', delta())
         await trio.sleep(0)
-        print('+++++', 'test_example user() after sleep')
+        print('+++++', 'test_example user() after sleep', delta())
 
-    print('+++++', 'test_example before nursery')
-    async with trio.open_nursery() as nursery:
-        nursery.start_soon(user)
-        print('+++++', 'test_example after nursery.start_soon()')
+    print('+++++', 'test_example before nursery', delta())
+    try:
+        async with trio.open_nursery() as nursery:
+            nursery.start_soon(user)
+            print('+++++', 'test_example after nursery.start_soon()', delta())
 
-        button.show()
-        print('+++++', 'test_example after button.show()')
+            button.show()
+            print('+++++', 'test_example after button.show()', delta())
+    finally:
+        print('+++++', 'test_example finally', delta())
