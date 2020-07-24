@@ -1,8 +1,11 @@
-timeout = 10
+timeout = 30
 
 
 def test_buildingrespect_outer(preshow_testdir):
     test_file = r"""
+    import os
+    import time
+
     import qtrio
     from qtpy import QtCore
     from qtpy import QtWidgets
@@ -60,4 +63,4 @@ def test_buildingrespect_outer(preshow_testdir):
     preshow_testdir.makepyfile(test_file)
 
     result = preshow_testdir.runpytest_subprocess("--capture=no", timeout=timeout)
-    result.assert_outcomes(passed=1)
+    result.assert_outcomes(passed=2)
