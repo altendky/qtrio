@@ -1,7 +1,7 @@
 import qtrio._pytest
 
 
-def test_overrunning_test_times_out(testdir):
+def test_overrunning_test_times_out(preshow_testdir):
     """The overrunning test is timed out."""
 
     test_file = rf"""
@@ -12,9 +12,9 @@ def test_overrunning_test_times_out(testdir):
     async def test(request):
         await trio.sleep({2 * qtrio._pytest.timeout})
     """
-    testdir.makepyfile(test_file)
+    preshow_testdir.makepyfile(test_file)
 
-    result = testdir.runpytest_subprocess(timeout=2 * qtrio._pytest.timeout)
+    result = preshow_testdir.runpytest_subprocess(timeout=2 * qtrio._pytest.timeout)
     result.assert_outcomes(failed=1)
     result.stdout.re_match_lines(
         lines2=[r"E\s+qtrio\._exceptions\.RunnerTimedOutError"]
@@ -25,7 +25,7 @@ def test_overrunning_test_times_out(testdir):
 #       it was doing five minutes ago.
 
 
-def test_hosted_assertion_failure_fails(testdir):
+def test_hosted_assertion_failure_fails(preshow_testdir):
     """QTrio hosted test which fails an assertion fails the test."""
 
     test_file = r"""
@@ -35,7 +35,7 @@ def test_hosted_assertion_failure_fails(testdir):
     async def test(request):
         assert False
     """
-    testdir.makepyfile(test_file)
+    preshow_testdir.makepyfile(test_file)
 
-    result = testdir.runpytest_subprocess(timeout=10)
+    result = preshow_testdir.runpytest_subprocess(timeout=10)
     result.assert_outcomes(failed=1)

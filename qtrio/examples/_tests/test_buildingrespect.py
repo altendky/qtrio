@@ -1,7 +1,7 @@
 timeout = 10
 
 
-def test_main(testdir):
+def test_main(preshow_testdir):
     test_file = r"""
     import qtrio
     from qtpy import QtCore
@@ -40,7 +40,7 @@ def test_main(testdir):
 
                 await qtrio.examples.buildingrespect.main(button=button)
     """
-    testdir.makepyfile(test_file)
+    preshow_testdir.makepyfile(test_file)
 
-    result = testdir.runpytest_subprocess("--capture=no", timeout=timeout)
+    result = preshow_testdir.runpytest_subprocess("--capture=no", timeout=timeout)
     result.assert_outcomes(passed=1)
