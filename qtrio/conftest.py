@@ -26,8 +26,6 @@ def preshow_fixture(qapp):
         + f" {show_time:0.3f} seconds...  {os.getpid()}"
     )
 
-    yield
-
 
 @pytest.fixture(name="preshow_testdir")
 def preshow_testdir_fixture(testdir):
