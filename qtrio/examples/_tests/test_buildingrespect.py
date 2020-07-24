@@ -32,6 +32,8 @@ async def test_example(request, qtbot):
         # async with qtrio.enter_emissions_channel(
         #     signals=[button.shown],
         # ) as emissions:
+            button.show()
+            button.hide()
             nursery.start_soon(user)
 
             button.show()
