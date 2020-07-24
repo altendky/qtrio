@@ -1,3 +1,4 @@
+import os
 import time
 import typing
 
@@ -20,9 +21,9 @@ async def main(button: typing.Optional[QtWidgets.QPushButton] = None):
     button.setText("Exit")
 
     async with qtrio.enter_emissions_channel(signals=[button.clicked]) as emissions:
-        print(f'+++++ before button.show()', delta())
+        print(f'+++++ before button.show()', delta(), os.getpid())
         button.show()
-        print(f'+++++ after button.show()', delta())
+        print(f'+++++ after button.show()', delta(), os.getpid())
 
         await emissions.channel.receive()
 

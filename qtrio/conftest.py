@@ -1,4 +1,5 @@
 import inspect
+import os
 import sys
 import time
 
@@ -21,7 +22,7 @@ def preshow_fixture(qapp):
 
     print(
         "FYI, the qtrio_preshow_workaround fixture widget show time was"
-        + f" {show_time:0.3f} seconds..."
+        + f" {show_time:0.3f} seconds...  {os.getpid()}"
     )
 
 
