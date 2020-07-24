@@ -23,9 +23,6 @@ clock = time.monotonic
 
 @qtrio.host
 async def test_example(request, qtbot):
-    button = SignaledButton()
-    qtbot.addWidget(button)
-
     start = clock()
 
     def delta():
@@ -36,18 +33,25 @@ async def test_example(request, qtbot):
         await trio.sleep(0)
         print('+++++', 'test_example user() after sleep', delta())
 
+    def show_button(message):
+        print(f'+++++ {message} - before button creation', delta())
+        button = SignaledButton()
+        print(f'+++++ {message} - before qtbot addition', delta())
+        qtbot.addWidget(button)
+        print(f'+++++ {message} - before button.show()', delta())
+        button.show()
+        print(f'+++++ {message} - after button.show()', delta())
+
     print('+++++', 'test_example before nursery', delta())
+
     try:
+        show_button('before nursery')
+
         async with trio.open_nursery() as nursery:
-            other_button = SignaledButton()
-            print('+++++', 'test_example before other_button.show()', delta())
-            other_button.show()
-            print('+++++', 'test_example after other_button.show()', delta())
+            show_button('in nursery')
 
             nursery.start_soon(user)
-            print('+++++', 'test_example after nursery.start_soon()', delta())
 
-            button.show()
-            print('+++++', 'test_example after button.show()', delta())
+            show_button('after start_soon')
     finally:
         print('+++++', 'test_example finally', delta())
