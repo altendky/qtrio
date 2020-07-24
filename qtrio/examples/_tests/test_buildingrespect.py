@@ -1,7 +1,7 @@
 timeout = 10
 
 
-def test_main(preshow_testdir):
+def test_buildingrespect_outer(preshow_testdir):
     test_file = r"""
     import qtrio
     from qtpy import QtCore
@@ -22,7 +22,7 @@ def test_main(preshow_testdir):
 
 
     @qtrio.host
-    async def test_example(request, qtbot):
+    async def test_buildingrespect_inner(request, qtbot):
         button = SignaledButton()
         qtbot.addWidget(button)
 
