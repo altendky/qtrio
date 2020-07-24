@@ -23,7 +23,7 @@ async def test_example(request, qtbot):
 
     async def user():
         print('+++++', 'test_example user() before sleep')
-        await trio.sleep(2)
+        await trio.sleep(0)
         print('+++++', 'test_example user() after sleep')
 
         button.click()
