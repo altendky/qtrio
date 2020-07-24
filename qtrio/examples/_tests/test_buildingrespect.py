@@ -9,15 +9,6 @@ import trio.testing
 import qtrio.examples.buildingrespect
 
 
-class SignaledButton(QtWidgets.QPushButton):
-    shown = QtCore.Signal()
-
-    def showEvent(self, event):
-        super().showEvent(event)
-        if event.isAccepted():
-            self.shown.emit()
-
-
 clock = time.monotonic
 
 
@@ -35,7 +26,7 @@ async def test_example(request, qtbot):
 
     def show_button(message):
         print(f'+++++ {message} - before button creation', delta())
-        button = SignaledButton()
+        button = QtWidgets.QPushButton()
         print(f'+++++ {message} - before qtbot addition', delta())
         qtbot.addWidget(button)
         print(f'+++++ {message} - before button.show()', delta())
