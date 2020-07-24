@@ -21,19 +21,6 @@ class SignaledButton(QtWidgets.QPushButton):
 clock = time.monotonic
 
 
-def test_show(qtbot):
-    start = clock()
-
-    def delta():
-        return f'{clock() - start:0.3f}'
-
-    print('+++++', 'test_show about to create the button', delta())
-    button = QtWidgets.QPushButton()
-    print('+++++', 'test_show before button.show()', delta())
-    button.show()
-    print('+++++', 'test_show after button.show()', delta())
-
-
 @qtrio.host
 async def test_example(request, qtbot):
     button = SignaledButton()
