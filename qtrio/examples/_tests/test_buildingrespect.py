@@ -25,7 +25,7 @@ def test_buildingrespect_outer(preshow_testdir):
 
 
     def test_preshow(qapp):
-        widget = SignaledButton()
+        widget = QtWidgets.QPushButton()
     
         clock = time.monotonic
         start = clock()
