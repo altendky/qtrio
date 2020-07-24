@@ -1,3 +1,5 @@
+import inspect
+import sys
 import time
 
 import pytest
@@ -22,4 +24,9 @@ def preshow_fixture(qapp):
         + f" {show_time:0.3f} seconds..."
     )
 
-    yield
+
+@pytest.fixture(name="preshow_testdir")
+def preshow_testdir_fixture(testdir):
+    testdir.makeconftest(inspect.getsource(sys.modules[__name__]))
+
+    return testdir
