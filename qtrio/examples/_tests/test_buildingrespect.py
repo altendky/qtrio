@@ -21,9 +21,6 @@ async def test_example(request, qtbot):
     button = SignaledButton()
     qtbot.addWidget(button)
 
-    button.show()
-    return
-
     async def user():
         # await emissions.channel.receive()
         await trio.sleep(2)
@@ -35,6 +32,9 @@ async def test_example(request, qtbot):
         # async with qtrio.enter_emissions_channel(
         #     signals=[button.shown],
         # ) as emissions:
+            button.show()
+            return
+
             nursery.start_soon(user)
 
             await qtrio.examples.buildingrespect.main(button=button)
