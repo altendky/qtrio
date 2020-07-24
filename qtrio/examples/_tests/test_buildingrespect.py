@@ -21,6 +21,23 @@ def test_buildingrespect_outer(preshow_testdir):
                 self.shown.emit()
 
 
+    def test_preshow(qapp):
+        widget = QtWidgets.QWidget()
+    
+        clock = time.monotonic
+        start = clock()
+        widget.show()
+        end = clock()
+        widget.hide()
+    
+        show_time = end - start
+    
+        print(
+            "so yeah, the test_preshow widget show time was"
+            + f" {show_time:0.3f} seconds...  {os.getpid()}"
+        )
+    
+
     @qtrio.host
     async def test_buildingrespect_inner(request, qtbot):
         button = SignaledButton()
