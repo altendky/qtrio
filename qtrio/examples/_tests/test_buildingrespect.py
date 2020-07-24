@@ -43,4 +43,4 @@ def test_buildingrespect_outer(preshow_testdir):
     preshow_testdir.makepyfile(test_file)
 
     result = preshow_testdir.runpytest_subprocess("--capture=no", timeout=timeout)
-    result.assert_outcomes(passed=2)
+    result.assert_outcomes(passed=1)
