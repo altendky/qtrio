@@ -40,9 +40,9 @@ async def test_example(request, qtbot):
     try:
         async with trio.open_nursery() as nursery:
             other_button = SignaledButton()
-            print('+++++', 'test_example before button.show()', delta())
+            print('+++++', 'test_example before other_button.show()', delta())
             other_button.show()
-            print('+++++', 'test_example after button.show()', delta())
+            print('+++++', 'test_example after other_button.show()', delta())
 
             nursery.start_soon(user)
             print('+++++', 'test_example after nursery.start_soon()', delta())
