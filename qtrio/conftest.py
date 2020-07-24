@@ -17,6 +17,7 @@ def preshow_fixture(qapp):
     start = clock()
     widget.show()
     end = clock()
+    widget.hide()
 
     show_time = end - start
 
@@ -26,8 +27,6 @@ def preshow_fixture(qapp):
     )
 
     yield
-
-    widget.hide()
 
 
 @pytest.fixture(name="preshow_testdir")
