@@ -19,19 +19,20 @@ class SignaledButton(QtWidgets.QPushButton):
 @qtrio.host
 async def test_example(request, qtbot):
     button = SignaledButton()
-    qtbot.addWidget(button)
-
-    async def user():
-        # await emissions.channel.receive()
-        await trio.sleep(2)
-
-        button.click()
-
-
-    async with trio.open_nursery() as nursery:
-        # async with qtrio.enter_emissions_channel(
-        #     signals=[button.shown],
-        # ) as emissions:
-            nursery.start_soon(user)
-
-            await qtrio.examples.buildingrespect.main(button=button)
+    button.show()
+    # qtbot.addWidget(button)
+    #
+    # async def user():
+    #     # await emissions.channel.receive()
+    #     await trio.sleep(2)
+    #
+    #     button.click()
+    #
+    #
+    # async with trio.open_nursery() as nursery:
+    #     # async with qtrio.enter_emissions_channel(
+    #     #     signals=[button.shown],
+    #     # ) as emissions:
+    #         nursery.start_soon(user)
+    #
+    #         await qtrio.examples.buildingrespect.main(button=button)
