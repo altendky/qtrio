@@ -27,16 +27,16 @@ async def test_example(request, qtbot):
 
         button.click()
 
+    print('+++++', 'test_example before nursery')
 
     async with trio.open_nursery() as nursery:
-        # async with qtrio.enter_emissions_channel(
-        #     signals=[button.shown],
-        # ) as emissions:
-            button.show()
-            button.hide()
-            nursery.start_soon(user)
+        print('+++++', 'test_example inside nursery')
+        button.show()
+        print('+++++', 'test_example after button.show()')
+        button.hide()
+        print('+++++', 'test_example after button.hide()')
+        nursery.start_soon(user)
+        print('+++++', 'test_example after nursery.start_soon()')
 
-            button.show()
-            return
-
-            await qtrio.examples.buildingrespect.main(button=button)
+        button.show()
+        print('+++++', 'test_example after button.show()')
