@@ -5,10 +5,10 @@
 QTrio - a library bringing Qt GUIs together with ``async`` and ``await`` via Trio
 =================================================================================
 
-Resources (option 1)
---------------------
+Resources
+---------
 
-=================================  =================================  =====================
+=================================  =================================  =============================
 
 `Documentation <documentation_>`_  `Read the Docs <documentation_>`_  |documentation badge|
 `Chat <chat_>`_                    `Gitter <chat_>`_                  |chat badge|
@@ -22,48 +22,7 @@ Resources (option 1)
                                                                       | |python versions badge|
                                                                       | |python interpreters badge|
 
-=================================  =================================  =====================
-
-=============  ==============  =====================
-Documentation  Read The Docs   |documentation badge|
-Repository     GitHub          |repository badge|
-Distribution   PyPI            |version badge|
-Tests          GitHub Actions  |tests badge|
-Coverage       Codecov         |coverage badge|
-Chat           Gitter          |chat badge|
-Forum          Discourse       |forum badge|
-
-=============  ==============  =====================
-
-
-Resources (option 2)
---------------------
-
-|documentation badge| `Documentation is provided on Read the Docs. <documentation_>`__
-
-|repository badge| `The repository is hosted at GitHub. <repository_>`__
-
-|version badge| `Releases are distributed on PyPI. <distribution_>`__
-
-|tests badge| `Tests are run with GitHub Actions. <tests_>`__
-
-|coverage badge| `Code coverage by tests is tracked with Codecov. <coverage_>`__
-
-|chat badge| `Interactive chat is available on Gitter. <chat_>`__
-
-|forum badge| `Forum posts can be made on Discourse. <forum_>`__
-
-
-Resources (option 3)
---------------------
-
-- Documentation is provided on `Read the Docs <documentation_>`__.
-- The repository is hosted at `GitHub <repository_>`__.
-- Releases are distributed on `PyPI <distribution_>`__.
-- Tests are run with GitHub `Actions <tests_>`__.
-- Code coverage is tracked with `Codecov <coverage_>`__.
-- Interactive chat is available on `Gitter <chat_>`__.
-- Forum posts can be made on `Discourse <forum_>`__.
+=================================  =================================  =============================
 
 
 Introduction
