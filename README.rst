@@ -1,14 +1,6 @@
-|documentation badge|
-|chat badge|
-|forum badge|
-
-|version badge|
-|python versions badge|
-|python interpreters badge|
-
-|repository badge|
-|tests badge|
-|coverage badge|
+| |documentation badge| |chat badge| |forum badge|
+| |version badge| |python versions badge| |python interpreters badge|
+| |repository badge| |tests badge| |coverage badge|
 
 QTrio - a library bringing Qt GUIs together with ``async`` and ``await`` via Trio
 =================================================================================
