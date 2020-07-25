@@ -11,10 +11,6 @@ import qtrio._qt
 
 
 @qtrio.host
-        # allow cancellation to occur even if the signal was received before the
-        # cancellation was requested.
-        await trio.sleep(0)
-
 async def test_information_message_box(request, qtbot):
     text = "Consider yourself informed."
     queried_text = None
