@@ -9,7 +9,17 @@ Resources (option 1)
 --------------------
 
 =================================  =================================  =====================
+
 `Documentation <documentation_>`_  `Read the Docs <documentation_>`_  |documentation badge|
+`Repository <repository_>`_        `GitHub <repository_>`_            |repository badge|
+`Distribution <distribution_>`_    `PyPI <distribution_>`_            | |version badge|
+                                                                      | |python versions badge|
+                                                                      | |python interpreters badge|
+`Tests <tests_>`_                  `GitHub Actions <tests_>`_         |tests badge|
+`Coverage <coverage_>`_            `Codecov <coverage_>`_             |coverage badge|
+`Chat <chat_>`_                    `Gitter <chat_>`_                  |chat badge|
+`Forum <forum_>`_                  `Discourse <forum_>`_              |forum badge|
+
 =================================  =================================  =====================
 
 =============  ==============  =====================
@@ -118,25 +128,25 @@ context of the open file to be sure it gets closed.
    :alt: Support forum
 
 .. _documentation: https://qtrio.readthedocs.io
-.. |documentation badge| image:: https://img.shields.io/badge/docs-read%20now-blue.svg?logo=read_the_docs
+.. |documentation badge| image:: https://img.shields.io/badge/docs-read%20now-blue.svg?logo=read-the-docs
    :target: `documentation`_
    :alt: Documentation
 
 .. _distribution: https://pypi.org/project/qtrio
-.. |version badge| image:: https://img.shields.io/pypi/v/qtrio.svg?color=blueviolet
+.. |version badge| image:: https://img.shields.io/pypi/v/qtrio.svg?logo=pypi&color=blueviolet
    :target: `distribution`_
    :alt: Latest distribution version
 
-.. |python versions badge| image:: https://img.shields.io/pypi/pyversions/qtrio.svg?color=blueviolet
+.. |python versions badge| image:: https://img.shields.io/pypi/pyversions/qtrio.svg?logo=pypi&color=blueviolet
    :alt: Supported Python versions
    :target: `distribution`_
 
-.. |python interpreters badge| image:: https://img.shields.io/pypi/implementation/qtrio.svg?color=blueviolet
+.. |python interpreters badge| image:: https://img.shields.io/pypi/implementation/qtrio.svg?logo=pypi&color=blueviolet
    :alt: Supported Python interpreters
    :target: `distribution`_
 
 .. _repository: https://github.com/altendky/qtrio
-.. |repository badge| image:: https://img.shields.io/github/last-commit/altendky/qtrio.svg
+.. |repository badge| image:: https://img.shields.io/github/last-commit/altendky/qtrio.svg?logo=github
    :target: `repository`_
    :alt: Repository
 
