@@ -11,14 +11,16 @@ Resources (option 1)
 =================================  =================================  =====================
 
 `Documentation <documentation_>`_  `Read the Docs <documentation_>`_  |documentation badge|
+`Chat <chat_>`_                    `Gitter <chat_>`_                  |chat badge|
+`Forum <forum_>`_                  `Discourse <forum_>`_              |forum badge|
+
 `Repository <repository_>`_        `GitHub <repository_>`_            |repository badge|
+`Tests <tests_>`_                  `GitHub Actions <tests_>`_         |tests badge|
+`Coverage <coverage_>`_            `Codecov <coverage_>`_             |coverage badge|
+
 `Distribution <distribution_>`_    `PyPI <distribution_>`_            | |version badge|
                                                                       | |python versions badge|
                                                                       | |python interpreters badge|
-`Tests <tests_>`_                  `GitHub Actions <tests_>`_         |tests badge|
-`Coverage <coverage_>`_            `Codecov <coverage_>`_             |coverage badge|
-`Chat <chat_>`_                    `Gitter <chat_>`_                  |chat badge|
-`Forum <forum_>`_                  `Discourse <forum_>`_              |forum badge|
 
 =================================  =================================  =====================
 
