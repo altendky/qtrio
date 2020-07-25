@@ -135,15 +135,15 @@ context of the open file to be sure it gets closed.
    :alt: Documentation
 
 .. _distribution: https://pypi.org/project/qtrio
-.. |version badge| image:: https://img.shields.io/pypi/v/qtrio.svg?color=purple&logo=pypi
+.. |version badge| image:: https://img.shields.io/pypi/v/qtrio.svg?color=darkred&logo=pypi
    :target: `distribution`_
    :alt: Latest distribution version
 
-.. |python versions badge| image:: https://img.shields.io/pypi/pyversions/qtrio.svg?color=purple&logo=pypi
+.. |python versions badge| image:: https://img.shields.io/pypi/pyversions/qtrio.svg?color=darkred&logo=pypi
    :alt: Supported Python versions
    :target: `distribution`_
 
-.. |python interpreters badge| image:: https://img.shields.io/pypi/implementation/qtrio.svg?color=purple&logo=pypi
+.. |python interpreters badge| image:: https://img.shields.io/pypi/implementation/qtrio.svg?color=darkred&logo=pypi
    :alt: Supported Python interpreters
    :target: `distribution`_
 
