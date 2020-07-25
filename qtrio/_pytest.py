@@ -9,7 +9,7 @@ import pytest
 import qtrio
 
 
-timeout = 3
+timeout = 8
 
 
 def host(test_function: typing.Callable[..., typing.Awaitable[None]]):
