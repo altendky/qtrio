@@ -1,7 +1,11 @@
 |documentation badge|
 |chat badge|
 |forum badge|
-|distribution badge|
+
+|version badge|
+|python versions badge|
+|python interpreters badge|
+
 |repository badge|
 |tests badge|
 |coverage badge|
@@ -19,7 +23,7 @@ Resources (option 1)
 =============  ==============  =====================
 Documentation  Read The Docs   |documentation badge|
 Repository     GitHub          |repository badge|
-Distribution   PyPI            |distribution badge|
+Distribution   PyPI            |version badge|
 Tests          GitHub Actions  |tests badge|
 Coverage       Codecov         |coverage badge|
 Chat           Gitter          |chat badge|
@@ -31,31 +35,31 @@ Forum          Discourse       |forum badge|
 Resources (option 2)
 --------------------
 
-|documentation badge| `Documentation is provided on Read the Docs. <documentation>`__
+|documentation badge| `Documentation is provided on Read the Docs. <documentation_>`__
 
-|repository badge| `The repository is hosted at GitHub. <repository>`__
+|repository badge| `The repository is hosted at GitHub. <repository_>`__
 
-|distribution badge| `Releases are distributed on PyPI. <distribution>`__
+|version badge| `Releases are distributed on PyPI. <distribution_>`__
 
-|tests badge| `Tests are run with GitHub Actions. <tests>`__
+|tests badge| `Tests are run with GitHub Actions. <tests_>`__
 
-|coverage badge| `Code coverage by tests is tracked with Codecov. <coverage>`__
+|coverage badge| `Code coverage by tests is tracked with Codecov. <coverage_>`__
 
-|chat badge| `Interactive chat is available on Gitter. <chat>`__
+|chat badge| `Interactive chat is available on Gitter. <chat_>`__
 
-|forum badge| `Forum posts can be made on Discourse. <forum>`__
+|forum badge| `Forum posts can be made on Discourse. <forum_>`__
 
 
 Resources (option 3)
 --------------------
 
-- Documentation is provided on `Read the Docs <documentation>`__.
-- The repository is hosted at `GitHub <repository>`__.
-- Releases are distributed on `PyPI <distribution>`__.
-- Tests are run with GitHub `Actions <tests>`__.
-- Code coverage is tracked with `Codecov <coverage>`__.
-- Interactive chat is available on `Gitter <chat>`__.
-- Forum posts can be made on `Discourse <forum>`__.
+- Documentation is provided on `Read the Docs <documentation_>`__.
+- The repository is hosted at `GitHub <repository_>`__.
+- Releases are distributed on `PyPI <distribution_>`__.
+- Tests are run with GitHub `Actions <tests_>`__.
+- Code coverage is tracked with `Codecov <coverage_>`__.
+- Interactive chat is available on `Gitter <chat_>`__.
+- Forum posts can be made on `Discourse <forum_>`__.
 
 
 Introduction
@@ -111,31 +115,45 @@ Note how by using ``async`` and ``await`` we are not only able to more clearly a
 concisely describe the sequenced activity, we also get to use ``with`` to manage the
 context of the open file to be sure it gets closed.
 
-.. |chat badge| image:: https://img.shields.io/badge/chat-join%20now-blue.svg
-   :target: https://gitter.im/python-trio/general
+.. _chat: https://gitter.im/python-trio/general
+.. |chat badge| image:: https://img.shields.io/badge/chat-join%20now-blue.svg?logo=gitter
+   :target: `chat`_
    :alt: Support chatroom
 
-.. |forum badge| image:: https://img.shields.io/badge/forum-join%20now-blue.svg
-   :target: https://trio.discourse.group
+.. _forum: https://trio.discourse.group
+.. |forum badge| image:: https://img.shields.io/badge/forum-join%20now-blue.svg?logo=discourse
+   :target: `forum`_
    :alt: Support forum
 
 .. _documentation: https://qtrio.readthedocs.io
-.. |documentation badge| image:: https://img.shields.io/badge/docs-read%20now-blue.svg
-   :target: documentation_
+.. |documentation badge| image:: https://img.shields.io/badge/docs-read%20now-blue.svg?logo=read_the_docs
+   :target: `documentation`_
    :alt: Documentation
 
-.. |distribution badge| image:: https://img.shields.io/pypi/v/qtrio.svg
-   :target: https://pypi.org/project/qtrio
+.. _distribution: https://pypi.org/project/qtrio
+.. |version badge| image:: https://img.shields.io/pypi/v/qtrio.svg?color=blueviolet
+   :target: `distribution`_
    :alt: Latest distribution version
 
+.. |python versions badge| image:: https://img.shields.io/pypi/pyversions/qtrio.svg?color=blueviolet
+   :alt: Supported Python versions
+   :target: `distribution`_
+
+.. |python interpreters badge| image:: https://img.shields.io/pypi/implementation/qtrio.svg?color=blueviolet
+   :alt: Supported Python interpreters
+   :target: `distribution`_
+
+.. _repository: https://github.com/altendky/qtrio
 .. |repository badge| image:: https://img.shields.io/github/last-commit/altendky/qtrio.svg
-   :target: https://github.com/altendky/qtrio
+   :target: `repository`_
    :alt: Repository
 
+.. _tests: https://github.com/altendky/qtrio/actions?query=branch%3Amaster
 .. |tests badge| image:: https://github.com/altendky/qtrio/workflows/CI/badge.svg?branch=master
-   :target: https://github.com/altendky/qtrio/actions?query=branch%3Amaster
+   :target: `tests`_
    :alt: Tests
 
+.. _coverage: https://codecov.io/gh/altendky/qtrio
 .. |coverage badge| image:: https://codecov.io/gh/altendky/qtrio/branch/master/graph/badge.svg
-   :target: https://codecov.io/gh/altendky/qtrio
+   :target: `coverage`_
    :alt: Test coverage
