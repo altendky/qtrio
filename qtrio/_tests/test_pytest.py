@@ -10,11 +10,11 @@ def test_overrunning_test_times_out(preshow_testdir):
 
     @qtrio.host
     async def test(request):
-        await trio.sleep({2 * qtrio._pytest.timeout})
+        await trio.sleep({10 * qtrio._pytest.timeout})
     """
     preshow_testdir.makepyfile(test_file)
 
-    result = preshow_testdir.runpytest_subprocess(timeout=2 * qtrio._pytest.timeout)
+    result = preshow_testdir.runpytest_subprocess(timeout=10 * qtrio._pytest.timeout)
     result.assert_outcomes(failed=1)
     result.stdout.re_match_lines(
         lines2=[r"E\s+qtrio\._exceptions\.RunnerTimedOutError"]
