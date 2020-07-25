@@ -584,6 +584,7 @@ class Runner:
                     import logging
                     logging.basicConfig()
                     logging.exception('========')
+                    raise
 
         if timeout_cancel_scope is not None and timeout_cancel_scope.cancelled_caught:
             raise qtrio.RunnerTimedOutError()
