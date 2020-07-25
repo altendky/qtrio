@@ -578,8 +578,12 @@ class Runner:
                     timeout_cancel_scope = exit_stack.enter_context(
                         trio.move_on_after(self.timeout)
                     )
-
-                result = await async_fn(*args)
+                try:
+                    result = await async_fn(*args)
+                except trio.MultiError as e:
+                    import logging
+                    logging.basicConfig()
+                    logging.exception('========')
 
         if timeout_cancel_scope is not None and timeout_cancel_scope.cancelled_caught:
             raise qtrio.RunnerTimedOutError()
