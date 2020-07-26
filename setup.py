@@ -16,6 +16,16 @@ setup(
         "a library bringing Qt GUIs together with ``async`` and ``await`` via Trio"
     ),
     url="https://github.com/altendky/qtrio",
+    project_urls={
+        'Documentation': 'https://qtrio.readthedocs.io/',
+        'Chat': 'https://gitter.im/python-trio/general',
+        'Forum': 'https://trio.discourse.group/',
+        'Issues': 'https://github.com/altendky/qtrio/issues',
+        'Repository': 'https://github.com/altendky/qtrio',
+        'Tests': 'https://github.com/altendky/qtrio/actions?query=branch%3Amaster',
+        'Coverage': 'https://codecov.io/gh/altendky/qtrio',
+        'Distribution': 'https://pypi.org/project/qtrio',
+    },
     long_description=LONG_DESC,
     author="Kyle Altendorf",
     author_email="sda@fstab.net",
