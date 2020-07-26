@@ -9,6 +9,7 @@ Resources
 `Documentation <documentation_>`_  `Read the Docs <documentation_>`_  |documentation badge|
 `Chat <chat_>`_                    `Gitter <chat_>`_                  |chat badge|
 `Forum <forum_>`_                  `Discourse <forum_>`_              |forum badge|
+`Issues <issues_>`_                `GitHub <issues_>`_                |issues badge|
 
 `Repository <repository_>`_        `GitHub <repository_>`_            |repository badge|
 `Tests <tests_>`_                  `GitHub Actions <tests_>`_         |tests badge|
@@ -101,6 +102,11 @@ context of the open file to be sure it gets closed.
 .. |python interpreters badge| image:: https://img.shields.io/pypi/implementation/qtrio.svg?color=IndianRed&logo=PyPI&logoColor=WhiteSmoke
    :alt: Supported Python interpreters
    :target: `distribution`_
+
+.. _issues: https://github.com/altendky/qtrio/issues
+.. |issues badge| image:: https://img.shields.io/github/issues/altendky/qtrio?color=RoyalBlue&logo=GitHub&logoColor=WhiteSmoke
+   :target: `issues`_
+   :alt: Issues
 
 .. _repository: https://github.com/altendky/qtrio
 .. |repository badge| image:: https://img.shields.io/github/last-commit/altendky/qtrio.svg?color=SeaGreen&logo=GitHub&logoColor=WhiteSmoke
