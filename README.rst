@@ -1,30 +1,28 @@
-.. image:: https://img.shields.io/badge/chat-join%20now-blue.svg
-   :target: https://gitter.im/python-trio/general
-   :alt: Join chatroom
-
-.. image:: https://img.shields.io/badge/forum-join%20now-blue.svg
-   :target: https://trio.discourse.group
-   :alt: Join forum
-
-.. image:: https://img.shields.io/badge/docs-read%20now-blue.svg
-   :target: https://qtrio.readthedocs.io
-   :alt: Documentation
-
-.. image:: https://img.shields.io/pypi/v/qtrio.svg
-   :target: https://pypi.org/project/qtrio
-   :alt: Latest PyPi version
-
-.. image:: https://img.shields.io/github/last-commit/altendky/qtrio.svg
-   :target: https://github.com/altendky/qtrio
-   :alt: Repository
-
-.. image:: https://codecov.io/gh/altendky/qtrio/branch/master/graph/badge.svg
-   :target: https://codecov.io/gh/altendky/qtrio
-   :alt: Test coverage
-
-
 QTrio - a library bringing Qt GUIs together with ``async`` and ``await`` via Trio
 =================================================================================
+
+Resources
+---------
+
+=================================  =================================  =============================
+
+`Documentation <documentation_>`_  `Read the Docs <documentation_>`_  |documentation badge|
+`Chat <chat_>`_                    `Gitter <chat_>`_                  |chat badge|
+`Forum <forum_>`_                  `Discourse <forum_>`_              |forum badge|
+
+`Repository <repository_>`_        `GitHub <repository_>`_            |repository badge|
+`Tests <tests_>`_                  `GitHub Actions <tests_>`_         |tests badge|
+`Coverage <coverage_>`_            `Codecov <coverage_>`_             |coverage badge|
+
+`Distribution <distribution_>`_    `PyPI <distribution_>`_            | |version badge|
+                                                                      | |python versions badge|
+                                                                      | |python interpreters badge|
+
+=================================  =================================  =============================
+
+
+Introduction
+------------
 
 Note:
     This library is in early development.  It works.  It has tests.  It has
@@ -75,3 +73,46 @@ of Qt concurrency.
 Note how by using ``async`` and ``await`` we are not only able to more clearly and
 concisely describe the sequenced activity, we also get to use ``with`` to manage the
 context of the open file to be sure it gets closed.
+
+.. _chat: https://gitter.im/python-trio/general
+.. |chat badge| image:: https://img.shields.io/badge/chat-join%20now-blue.svg?color=RoyalBlue&logo=Gitter&logoColor=WhiteSmoke
+   :target: `chat`_
+   :alt: Support chatroom
+
+.. _forum: https://trio.discourse.group
+.. |forum badge| image:: https://img.shields.io/badge/forum-join%20now-blue.svg?color=RoyalBlue&logo=Discourse&logoColor=WhiteSmoke
+   :target: `forum`_
+   :alt: Support forum
+
+.. _documentation: https://qtrio.readthedocs.io
+.. |documentation badge| image:: https://img.shields.io/badge/docs-read%20now-blue.svg?color=RoyalBlue&logo=Read-the-Docs&logoColor=WhiteSmoke
+   :target: `documentation`_
+   :alt: Documentation
+
+.. _distribution: https://pypi.org/project/qtrio
+.. |version badge| image:: https://img.shields.io/pypi/v/qtrio.svg?color=IndianRed&logo=PyPI&logoColor=WhiteSmoke
+   :target: `distribution`_
+   :alt: Latest distribution version
+
+.. |python versions badge| image:: https://img.shields.io/pypi/pyversions/qtrio.svg?color=IndianRed&logo=PyPI&logoColor=WhiteSmoke
+   :alt: Supported Python versions
+   :target: `distribution`_
+
+.. |python interpreters badge| image:: https://img.shields.io/pypi/implementation/qtrio.svg?color=IndianRed&logo=PyPI&logoColor=WhiteSmoke
+   :alt: Supported Python interpreters
+   :target: `distribution`_
+
+.. _repository: https://github.com/altendky/qtrio
+.. |repository badge| image:: https://img.shields.io/github/last-commit/altendky/qtrio.svg?color=SeaGreen&logo=GitHub&logoColor=WhiteSmoke
+   :target: `repository`_
+   :alt: Repository
+
+.. _tests: https://github.com/altendky/qtrio/actions?query=branch%3Amaster
+.. |tests badge| image:: https://img.shields.io/github/workflow/status/altendky/qtrio/CI/master?color=SeaGreen&logo=GitHub-Actions&logoColor=WhiteSmoke
+   :target: `tests`_
+   :alt: Tests
+
+.. _coverage: https://codecov.io/gh/altendky/qtrio
+.. |coverage badge| image:: https://img.shields.io/codecov/c/github/altendky/qtrio/master?color=SeaGreen&logo=Codecov&logoColor=WhiteSmoke
+   :target: `coverage`_
+   :alt: Test coverage
