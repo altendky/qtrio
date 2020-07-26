@@ -34,6 +34,7 @@ setup(
     install_requires=[
         "async_generator",
         "attrs",
+        "decorator",
         "outcome",
         "pytest",
         "qtpy",
