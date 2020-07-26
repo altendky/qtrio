@@ -9,7 +9,7 @@ Resources
 `Documentation <documentation_>`_  `Read the Docs <documentation_>`_  |documentation badge|
 `Chat <chat_>`_                    `Gitter <chat_>`_                  |chat badge|
 `Forum <forum_>`_                  `Discourse <forum_>`_              |forum badge|
-`Issues <issues_>`_                `GitHub`_                          |issues badge|
+`Issues <issues_>`_                `GitHub <issues_>`_                |issues badge|
 
 `Repository <repository_>`_        `GitHub <repository_>`_            |repository badge|
 `Tests <tests_>`_                  `GitHub Actions <tests_>`_         |tests badge|
