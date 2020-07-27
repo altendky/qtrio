@@ -12,29 +12,27 @@ import pytest
 import qtrio
 
 
+async_def = typing.Callable[..., typing.Awaitable[object]]
+sync_def = typing.Callable[..., object]
+
+
 @typing.overload
-def host(
-    func: typing.Callable[..., typing.Awaitable[object]],
-) -> typing.Callable[..., object]:
+def host(func: async_def,) -> sync_def:
     ...
 
 
 @typing.overload
-def host(
-    *, timeout: float = 3,
-) -> typing.Callable[
-    [typing.Callable[..., typing.Awaitable[object]]], typing.Callable[..., object],
-]:
+def host(*, timeout: float = 3) -> typing.Callable[[async_def], sync_def]:
     ...
 
 
-@decorator.decorator
+# TODO: not really sure...
+# qtrio/_pytest.py:37: error: Overloaded function implementation does not accept all possible arguments of signature 1
+# qtrio/_pytest.py:37: error: Overloaded function implementation does not accept all possible arguments of signature 2
+@decorator.decorator  # type: ignore
 @pytest.mark.usefixtures("qapp", "qtbot")
 def host(
-    func: typing.Callable[..., typing.Awaitable[object]],
-    timeout: float = 3,
-    *args,
-    **kwargs,
+    func, timeout=3, *args, **kwargs,
 ):
     """
     Decorate your tests that you want run in a Trio guest and a Qt Host.  This decorator
