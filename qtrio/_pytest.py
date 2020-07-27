@@ -17,8 +17,9 @@ def host(test_function: typing.Callable[..., typing.Awaitable[None]]):
     Decorate your tests that you want run with a Trio guest and a Qt Host.
 
     Note:
-        Presently the test is required to specify the ``request`` fixture so this
-        decorator can intercept and use it.
+        Presently the test is required to specify the
+        :class:`request <_pytest.fixtures.FixtureRequest>` fixture so this decorator can
+        intercept and use it.
 
     Warning:
         The interface for specifying tests to run in this way will likely change a lot.
