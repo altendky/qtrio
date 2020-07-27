@@ -498,7 +498,7 @@ class Runner:
 
     def run(
         self,
-        async_fn: typing.Callable[[], typing.Awaitable[None]],
+        async_fn: typing.Callable[[], typing.Awaitable[object]],
         *args,
         execute_application: bool = True,
     ) -> Outcomes:
