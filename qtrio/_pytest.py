@@ -21,11 +21,9 @@ def host(
 
 @typing.overload
 def host(
-    *,
-    timeout: float = 3,
+    *, timeout: float = 3,
 ) -> typing.Callable[
-    [typing.Callable[..., typing.Awaitable[object]]],
-    typing.Callable[..., object],
+    [typing.Callable[..., typing.Awaitable[object]]], typing.Callable[..., object],
 ]:
     ...
 
@@ -36,7 +34,7 @@ def host(
     func: typing.Callable[..., typing.Awaitable[object]],
     timeout: float = 3,
     *args,
-    **kwargs
+    **kwargs,
 ):
     """
     Decorate your tests that you want run in a Trio guest and a Qt Host.  This decorator
