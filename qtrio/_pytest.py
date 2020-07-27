@@ -12,17 +12,19 @@ import pytest
 import qtrio
 
 
-async_def = typing.Callable[..., typing.Awaitable[object]]
-sync_def = typing.Callable[..., object]
-
-
 @typing.overload
-def host(func: async_def,) -> sync_def:
+def host(
+    func: typing.Callable[..., typing.Awaitable[object]]
+) -> typing.Callable[..., object]:
     ...
 
 
 @typing.overload
-def host(*, timeout: float = 3) -> typing.Callable[[async_def], sync_def]:
+def host(
+    *, timeout: float = 3
+) -> typing.Callable[
+    [typing.Callable[..., typing.Awaitable[object]]], typing.Callable[..., object]
+]:
     ...
 
 
