@@ -12,10 +12,28 @@ import pytest
 import qtrio
 
 
+@typing.overload
+def host(
+    func: typing.Callable[..., typing.Awaitable[object]],
+) -> typing.Callable[..., object]:
+    ...
+
+
+@typing.overload
+def host(
+    *,
+    timeout: float = 3,
+) -> typing.Callable[
+    [typing.Callable[..., typing.Awaitable[object]]],
+    typing.Callable[..., object],
+]:
+    ...
+
+
 @decorator.decorator
 @pytest.mark.usefixtures("qapp", "qtbot")
 def host(
-    func: typing.Callable[..., typing.Awaitable[None]],
+    func: typing.Callable[..., typing.Awaitable[object]],
     timeout: float = 3,
     *args,
     **kwargs
