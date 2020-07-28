@@ -72,8 +72,13 @@ else
         PASSED=false
     fi
 
+    set -vx
     echo ------------
     pwd
+    echo ------------
+    ls -la .
+    echo ------------
+    ls -la ..
     echo ------------
     cat ../coverage.xml
     echo ------------
