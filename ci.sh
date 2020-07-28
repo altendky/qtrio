@@ -80,7 +80,7 @@ else
     echo ------------
     ls -la ..
     echo ------------
-    cat ../coverage.xml
+    cat ../coverage.xml || true
     echo ------------
 
     # The codecov docs recommend something like 'bash <(curl ...)' to pipe the
