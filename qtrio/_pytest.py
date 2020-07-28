@@ -1,7 +1,6 @@
 """Tools to help working with QTrio in pytest."""
 
 import functools
-import itertools
 import typing
 
 import decorator
@@ -60,7 +59,8 @@ def host(
     # TODO: https://github.com/micheles/decorator/issues/39
     [request] = (
         arg
-        for arg in itertools.chain(args, kwargs.values())
+        for arg_sequence in [args, kwargs.values()]
+        for arg in arg_sequence
         if isinstance(arg, _pytest.fixtures.FixtureRequest)
     )
 
