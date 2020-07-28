@@ -72,6 +72,12 @@ else
         PASSED=false
     fi
 
+    echo ------------
+    pwd
+    echo ------------
+    cat coverage.xml
+    echo ------------
+
     # The codecov docs recommend something like 'bash <(curl ...)' to pipe the
     # script directly into bash as its being downloaded. But, the codecov
     # server is flaky, so we instead save to a temp file with retries, and
