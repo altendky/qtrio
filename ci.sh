@@ -75,7 +75,7 @@ else
     echo ------------
     pwd
     echo ------------
-    cat ../test-results.xml
+    cat ../coverage.xml
     echo ------------
 
     # The codecov docs recommend something like 'bash <(curl ...)' to pipe the
