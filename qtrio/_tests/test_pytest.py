@@ -18,11 +18,11 @@ def test_overrunning_test_times_out(preshow_testdir, decorator_format):
 
     @{decorator_string}
     async def test(request):
-        await trio.sleep({2 * timeout})
+        await trio.sleep({4 * timeout})
     """
     preshow_testdir.makepyfile(test_file)
 
-    result = preshow_testdir.runpytest_subprocess(timeout=2 * timeout)
+    result = preshow_testdir.runpytest_subprocess(timeout=4 * timeout)
     result.assert_outcomes(failed=1)
     result.stdout.re_match_lines(
         lines2=[r"E\s+qtrio\._exceptions\.RunnerTimedOutError"]
