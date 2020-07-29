@@ -31,7 +31,7 @@ def host(
 # qtrio/_pytest.py:37: error: Overloaded function implementation does not accept all possible arguments of signature 1
 # qtrio/_pytest.py:37: error: Overloaded function implementation does not accept all possible arguments of signature 2
 @decorator.decorator  # type: ignore
-@pytest.mark.usefixtures("qapp", "qtbot")
+@pytest.mark.usefixtures("qapp", "qtbot")  # type: ignore
 def host(
     func, timeout=3, *args, **kwargs,
 ):
