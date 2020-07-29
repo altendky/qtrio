@@ -101,7 +101,7 @@ jobs:
       - name: Setup python
         uses: actions/setup-python@v2
         with:
-          python-version: '${{ matrix.python }}-alpha - ${{ matrix.python }}'
+          python-version: '${{ matrix.python }}.0-alpha - ${{ matrix.python }}.0'
           architecture: '${{ matrix.arch }}'
       - name: Run tests
         run: ./ci.sh
@@ -158,7 +158,7 @@ jobs:
       - name: Setup python
         uses: actions/setup-python@v2
         with:
-          python-version: '${{ matrix.python }}-alpha - ${{ matrix.python }}'
+          python-version: '${{ matrix.python }}.0-alpha - ${{ matrix.python }}.0'
       - name: Run tests
         run: ./ci.sh
         env:
