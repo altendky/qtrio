@@ -72,6 +72,7 @@ else
         PASSED=false
     fi
 
+    coverage xml -o coverage.xml
     set -vx
     echo ------------
     pwd
@@ -80,7 +81,7 @@ else
     echo ------------
     ls -la ..
     echo ------------
-    cat ../coverage.xml || true
+    cat coverage.xml
     echo ------------
 
     # The codecov docs recommend something like 'bash <(curl ...)' to pipe the
