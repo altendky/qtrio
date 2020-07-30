@@ -35,6 +35,7 @@ def host(test_function: typing.Callable[..., typing.Awaitable[None]]):
         request = kwargs["request"]
 
         qapp = request.getfixturevalue("qapp")
+        qapp.setQuitOnLastWindowClosed(False)
 
         runner = qtrio._core.Runner(application=qapp, timeout=timeout)
 
