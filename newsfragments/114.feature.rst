@@ -1,0 +1,1 @@
+:func:`qtrio.host` is usable as `@qtrio.host` or `@qtrio.host()`.

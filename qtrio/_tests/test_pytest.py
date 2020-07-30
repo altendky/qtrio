@@ -4,8 +4,7 @@ import qtrio._pytest
 
 
 @pytest.mark.parametrize(
-    argnames=["decorator_string"],
-    argvalues=[["qtrio.host"], ["qtrio.host()"]],
+    argnames=["decorator_string"], argvalues=[["qtrio.host"], ["qtrio.host()"]],
 )
 def test_overrunning_test_times_out(preshow_testdir, decorator_string):
     """The overrunning test is timed out."""
