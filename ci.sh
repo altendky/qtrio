@@ -82,6 +82,8 @@ else
     echo ------------
     ls -la ..
     echo ------------
+    ls -la htmlcov
+    echo ------------
     cat coverage.xml
     echo ------------
     cat htmlcov/qtrio__pytest_py.html
