@@ -76,6 +76,8 @@ else
     coverage html
     set -vx
     echo ------------
+    cat ../.coveragerc
+    echo ------------
     pwd
     echo ------------
     ls -la .
