@@ -66,10 +66,7 @@ else
 
     INSTALLDIR=$(python -c "import os, ${PACKAGE_NAME}; print(os.path.dirname(${PACKAGE_NAME}.__file__))")
     cp ../setup.cfg $INSTALLDIR
-    mkdir pp
-    echo 'import coverage; coverage.process_startup()' > ${INSTALLDIR}/../sitecustomize.py
-    export COVERAGE_PROCESS_START=$(pwd)/../.coveragerc
-    if coverage run --rcfile ../.coveragerc --source ${PACKAGE_NAME} -m pytest -W error -r a --junitxml=../test-results.xml --verbose --capture=no --no-qt-log --pyargs ${PACKAGE_NAME}; then
+    if pytest -W error -r a --junitxml=../test-results.xml --cov=${PACKAGE_NAME} --cov-config=../.coveragerc --verbose --capture=no --no-qt-log --pyargs ${PACKAGE_NAME}; then
         PASSED=true
     else
         PASSED=false
