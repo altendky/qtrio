@@ -66,7 +66,7 @@ else
 
     INSTALLDIR=$(python -c "import os, ${PACKAGE_NAME}; print(os.path.dirname(${PACKAGE_NAME}.__file__))")
     cp ../setup.cfg $INSTALLDIR
-    if coverage run --rcfile ../.coveragerc --source qtrio -m pytest -W error -r a --junitxml=../test-results.xml ${INSTALLDIR} --verbose --capture=no --no-qt-log; then
+    if coverage run --rcfile ../.coveragerc --source ${PACKAGE_NAME} -m pytest -W error -r a --junitxml=../test-results.xml ${PACKAGE_NAME} --verbose --capture=no --no-qt-log; then
         PASSED=true
     else
         PASSED=false
