@@ -73,6 +73,7 @@ else
     fi
 
     coverage xml -o coverage.xml
+    coverage html
     set -vx
     echo ------------
     pwd
@@ -82,6 +83,8 @@ else
     ls -la ..
     echo ------------
     cat coverage.xml
+    echo ------------
+    cat htmlcov/qtrio__pytest_py.html
     echo ------------
 
     # The codecov docs recommend something like 'bash <(curl ...)' to pipe the
