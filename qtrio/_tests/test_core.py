@@ -1177,3 +1177,60 @@ async def test_emissions_nursery_wraps(request, is_async):
 
     with pytest.raises(LocalUniqueException):
         result.unwrap()
+
+
+def test_run_without_executing_application(testdir):
+    """Running without executing the application...  doesn't."""
+
+    """Exiting enter_emissions_channel() closes send and receive channels on exit."""
+    test_file = r"""
+    import qtrio
+
+
+    def test(request):
+        ran = False
+
+        async def async_fn():
+            nonlocal ran
+            ran = True
+
+        runner = qtrio.Runner()
+        runner.run(async_fn=async_fn, execute_application=False)
+
+        assert not ran
+    """
+
+    testdir.makepyfile(test_file)
+
+    result = testdir.runpytest_subprocess(timeout=timeout)
+    result.assert_outcomes(passed=1)
+
+
+def test_execute_manually(testdir):
+    """Executing manually works."""
+
+    test_file = r"""
+    import qtrio
+
+
+    def test(request):
+        ran = False
+
+        async def async_fn():
+            nonlocal ran
+            ran = True
+
+        runner = qtrio.Runner()
+        runner.run(async_fn=async_fn, execute_application=False)
+
+        assert not ran
+
+        runner.application.exec_()
+
+        assert ran
+    """
+
+    testdir.makepyfile(test_file)
+
+    result = testdir.runpytest_subprocess(timeout=timeout)
+    result.assert_outcomes(passed=1)
