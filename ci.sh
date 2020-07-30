@@ -86,7 +86,7 @@ else
     echo ------------
     cat coverage.xml
     echo ------------
-    cat htmlcov/qtrio__pytest_py.html
+    cat htmlcov/*qtrio__pytest_py.html
     echo ------------
 
     # The codecov docs recommend something like 'bash <(curl ...)' to pipe the
