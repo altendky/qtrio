@@ -1177,3 +1177,102 @@ async def test_emissions_nursery_wraps(request, is_async):
 
     with pytest.raises(LocalUniqueException):
         result.unwrap()
+
+
+def test_run_without_executing_application(testdir):
+    """Running without executing the application...  doesn't."""
+
+    """Exiting enter_emissions_channel() closes send and receive channels on exit."""
+    test_file = r"""
+    import qtrio
+
+
+    def test(request):
+        ran = False
+
+        async def async_fn():
+            nonlocal ran
+            ran = True
+
+        runner = qtrio.Runner()
+        runner.run(async_fn=async_fn, execute_application=False)
+
+        assert not ran
+    """
+
+    testdir.makepyfile(test_file)
+
+    result = testdir.runpytest_subprocess(timeout=timeout)
+    result.assert_outcomes(passed=1)
+
+
+def test_execute_manually(testdir):
+    """Executing manually works."""
+
+    test_file = r"""
+    import qtrio
+
+
+    def test(request):
+        ran = False
+
+        async def async_fn():
+            nonlocal ran
+            ran = True
+
+        runner = qtrio.Runner()
+        runner.run(async_fn=async_fn, execute_application=False)
+
+        assert not ran
+
+        runner.application.exec_()
+
+        assert ran
+    """
+
+    testdir.makepyfile(test_file)
+
+    result = testdir.runpytest_subprocess(timeout=timeout)
+    result.assert_outcomes(passed=1)
+
+
+def test_not_quitting_application_does_not(testdir):
+    """Not quitting the application doesn't quit."""
+
+    test_file = r"""
+    from qtpy import QtCore
+    import qtrio
+
+
+    def test(request, qapp):
+        results = []
+
+        async def async_fn():
+            pass
+
+        def cycle():
+            if runner.done and 'done' not in results:
+                results.append('done')
+
+                timer.stop()
+                runner.application.quit()
+
+        def about_to_quit():
+            results.append('about to quit')
+
+        timer = QtCore.QTimer()
+        timer.setInterval(10)
+        timer.timeout.connect(cycle)
+        timer.start()
+
+        runner = qtrio.Runner(application=qapp, quit_application=False)
+        runner.application.aboutToQuit.connect(about_to_quit)
+        runner.run(async_fn=async_fn)
+
+        assert results == ['done', 'about to quit']
+    """
+
+    testdir.makepyfile(test_file)
+
+    result = testdir.runpytest_subprocess(timeout=timeout)
+    result.assert_outcomes(passed=1)
