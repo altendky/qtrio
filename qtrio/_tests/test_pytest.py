@@ -1,14 +1,19 @@
+import pytest
+
 import qtrio._pytest
 
 
-def test_overrunning_test_times_out(preshow_testdir):
+@pytest.mark.parametrize(
+    argnames=["decorator_string"], argvalues=[["qtrio.host"], ["qtrio.host()"]],
+)
+def test_overrunning_test_times_out(preshow_testdir, decorator_string):
     """The overrunning test is timed out."""
 
     test_file = rf"""
     import qtrio
     import trio
 
-    @qtrio.host
+    @{decorator_string}
     async def test(request):
         await trio.sleep({2 * qtrio._pytest.timeout})
     """
