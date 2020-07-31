@@ -1,2 +1,2 @@
-Accept a `clock` parameter.  Supported by :func:`qtrio.run`, :class:`qtrio.Runner`, and
+Accept a ``clock`` parameter.  Supported by :func:`qtrio.run`, :class:`qtrio.Runner`, and
 :func:`qtrio.host`.
