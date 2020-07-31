@@ -13,7 +13,7 @@ env | sort
 function try-harder() {
     for BACKOFF in 0 1 2 4 8 15 15 15 15; do
         sleep $BACKOFF
-        if curl -fL --connect-timeout 5 "$@"; then
+        if "$@"; then
             return 0
         fi
     done
