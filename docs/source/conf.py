@@ -97,14 +97,16 @@ version = qtrio.__version__
 # The full version, including alpha/beta/rc tags.
 release = version
 
+
 def process_newsfragments():
     import pathlib
     import subprocess
     import sysconfig
 
     # TODO: needs released https://github.com/twisted/towncrier/commit/5c431028a3b699c74b162014e907272cbea8ac81
-    bin = pathlib.Path(sysconfig.get_path('scripts'))
+    bin = pathlib.Path(sysconfig.get_path("scripts"))
     subprocess.run([bin / "towncrier", "build", "--yes", "--name", "QTrio"])
+
 
 if "+dev" in version and os.environ.get("READTHEDOCS") is not None:
     process_newsfragments()
