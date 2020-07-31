@@ -10,13 +10,7 @@ set +o allexport
 # Log some general info about the environment
 env | sort
 
-# Curl's built-in retry system is not very robust; it gives up on lots of
-# network errors that we want to retry on. Wget might work better, but it's
-# not installed on azure pipelines's windows boxes. So... let's try some good
-# old-fashioned brute force. (This is also a convenient place to put options
-# we always want, like -f to tell curl to give an error if the server sends an
-# error response, and -L to follow redirects.)
-function curl-harder() {
+function try-harder() {
     for BACKOFF in 0 1 2 4 8 15 15 15 15; do
         sleep $BACKOFF
         if curl -fL --connect-timeout 5 "$@"; then
@@ -24,6 +18,16 @@ function curl-harder() {
         fi
     done
     return 1
+}
+
+# Curl's built-in retry system is not very robust; it gives up on lots of
+# network errors that we want to retry on. Wget might work better, but it's
+# not installed on azure pipelines's windows boxes. So... let's try some good
+# old-fashioned brute force. (This is also a convenient place to put options
+# we always want, like -f to tell curl to give an error if the server sends an
+# error response, and -L to follow redirects.)
+function curl-harder() {
+    try-harder curl -fL --connect-timeout 5 "$@"
 }
 
 ################################################################
@@ -37,7 +41,7 @@ python -m pip --version
 
 python setup.py sdist --formats=zip
 INSTALL_ARTIFACT=$(ls dist/*.zip)
-python -m pip install ${INSTALL_ARTIFACT}${INSTALL_EXTRAS}
+try-harder python -m pip install ${INSTALL_ARTIFACT}${INSTALL_EXTRAS}
 
 python -m pip list
 python -m pip freeze
