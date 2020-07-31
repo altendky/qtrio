@@ -5,7 +5,6 @@ import typing
 
 import decorator
 import outcome
-import _pytest.fixtures
 import pytest
 
 import qtrio
@@ -54,13 +53,7 @@ def host(func, _=None, *args, **kwargs):
         func: The test function to be run via QTrio.
     """
 
-    # TODO: https://github.com/micheles/decorator/issues/39
-    [request] = (
-        arg
-        for arg_sequence in [args, kwargs.values()]
-        for arg in arg_sequence
-        if isinstance(arg, _pytest.fixtures.FixtureRequest)
-    )
+    request = kwargs["request"]
 
     qapp = request.getfixturevalue("qapp")
     qtbot = request.getfixturevalue("qtbot")

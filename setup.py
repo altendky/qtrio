@@ -34,7 +34,7 @@ setup(
     install_requires=[
         "async_generator",
         "attrs",
-        "decorator",
+	"decorator > 4.4.2",
         "outcome",
         "pytest",
         "qtpy",
