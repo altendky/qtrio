@@ -66,7 +66,12 @@ else
 
     INSTALLDIR=$(python -c "import os, ${PACKAGE_NAME}; print(os.path.dirname(${PACKAGE_NAME}.__file__))")
     cp ../setup.cfg $INSTALLDIR
-    if pytest -W error -r a --junitxml=../test-results.xml --cov=${PACKAGE_NAME} --cov-config=../.coveragerc --verbose --capture=no --no-qt-log --pyargs ${PACKAGE_NAME}; then
+    # We have to copy .coveragerc into this directory, rather than passing
+    # --cov-config=../.coveragerc to pytest, because codecov.sh will run
+    # 'coverage xml' to generate the report that it uses, and that will only
+    # apply the ignore patterns in the current directory's .coveragerc.
+    cp ../.coveragerc .
+    if pytest -W error -ra --junitxml=../test-results.xml --cov=${PACKAGE_NAME} --verbose --pyargs ${PACKAGE_NAME}; then
         PASSED=true
     else
         PASSED=false

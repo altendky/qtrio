@@ -1,5 +1,7 @@
 import pytest
 
+import qtrio._pytest
+
 
 @pytest.mark.parametrize(
     argnames=["decorator_format"],
