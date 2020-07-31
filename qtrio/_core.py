@@ -495,6 +495,7 @@ class Runner:
 
     outcomes: Outcomes = attr.ib(factory=Outcomes, init=False)
     cancel_scope: trio.CancelScope = attr.ib(default=None, init=False)
+    done: bool = attr.ib(default=False, init=False)
 
     def run(
         self,
@@ -608,3 +609,5 @@ class Runner:
 
         if self.quit_application:
             self.application.quit()
+
+        self.done = True

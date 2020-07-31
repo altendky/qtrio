@@ -32,7 +32,7 @@ def host() -> typing.Callable[
 # qtrio/_pytest.py:37: error: Overloaded function implementation does not accept all possible arguments of signature 1
 # qtrio/_pytest.py:37: error: Overloaded function implementation does not accept all possible arguments of signature 2
 @decorator.decorator  # type: ignore
-@pytest.mark.usefixtures("qapp", "qtbot")  # type: ignore
+@pytest.mark.usefixtures("qapp")  # type: ignore
 def host(func, _=None, *args, **kwargs):
     """
     Decorate your tests that you want run in a Trio guest and a Qt Host.  This decorator
@@ -63,30 +63,11 @@ def host(func, _=None, *args, **kwargs):
     )
 
     qapp = request.getfixturevalue("qapp")
-    qtbot = request.getfixturevalue("qtbot")
+    qapp.setQuitOnLastWindowClosed(False)
 
-    test_outcomes_sentinel = qtrio.Outcomes(
-        qt=outcome.Value(0), trio=outcome.Value(29),
-    )
-    test_outcomes = test_outcomes_sentinel
+    runner = qtrio._core.Runner(application=qapp, timeout=timeout)
 
-    def done_callback(outcomes):
-        nonlocal test_outcomes
-        test_outcomes = outcomes
+    async_fn = functools.partial(func, *args, **kwargs)
+    test_outcomes = runner.run(async_fn=async_fn)
 
-    runner = qtrio._core.Runner(
-        application=qapp,
-        done_callback=done_callback,
-        quit_application=False,
-        timeout=timeout,
-    )
-
-    runner.run(
-        functools.partial(func, **kwargs), *args, execute_application=False,
-    )
-
-    # TODO: probably increases runtime of fast tests a lot due to polling
-    qtbot.wait_until(
-        lambda: test_outcomes is not test_outcomes_sentinel, timeout=3.14e8
-    )
     test_outcomes.unwrap()
