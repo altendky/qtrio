@@ -67,7 +67,7 @@ def host(func, _=None, *args, **kwargs):
 
     runner = qtrio._core.Runner(application=qapp, timeout=timeout)
 
-    async_fn = functools.partial(test_function, *args, **kwargs)
+    async_fn = functools.partial(func, *args, **kwargs)
     test_outcomes = runner.run(async_fn=async_fn)
 
     test_outcomes.unwrap()
