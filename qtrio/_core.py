@@ -18,6 +18,7 @@ from qtpy import QtCore
 from qtpy import QtGui
 from qtpy import QtWidgets
 import trio
+import trio.abc
 
 import qtrio
 import qtrio._qt
@@ -415,6 +416,7 @@ def run(
     async_fn: typing.Callable[[], typing.Awaitable[None]],
     *args: typing.Tuple[typing.Any, ...],
     done_callback: typing.Optional[typing.Callable[[Outcomes], None]] = None,
+    clock: trio.abc.Clock = None,
 ) -> Outcomes:
     """Run a Trio-flavored async function in guest mode on a Qt host application, and
     return the outcomes.
@@ -423,11 +425,13 @@ def run(
         async_fn: The async function to run.
         args: Positional arguments to pass to `async_fn`.
         done_callback: See :class:`qtrio.Runner.done_callback`.
+        clock: See :class:`qtrio.Runner.clock`.
+
 
     Returns:
         The :class:`qtrio.Outcomes` with both the Trio and Qt outcomes.
     """
-    runner = Runner(done_callback=done_callback)
+    runner = Runner(done_callback=done_callback, clock=clock)
     runner.run(async_fn, *args)
 
     return runner.outcomes
@@ -471,6 +475,9 @@ class Runner:
             completed.
         timeout: If not :py:object`None`, use :func:`trio.move_on_after()` to cancel
             after ``timeout`` seconds and raise.
+        clock: The clock to use for this run.  This is primarily used to speed up tests
+            that include timeouts.  The value will be passed on to
+            :func:`trio.lowlevel.start_guest_run`.
         reenter: The `QObject` instance which will receive the events requesting
             execution of the needed Trio and user code in the host's event loop and
             thread.
@@ -486,6 +493,7 @@ class Runner:
     application: QtGui.QGuiApplication = attr.ib(factory=build_application)
     quit_application: bool = True
     timeout: typing.Optional[float] = None
+    clock: trio.abc.Clock = None
 
     reenter: Reenter = attr.ib(factory=Reenter)
 
@@ -526,6 +534,7 @@ class Runner:
             args,
             run_sync_soon_threadsafe=self.run_sync_soon_threadsafe,
             done_callback=self.trio_done,
+            clock=self.clock,
         )
 
         if execute_application:

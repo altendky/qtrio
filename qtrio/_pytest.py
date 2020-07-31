@@ -32,7 +32,7 @@ def host(
 # qtrio/_pytest.py:37: error: Overloaded function implementation does not accept all possible arguments of signature 2
 @decorator.decorator  # type: ignore
 @pytest.mark.usefixtures("qapp")  # type: ignore
-def host(func, timeout=3, *args, **kwargs):
+def host(func, timeout=3, clock=None, *args, **kwargs):
     """
     Decorate your tests that you want run in a Trio guest and a Qt Host.  This decorator
     can be used in any of the following forms.  Positional arguments other than a call
@@ -52,6 +52,8 @@ def host(func, timeout=3, *args, **kwargs):
     Args:
         func: The test function to be run via QTrio.
         timeout: The timeout to be applied to the test via :func:`trio.move_on_after`.
+        clock: Usually used to speed up tests via :class:`trio.testing.MockClock`.  See
+            :func:`trio.lowlevel.start_guest_run`.
     """
 
     # TODO: https://github.com/micheles/decorator/issues/39
@@ -65,7 +67,7 @@ def host(func, timeout=3, *args, **kwargs):
     qapp = request.getfixturevalue("qapp")
     qapp.setQuitOnLastWindowClosed(False)
 
-    runner = qtrio._core.Runner(application=qapp, timeout=timeout)
+    runner = qtrio._core.Runner(application=qapp, timeout=timeout, clock=clock)
 
     async_fn = functools.partial(func, *args, **kwargs)
     test_outcomes = runner.run(async_fn=async_fn)
