@@ -72,8 +72,8 @@ else
         PASSED=false
     fi
 
-    coverage xml -o coverage.xml
-    coverage html
+    coverage xml --rcfile ../.coveragerc -o coverage.xml
+    coverage html --rcfile ../.coveragerc
     set -vx
     echo ------------
     cat ../.coveragerc
