@@ -78,7 +78,7 @@ async def test_get_integer_gets_value_after_retry(request, qtbot):
     assert integer == test_value
 
 
-@qtrio.host
+@qtrio.host(timeout=10)
 async def test_file_save(request, qtbot, tmp_path):
     assert tmp_path.is_dir()
     path_to_select = trio.Path(tmp_path) / "something.new"
