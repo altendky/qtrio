@@ -1,0 +1,1 @@
+:class:`request <_pytest.fixtures.FixtureRequest>` is properly linked in :func:`qtrio.host` documentation.

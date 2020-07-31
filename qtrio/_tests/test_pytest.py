@@ -1,20 +1,48 @@
+import pytest
+
 import qtrio._pytest
 
 
-def test_overrunning_test_times_out(preshow_testdir):
-    """The overrunning test is timed out."""
+@pytest.mark.parametrize(
+    argnames=["decorator_format"],
+    argvalues=[["qtrio.host"], ["qtrio.host()"], ["qtrio.host(timeout={timeout})"]],
+)
+def test_host_decoration_options(preshow_testdir, decorator_format):
+    """The several decoration modes all work."""
+
+    decorator_string = decorator_format.format(timeout=3)
 
     test_file = rf"""
     import qtrio
     import trio
 
-    @qtrio.host
+    @{decorator_string}
     async def test(request):
-        await trio.sleep({10 * qtrio._pytest.timeout})
+        True
     """
     preshow_testdir.makepyfile(test_file)
 
-    result = preshow_testdir.runpytest_subprocess(timeout=10 * qtrio._pytest.timeout)
+    result = preshow_testdir.runpytest_subprocess(timeout=10)
+    result.assert_outcomes(passed=1)
+
+
+def test_overrunning_test_times_out(preshow_testdir):
+    """The overrunning test is timed out."""
+
+    timeout = 3
+
+    test_file = rf"""
+    import qtrio
+    import trio
+    import trio.testing
+
+    @qtrio.host(timeout={timeout}, clock=trio.testing.MockClock(autojump_threshold=0))
+    async def test(request):
+        await trio.sleep({4 * timeout})
+    """
+    preshow_testdir.makepyfile(test_file)
+
+    result = preshow_testdir.runpytest_subprocess(timeout=4 * timeout)
     result.assert_outcomes(failed=1)
     result.stdout.re_match_lines(
         lines2=[r"E\s+qtrio\._exceptions\.RunnerTimedOutError"]
