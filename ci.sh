@@ -77,25 +77,6 @@ else
         PASSED=false
     fi
 
-    coverage xml --rcfile ../.coveragerc -o coverage.xml
-    coverage html --rcfile ../.coveragerc
-    set -vx
-    echo ------------
-    cat ../.coveragerc
-    echo ------------
-    pwd
-    echo ------------
-    ls -la .
-    echo ------------
-    ls -la ..
-    echo ------------
-    ls -la htmlcov
-    echo ------------
-    cat coverage.xml
-    echo ------------
-    cat htmlcov/*qtrio__pytest_py.html
-    echo ------------
-
     # The codecov docs recommend something like 'bash <(curl ...)' to pipe the
     # script directly into bash as its being downloaded. But, the codecov
     # server is flaky, so we instead save to a temp file with retries, and
