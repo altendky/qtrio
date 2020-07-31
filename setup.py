@@ -9,6 +9,8 @@ exec((here / "qtrio" / "_version.py").read_text(encoding="utf-8"))
 
 LONG_DESC = (here / "README.rst").read_text(encoding="utf-8")
 
+towncrier = "towncrier >= 19.9.0rc1"
+
 setup(
     name="qtrio",
     version=__version__,
@@ -41,13 +43,14 @@ setup(
         "trio>=0.16",
     ],
     extras_require={
-        "checks": ["black", "flake8", "mypy", "towncrier>=19.9.0rc1"],
+        "checks": ["black", "flake8", "mypy", towncrier],
         "docs": [
             "sphinx >= 1.7.0",
             "sphinx-autodoc-typehints",
             "sphinx-qt-documentation>=0.3",
             "sphinx_rtd_theme",
             "sphinxcontrib-trio",
+            towncrier,
         ],
         "examples": ["click"],
         "pyqt5": ["pyqt5", "pyqt5-stubs"],
