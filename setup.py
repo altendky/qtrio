@@ -9,7 +9,7 @@ exec((here / "qtrio" / "_version.py").read_text(encoding="utf-8"))
 
 LONG_DESC = (here / "README.rst").read_text(encoding="utf-8")
 
-towncrier = "towncrier >= 19.9.0rc1"
+towncrier = "towncrier > 19.9.0rc1"
 
 setup(
     name="qtrio",
