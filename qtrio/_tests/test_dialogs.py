@@ -12,7 +12,7 @@ import qtrio._dialogs
 import qtrio._qt
 
 
-@qtrio.host
+@qtrio.host(timeout=99999)
 async def test_get_integer_gets_value(request, qtbot):
     dialog = qtrio._dialogs.IntegerDialog.build()
 
@@ -47,9 +47,8 @@ async def test_get_integer_raises_cancel_when_canceled(request, qtbot):
     async with trio.open_nursery() as nursery:
         await nursery.start(user)
         with qtrio._qt.connection(signal=dialog.shown, slot=qtbot.addWidget):
-            result = await dialog.wait()
-
-        assert result is None
+            with pytest.raises(qtrio.UserCancelledError):
+                await dialog.wait()
 
 
 @qtrio.host

@@ -12,6 +12,22 @@ import trio
 import qtrio._qt
 
 
+@contextlib.contextmanager
+def manage(dialog):
+    finished_event = trio.Event()
+
+    def slot(*args, **kwargs):
+        if not finished_event.is_set():
+            finished_event.set()
+
+    with qtrio._qt.connection(signal=dialog.finished, slot=slot):
+        try:
+            dialog.setup()
+            yield finished_event
+        finally:
+            dialog.teardown()
+
+
 @attr.s(auto_attribs=True)
 class IntegerDialog:
     parent: QtWidgets.QWidget
@@ -62,34 +78,18 @@ class IntegerDialog:
         self.cancel_button = None
         self.edit_widget = None
 
-    @contextlib.contextmanager
-    def manage(self, finished_event=None):
-        with contextlib.ExitStack() as exit_stack:
-            if finished_event is not None:
-                exit_stack.enter_context(
-                    qtrio._qt.connection(
-                        signal=self.finished,
-                        slot=lambda *args, **kwargs: finished_event.set(),
-                    )
-                )
-            try:
-                self.setup()
-                yield self
-            finally:
-                self.teardown()
-
     async def wait(self):
         while True:
-            finished_event = trio.Event()
-            with self.manage(finished_event=finished_event):
+            with manage(dialog=self) as finished_event:
                 await finished_event.wait()
+
                 if self.dialog.result() != QtWidgets.QDialog.Accepted:
-                    self.result = None
-                else:
-                    try:
-                        self.result = int(self.dialog.textValue())
-                    except ValueError:
-                        continue
+                    raise qtrio.UserCancelledError()
+
+                try:
+                    self.result = int(self.dialog.textValue())
+                except ValueError:
+                    continue
 
                 return self.result
 
@@ -104,9 +104,10 @@ class TextInputDialog:
     accept_button: typing.Optional[QtWidgets.QPushButton] = None
     reject_button: typing.Optional[QtWidgets.QPushButton] = None
     line_edit: typing.Optional[QtWidgets.QLineEdit] = None
-    result: typing.Optional[trio.Path] = None
+    result: typing.Optional[str] = None
 
     shown = qtrio._qt.Signal(QtWidgets.QInputDialog)
+    finished = qtrio._qt.Signal(int)  # QtWidgets.QDialog.DialogCode
 
     def setup(self):
         self.result = None
@@ -117,6 +118,8 @@ class TextInputDialog:
         if self.title is not None:
             self.dialog.setWindowTitle(self.title)
 
+        # TODO: adjust so we can use a context manager?
+        self.dialog.finished.connect(self.finished)
         self.dialog.show()
 
         buttons = dialog_button_box_buttons_by_role(dialog=self.dialog)
@@ -130,21 +133,16 @@ class TextInputDialog:
     def teardown(self):
         if self.dialog is not None:
             self.dialog.close()
+        self.dialog.finished.disconnect(self.finished)
         self.dialog = None
         self.accept_button = None
         self.reject_button = None
 
-    @contextlib.contextmanager
-    def manage(self):
-        try:
-            self.setup()
-            yield self
-        finally:
-            self.teardown()
-
     async def wait(self):
-        with self.manage():
-            [result] = await qtrio._core.wait_signal(self.dialog.finished)
+        with manage(dialog=self) as finished_event:
+            await finished_event.wait()
+
+            result = self.dialog.result()
 
             if result == QtWidgets.QDialog.Rejected:
                 raise qtrio.UserCancelledError()
@@ -232,25 +230,8 @@ class FileDialog:
         self.accept_button = None
         self.reject_button = None
 
-    @contextlib.contextmanager
-    def manage(self, finished_event=None):
-        with contextlib.ExitStack() as exit_stack:
-            if finished_event is not None:
-                exit_stack.enter_context(
-                    qtrio._qt.connection(
-                        signal=self.finished,
-                        slot=lambda *args, **kwargs: finished_event.set(),
-                    )
-                )
-            try:
-                self.setup()
-                yield self
-            finally:
-                self.teardown()
-
     async def wait(self):
-        finished_event = trio.Event()
-        with self.manage(finished_event=finished_event):
+        with manage(dialog=self) as finished_event:
             await finished_event.wait()
             if self.dialog.result() != QtWidgets.QDialog.Accepted:
                 self.result = None
@@ -291,6 +272,7 @@ class MessageBox:
     result: typing.Optional[trio.Path] = None
 
     shown = qtrio._qt.Signal(QtWidgets.QMessageBox)
+    finished = qtrio._qt.Signal(int)  # QtWidgets.QDialog.DialogCode
 
     def setup(self):
         self.result = None
@@ -298,6 +280,9 @@ class MessageBox:
         self.dialog = QtWidgets.QMessageBox(
             self.icon, self.title, self.text, self.buttons, self.parent
         )
+
+        # TODO: adjust so we can use a context manager?
+        self.dialog.finished.connect(self.finished)
 
         self.dialog.show()
 
@@ -312,17 +297,11 @@ class MessageBox:
         self.dialog = None
         self.accept_button = None
 
-    @contextlib.contextmanager
-    def manage(self):
-        try:
-            self.setup()
-            yield self
-        finally:
-            self.teardown()
-
     async def wait(self):
-        with self.manage():
-            [result] = await qtrio._core.wait_signal(self.dialog.finished)
+        with manage(dialog=self) as finished_event:
+            await finished_event.wait()
+
+            result = self.dialog.result()
 
             if result == QtWidgets.QDialog.Rejected:
                 raise qtrio.UserCancelledError()

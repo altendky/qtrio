@@ -59,3 +59,9 @@ class RunnerTimedOutError(QTrioException):
     """Raised when a :class:`qtrio.Runner` times out the run."""
 
     pass
+
+
+class UserCancelledError(QTrioException):
+    """Raised when a user requested cancellation of an operation."""
+
+    pass
