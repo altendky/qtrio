@@ -18,11 +18,11 @@ def test_host_decoration_options(preshow_testdir, decorator_format):
 
     @{decorator_string}
     async def test(request):
-        True
+        pass
     """
     preshow_testdir.makepyfile(test_file)
 
-    result = preshow_testdir.runpytest_subprocess(timeout=10)
+    result = preshow_testdir.runpytest_subprocess(timeout=20)
     result.assert_outcomes(passed=1)
 
 
