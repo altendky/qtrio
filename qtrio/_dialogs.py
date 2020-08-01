@@ -72,7 +72,7 @@ class IntegerDialog:
     def teardown(self):
         if self.dialog is not None:
             self.dialog.close()
-        self.dialog.finished.disconnect(self.finished)
+            self.dialog.finished.disconnect(self.finished)
         self.dialog = None
         self.ok_button = None
         self.cancel_button = None
@@ -109,6 +109,15 @@ class TextInputDialog:
     shown = qtrio._qt.Signal(QtWidgets.QInputDialog)
     finished = qtrio._qt.Signal(int)  # QtWidgets.QDialog.DialogCode
 
+    @classmethod
+    def build(
+        cls,
+        title: typing.Optional[str] = None,
+        label: typing.Optional[str] = None,
+        parent: typing.Optional[QtCore.QObject] = None,
+    ) -> "TextInputDialog":
+        return cls(title=title, label=label, parent=parent)
+
     def setup(self):
         self.result = None
 
@@ -133,7 +142,7 @@ class TextInputDialog:
     def teardown(self):
         if self.dialog is not None:
             self.dialog.close()
-        self.dialog.finished.disconnect(self.finished)
+            self.dialog.finished.disconnect(self.finished)
         self.dialog = None
         self.accept_button = None
         self.reject_button = None
@@ -150,14 +159,6 @@ class TextInputDialog:
             self.result = self.dialog.textValue()
 
             return self.result
-
-
-def create_text_input_dialog(
-    title: typing.Optional[str] = None,
-    label: typing.Optional[str] = None,
-    parent: typing.Optional[QtCore.QObject] = None,
-):
-    return TextInputDialog(title=title, label=label, parent=parent)
 
 
 def dialog_button_box_buttons_by_role(
@@ -187,6 +188,23 @@ class FileDialog:
 
     shown = qtrio._qt.Signal(QtWidgets.QFileDialog)
     finished = qtrio._qt.Signal(int)  # QtWidgets.QDialog.DialogCode
+
+    @classmethod
+    def build(
+        cls,
+        parent: typing.Optional[QtCore.QObject] = None,
+        default_directory: typing.Optional[trio.Path] = None,
+        default_file: typing.Optional[trio.Path] = None,
+        options: QtWidgets.QFileDialog.Options = QtWidgets.QFileDialog.Options(),
+    ) -> "FileDialog":
+        return cls(
+            parent=parent,
+            default_directory=default_directory,
+            default_file=default_file,
+            options=options,
+            file_mode=QtWidgets.QFileDialog.AnyFile,
+            accept_mode=QtWidgets.QFileDialog.AcceptSave,
+        )
 
     def setup(self):
         self.result = None
@@ -225,7 +243,7 @@ class FileDialog:
     def teardown(self):
         if self.dialog is not None:
             self.dialog.close()
-        self.dialog.finished.disconnect(self.finished)
+            self.dialog.finished.disconnect(self.finished)
         self.dialog = None
         self.accept_button = None
         self.reject_button = None
@@ -240,22 +258,6 @@ class FileDialog:
                 self.result = trio.Path(path_string)
 
             return self.result
-
-
-def create_file_save_dialog(
-    parent: typing.Optional[QtCore.QObject] = None,
-    default_directory: typing.Optional[trio.Path] = None,
-    default_file: typing.Optional[trio.Path] = None,
-    options: QtWidgets.QFileDialog.Options = QtWidgets.QFileDialog.Options(),
-):
-    return FileDialog(
-        parent=parent,
-        default_directory=default_directory,
-        default_file=default_file,
-        options=options,
-        file_mode=QtWidgets.QFileDialog.AnyFile,
-        accept_mode=QtWidgets.QFileDialog.AcceptSave,
-    )
 
 
 @attr.s(auto_attribs=True)
@@ -273,6 +275,17 @@ class MessageBox:
 
     shown = qtrio._qt.Signal(QtWidgets.QMessageBox)
     finished = qtrio._qt.Signal(int)  # QtWidgets.QDialog.DialogCode
+
+    @classmethod
+    def build_information(
+        cls,
+        title: str,
+        text: str,
+        icon: QtWidgets.QMessageBox.Icon = QtWidgets.QMessageBox.Information,
+        buttons: QtWidgets.QMessageBox.StandardButtons = QtWidgets.QMessageBox.Ok,
+        parent: typing.Optional[QtCore.QObject] = None,
+    ):
+        return cls(icon=icon, title=title, text=text, buttons=buttons, parent=parent)
 
     def setup(self):
         self.result = None
@@ -305,16 +318,6 @@ class MessageBox:
 
             if result == QtWidgets.QDialog.Rejected:
                 raise qtrio.UserCancelledError()
-
-
-def create_information_message_box(
-    icon: QtWidgets.QMessageBox.Icon,
-    title: str,
-    text: str,
-    buttons: QtWidgets.QMessageBox.StandardButtons = QtWidgets.QMessageBox.Ok,
-    parent: typing.Optional[QtCore.QObject] = None,
-):
-    return MessageBox(icon=icon, title=title, text=text, buttons=buttons, parent=parent)
 
 
 @async_generator.asynccontextmanager

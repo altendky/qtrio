@@ -12,7 +12,7 @@ import qtrio._dialogs
 import qtrio._qt
 
 
-@qtrio.host(timeout=99999)
+@qtrio.host
 async def test_get_integer_gets_value(request, qtbot):
     dialog = qtrio._dialogs.IntegerDialog.build()
 
@@ -77,12 +77,26 @@ async def test_get_integer_gets_value_after_retry(request, qtbot):
     assert integer == test_value
 
 
+@pytest.mark.parametrize(
+    argnames=["builder"],
+    argvalues=[
+        [qtrio._dialogs.IntegerDialog.build],
+        [qtrio._dialogs.TextInputDialog.build],
+        [qtrio._dialogs.FileDialog.build],
+        [lambda: qtrio._dialogs.MessageBox.build_information(title="", text="")],
+    ],
+)
+def test_unused_dialog_teardown_ok(builder):
+    dialog = builder()
+    dialog.teardown()
+
+
 @qtrio.host(timeout=10)
 async def test_file_save(request, qtbot, tmp_path):
     assert tmp_path.is_dir()
     path_to_select = trio.Path(tmp_path) / "something.new"
 
-    dialog = qtrio._dialogs.create_file_save_dialog(
+    dialog = qtrio._dialogs.FileDialog.build(
         default_directory=path_to_select.parent, default_file=path_to_select,
     )
 
@@ -109,8 +123,8 @@ async def test_information_message_box(request, qtbot):
     text = "Consider yourself informed."
     queried_text = None
 
-    dialog = qtrio._dialogs.create_information_message_box(
-        icon=QtWidgets.QMessageBox.Information, title="Information", text=text,
+    dialog = qtrio._dialogs.MessageBox.build_information(
+        title="Information", text=text, icon=QtWidgets.QMessageBox.Information,
     )
 
     async def user(task_status):
@@ -132,7 +146,7 @@ async def test_information_message_box(request, qtbot):
 
 @qtrio.host
 async def test_text_input_dialog(request, qtbot):
-    dialog = qtrio._dialogs.create_text_input_dialog()
+    dialog = qtrio._dialogs.TextInputDialog.build()
 
     entered_text = "etcetera"
 
