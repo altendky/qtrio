@@ -1,7 +1,7 @@
 timeout = 10
 
 
-def test_main(preshow_testdir):
+def test_main(testdir):
     test_file = r"""
     import qtrio
     from qtpy import QtCore
@@ -47,7 +47,7 @@ def test_main(preshow_testdir):
 
         assert results == ["1", "2", "3", "2", "1", "0", "-1"]
     """
-    preshow_testdir.makepyfile(test_file)
+    testdir.makepyfile(test_file)
 
-    result = preshow_testdir.runpytest_subprocess("--capture=no", timeout=timeout)
+    result = testdir.runpytest_subprocess("--capture=no", timeout=timeout)
     result.assert_outcomes(passed=1)
