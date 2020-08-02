@@ -1,6 +1,3 @@
-timeout = 10
-
-
 def test_main(testdir):
     conftest_file = r"""
     import pytest
@@ -56,5 +53,5 @@ def test_main(testdir):
     """
     testdir.makepyfile(test_file)
 
-    result = testdir.runpytest_subprocess("--capture=no", timeout=timeout)
+    result = testdir.runpytest_subprocess("--capture=no", timeout=20)
     result.assert_outcomes(passed=1)
