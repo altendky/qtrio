@@ -772,9 +772,7 @@ def test_emissions_channel_iterates_three(testdir, emissions_channel_string):
     result.assert_outcomes(passed=1)
 
 
-def test_emissions_channel_with_three_receives_first(
-    testdir, emissions_channel_string
-):
+def test_emissions_channel_with_three_receives_first(testdir, emissions_channel_string):
     """Emissions channel yields receives first item when requested."""
     test_file = rf"""
     from qtpy import QtCore

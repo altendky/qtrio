@@ -2,7 +2,7 @@ timeout = 10
 
 
 def test_main(testdir):
-    testdir.makeconftest(r"""
+    conftest_file = r"""
     import pytest
     from qtpy import QtWidgets
 
@@ -13,7 +13,8 @@ def test_main(testdir):
 
         widget.show()
         widget.hide()
-    """)
+    """
+    testdir.makeconftest(conftest_file)
 
     test_file = r"""
     import qtrio
