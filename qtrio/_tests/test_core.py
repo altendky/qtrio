@@ -435,7 +435,7 @@ def test_wait_signal_waits(testdir):
     result.assert_outcomes(passed=1)
 
 
-def test_wait_signal_returns_the_value(preshow_testdir):
+def test_wait_signal_returns_the_value(testdir):
     """wait_signal() waits for the signal."""
     test_file = r"""
     from qtpy import QtCore
@@ -460,13 +460,13 @@ def test_wait_signal_returns_the_value(preshow_testdir):
 
         assert result == (17,)
     """
-    preshow_testdir.makepyfile(test_file)
+    testdir.makepyfile(test_file)
 
-    result = preshow_testdir.runpytest_subprocess(timeout=timeout)
+    result = testdir.runpytest_subprocess(timeout=timeout)
     result.assert_outcomes(passed=1)
 
 
-def test_wait_signal_context_waits(preshow_testdir):
+def test_wait_signal_context_waits(testdir):
     """wait_signal_context() waits for the signal.
     """
     test_file = r"""
@@ -489,9 +489,9 @@ def test_wait_signal_context_waits(preshow_testdir):
 
         assert end - start > 0.090
     """
-    preshow_testdir.makepyfile(test_file)
+    testdir.makepyfile(test_file)
 
-    result = preshow_testdir.runpytest_subprocess(timeout=timeout)
+    result = testdir.runpytest_subprocess(timeout=timeout)
     result.assert_outcomes(passed=1)
 
 
@@ -609,7 +609,7 @@ def test_outcome_from_application_return_code_error():
     assert result == outcome.Error(qtrio.ReturnCodeError(-1))
 
 
-def test_failed_hosted_trio_prints_exception(preshow_testdir):
+def test_failed_hosted_trio_prints_exception(testdir):
     """Except is printed when main Trio function raises."""
     test_file = r"""
     from qtpy import QtCore
@@ -624,9 +624,9 @@ def test_failed_hosted_trio_prints_exception(preshow_testdir):
     async def test(request):
         raise UniqueLocalException()
     """
-    preshow_testdir.makepyfile(test_file)
+    testdir.makepyfile(test_file)
 
-    result = preshow_testdir.runpytest_subprocess(timeout=timeout)
+    result = testdir.runpytest_subprocess(timeout=timeout)
     result.assert_outcomes(failed=1)
     result.stdout.re_match_lines(lines2=["--- Error(UniqueLocalException())"])
 
@@ -704,7 +704,7 @@ def test_emissions_unequal_by_args():
     ) != qtrio._core.Emission(signal=instance.signal, args=(14,))
 
 
-def test_emissions_channel_iterates_one(preshow_testdir, emissions_channel_string):
+def test_emissions_channel_iterates_one(testdir, emissions_channel_string):
     """Emissions channel yields one emission as expected."""
     test_file = rf"""
     from qtpy import QtCore
@@ -730,13 +730,13 @@ def test_emissions_channel_iterates_one(preshow_testdir, emissions_channel_strin
 
         assert emissions == [qtrio._core.Emission(signal=instance.signal, args=(93,))]
     """
-    preshow_testdir.makepyfile(test_file)
+    testdir.makepyfile(test_file)
 
-    result = preshow_testdir.runpytest_subprocess(timeout=timeout)
+    result = testdir.runpytest_subprocess(timeout=timeout)
     result.assert_outcomes(passed=1)
 
 
-def test_emissions_channel_iterates_three(preshow_testdir, emissions_channel_string):
+def test_emissions_channel_iterates_three(testdir, emissions_channel_string):
     """Emissions channel yields three emissions as expected."""
     test_file = rf"""
     from qtpy import QtCore
@@ -766,14 +766,14 @@ def test_emissions_channel_iterates_three(preshow_testdir, emissions_channel_str
             for v in [93, 56, 27]
         ]
     """
-    preshow_testdir.makepyfile(test_file)
+    testdir.makepyfile(test_file)
 
-    result = preshow_testdir.runpytest_subprocess(timeout=timeout)
+    result = testdir.runpytest_subprocess(timeout=timeout)
     result.assert_outcomes(passed=1)
 
 
 def test_emissions_channel_with_three_receives_first(
-    preshow_testdir, emissions_channel_string
+    testdir, emissions_channel_string
 ):
     """Emissions channel yields receives first item when requested."""
     test_file = rf"""
@@ -801,13 +801,13 @@ def test_emissions_channel_with_three_receives_first(
 
         assert emission == qtrio._core.Emission(signal=instance.signal, args=(93,))
     """
-    preshow_testdir.makepyfile(test_file)
+    testdir.makepyfile(test_file)
 
-    result = preshow_testdir.runpytest_subprocess(timeout=timeout)
+    result = testdir.runpytest_subprocess(timeout=timeout)
     result.assert_outcomes(passed=1)
 
 
-def test_emissions_channel_iterates_in_order(preshow_testdir, emissions_channel_string):
+def test_emissions_channel_iterates_in_order(testdir, emissions_channel_string):
     """Emissions channel yields signal emissions in order (pretty probably...)."""
     test_file = rf"""
     from qtpy import QtCore
@@ -843,13 +843,13 @@ def test_emissions_channel_iterates_in_order(preshow_testdir, emissions_channel_
 
         assert results == values
     """
-    preshow_testdir.makepyfile(test_file)
+    testdir.makepyfile(test_file)
 
-    result = preshow_testdir.runpytest_subprocess(timeout=timeout)
+    result = testdir.runpytest_subprocess(timeout=timeout)
     result.assert_outcomes(passed=1)
 
 
-def test_emissions_channel_limited_buffer(preshow_testdir, emissions_channel_string):
+def test_emissions_channel_limited_buffer(testdir, emissions_channel_string):
     """Emissions channel throws away beyond buffer limit."""
     test_file = rf"""
     from qtpy import QtCore
@@ -882,13 +882,13 @@ def test_emissions_channel_limited_buffer(preshow_testdir, emissions_channel_str
 
         assert results == values[:max_buffer_size]
     """
-    preshow_testdir.makepyfile(test_file)
+    testdir.makepyfile(test_file)
 
-    result = preshow_testdir.runpytest_subprocess(timeout=timeout)
+    result = testdir.runpytest_subprocess(timeout=timeout)
     result.assert_outcomes(passed=1)
 
 
-def test_open_emissions_channel_does_not_close_read_channel(preshow_testdir):
+def test_open_emissions_channel_does_not_close_read_channel(testdir):
     """Exiting open_emissions_channel() closes send channel and does not close
     read channel on exit.
     """
@@ -921,13 +921,13 @@ def test_open_emissions_channel_does_not_close_read_channel(preshow_testdir):
         with pytest.raises(trio.ClosedResourceError):
             emissions.send_channel.send_nowait(None)
     """
-    preshow_testdir.makepyfile(test_file)
+    testdir.makepyfile(test_file)
 
-    result = preshow_testdir.runpytest_subprocess(timeout=timeout)
+    result = testdir.runpytest_subprocess(timeout=timeout)
     result.assert_outcomes(passed=1)
 
 
-def test_enter_emissions_channel_closes_both_channels(preshow_testdir):
+def test_enter_emissions_channel_closes_both_channels(testdir):
     """Exiting enter_emissions_channel() closes send and receive channels on exit."""
     test_file = r"""
     import pytest
@@ -958,9 +958,9 @@ def test_enter_emissions_channel_closes_both_channels(preshow_testdir):
         with pytest.raises(trio.ClosedResourceError):
             emissions.send_channel.send_nowait(None)
     """
-    preshow_testdir.makepyfile(test_file)
+    testdir.makepyfile(test_file)
 
-    result = preshow_testdir.runpytest_subprocess(timeout=timeout)
+    result = testdir.runpytest_subprocess(timeout=timeout)
     result.assert_outcomes(passed=1)
 
 

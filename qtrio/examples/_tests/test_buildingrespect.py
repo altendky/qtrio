@@ -1,7 +1,20 @@
 timeout = 10
 
 
-def test_main(preshow_testdir):
+def test_main(testdir):
+    testdir.makeconftest(r"""
+    import pytest
+    from qtpy import QtWidgets
+
+
+    @pytest.fixture(name="qtrio_preshow_workaround", scope="session", autouse=True)
+    def preshow_fixture(qapp):
+        widget = QtWidgets.QPushButton()
+
+        widget.show()
+        widget.hide()
+    """)
+
     test_file = r"""
     import qtrio
     from qtpy import QtCore
@@ -40,7 +53,7 @@ def test_main(preshow_testdir):
 
                 await qtrio.examples.buildingrespect.main(button=button)
     """
-    preshow_testdir.makepyfile(test_file)
+    testdir.makepyfile(test_file)
 
-    result = preshow_testdir.runpytest_subprocess("--capture=no", timeout=timeout)
+    result = testdir.runpytest_subprocess("--capture=no", timeout=timeout)
     result.assert_outcomes(passed=1)
