@@ -11,7 +11,7 @@ def test_main(testdir):
     import qtrio.examples.emissions
 
 
-    @qtrio.host(timeout=10)
+    @qtrio.host
     async def test_example(request, qtbot):
         window = qtrio.examples.emissions.Window.build()
         qtbot.addWidget(window.widget)
