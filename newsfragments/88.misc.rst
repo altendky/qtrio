@@ -1,1 +1,1 @@
-Use --name to specify proper QTrio capitalization to towncrier.
+Use ``--name`` to specify proper QTrio capitalization to ``towncrier``.
