@@ -801,8 +801,6 @@ async def test_open_emissions_channel_does_not_close_read_channel(request):
 
     instance = MyQObject()
     max_buffer_size = 10
-    values = list(range(2 * max_buffer_size))
-    results = []
 
     async with qtrio._core.open_emissions_channel(
         signals=[instance.signal], max_buffer_size=max_buffer_size,
