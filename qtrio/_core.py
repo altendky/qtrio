@@ -363,7 +363,10 @@ async def wait_signal_context(
     """
     event = trio.Event()
 
-    with qtrio._qt.connection(signal=signal, slot=lambda *args, **kwargs: event.set()):
+    def slot(*args, **kwargs):
+        event.set()
+
+    with qtrio._qt.connection(signal=signal, slot=slot):
         yield
         await event.wait()
 
