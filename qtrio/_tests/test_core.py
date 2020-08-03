@@ -712,9 +712,7 @@ async def test_emissions_channel_iterates_three(request, emissions_channel):
 
 
 @qtrio.host
-async def test_emissions_channel_with_three_receives_first(
-    request, emissions_channel
-):
+async def test_emissions_channel_with_three_receives_first(request, emissions_channel):
     """Emissions channel yields receives first item when requested."""
 
     class MyQObject(QtCore.QObject):
