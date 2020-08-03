@@ -4,6 +4,7 @@ from qtpy import QtWidgets
 import trio
 import trio.testing
 
+import qtrio._core
 import qtrio.examples.emissions
 
 
@@ -33,10 +34,11 @@ async def test_main(request, qtbot):
             window.decrement,
         ]
         for button in buttons:
-            print('+++ user() before mouseClick')
-            qtbot.mouseClick(button, QtCore.Qt.LeftButton)
+            async with qtrio._core.wait_signal_context(signal=button.clicked):
+                print('+++ user() before mouseClick')
+                qtbot.mouseClick(button, QtCore.Qt.LeftButton)
             print('+++ user() before await blocked')
-            await trio.testing.wait_all_tasks_blocked(cushion=0.05)
+            await trio.testing.wait_all_tasks_blocked(cushion=0.01)
             print('+++ user() before appending')
             results.append(window.label.text())
 
