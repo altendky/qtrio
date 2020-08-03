@@ -32,7 +32,8 @@ async def test_main(request, qtbot):
         for button in buttons:
             async with qtrio._core.wait_signal_context(signal=button.clicked):
                 print('+++ user() before mouseClick')
-                qtbot.mouseClick(button, QtCore.Qt.LeftButton)
+                # qtbot.mouseClick(button, QtCore.Qt.LeftButton)
+                button.click()
             print('+++ user() before await blocked')
             await trio.testing.wait_all_tasks_blocked(cushion=0.01)
             print('+++ user() before appending')
