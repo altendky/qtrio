@@ -26,7 +26,10 @@ async def test_main(request, qtbot):
             window.decrement,
         ]
         for button in buttons:
-            qtbot.mouseClick(button, QtCore.Qt.LeftButton)
+            # TODO: Doesn't work reliably on macOS in GitHub Actions.  Seems to
+            #       sometimes just miss the click entirely.
+            # qtbot.mouseClick(button, QtCore.Qt.LeftButton)
+            button.clicked()
             await trio.testing.wait_all_tasks_blocked(cushion=0.01)
             results.append(window.label.text())
 
