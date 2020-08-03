@@ -1,13 +1,18 @@
 import qtrio
 from qtpy import QtCore
+from qtpy import QtWidgets
 import trio
 import trio.testing
 
 import qtrio.examples.emissions
 
 
-@qtrio.host
+@qtrio.host(timeout=20)
 async def test_main(request, qtbot):
+    button = QtWidgets.QPushButton()
+    button.show()
+    button.hide()
+
     window = qtrio.examples.emissions.Window.build()
     qtbot.addWidget(window.widget)
 
