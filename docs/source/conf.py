@@ -226,3 +226,12 @@ texinfo_documents = [
         "Miscellaneous",
     ),
 ]
+
+
+def setup(app: "sphinx.application.Sphinx") -> None:
+    app.add_crossref_type(
+        "fixture",
+        "fixture",
+        objname="built-in fixture",
+        indextemplate="pair: %s; fixture",
+    )
