@@ -7,7 +7,7 @@ import qtrio._pytest
     argnames=["decorator_format"],
     argvalues=[["qtrio.host"], ["qtrio.host()"], ["qtrio.host(timeout={timeout})"]],
 )
-def test_host_decoration_options(preshow_testdir, decorator_format):
+def test_host_decoration_options(testdir, decorator_format):
     """The several decoration modes all work."""
 
     decorator_string = decorator_format.format(timeout=3)
@@ -20,13 +20,13 @@ def test_host_decoration_options(preshow_testdir, decorator_format):
     async def test(request):
         pass
     """
-    preshow_testdir.makepyfile(test_file)
+    testdir.makepyfile(test_file)
 
-    result = preshow_testdir.runpytest_subprocess(timeout=20)
+    result = testdir.runpytest_subprocess(timeout=10)
     result.assert_outcomes(passed=1)
 
 
-def test_overrunning_test_times_out(preshow_testdir):
+def test_overrunning_test_times_out(testdir):
     """The overrunning test is timed out."""
 
     timeout = 3
@@ -40,9 +40,9 @@ def test_overrunning_test_times_out(preshow_testdir):
     async def test(request):
         await trio.sleep({4 * timeout})
     """
-    preshow_testdir.makepyfile(test_file)
+    testdir.makepyfile(test_file)
 
-    result = preshow_testdir.runpytest_subprocess(timeout=4 * timeout)
+    result = testdir.runpytest_subprocess(timeout=4 * timeout)
     result.assert_outcomes(failed=1)
     result.stdout.re_match_lines(
         lines2=[r"E\s+qtrio\._exceptions\.RunnerTimedOutError"]
@@ -53,7 +53,7 @@ def test_overrunning_test_times_out(preshow_testdir):
 #       it was doing five minutes ago.
 
 
-def test_hosted_assertion_failure_fails(preshow_testdir):
+def test_hosted_assertion_failure_fails(testdir):
     """QTrio hosted test which fails an assertion fails the test."""
 
     test_file = r"""
@@ -63,7 +63,7 @@ def test_hosted_assertion_failure_fails(preshow_testdir):
     async def test(request):
         assert False
     """
-    preshow_testdir.makepyfile(test_file)
+    testdir.makepyfile(test_file)
 
-    result = preshow_testdir.runpytest_subprocess(timeout=10)
+    result = testdir.runpytest_subprocess(timeout=10)
     result.assert_outcomes(failed=1)

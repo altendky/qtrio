@@ -364,8 +364,7 @@ async def wait_signal_context(
     event = trio.Event()
 
     def slot(*args, **kwargs):
-        if not event.is_set():
-            event.set()
+        event.set()
 
     with qtrio._qt.connection(signal=signal, slot=slot):
         yield

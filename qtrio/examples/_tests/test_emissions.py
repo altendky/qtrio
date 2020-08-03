@@ -1,53 +1,46 @@
-timeout = 10
+import qtrio
+from qtpy import QtCore
+import trio
+import trio.testing
+
+import qtrio.examples.emissions
 
 
-def test_main(preshow_testdir):
-    test_file = r"""
-    import qtrio
-    from qtpy import QtCore
-    import trio
-    import trio.testing
+@qtrio.host
+async def test_main(request, qtbot):
+    window = qtrio.examples.emissions.Window.build()
+    qtbot.addWidget(window.widget)
 
-    import qtrio.examples.emissions
+    results = []
 
+    async def user():
+        await emissions.channel.receive()
 
-    @qtrio.host(timeout=10)
-    async def test_example(request, qtbot):
-        window = qtrio.examples.emissions.Window.build()
-        qtbot.addWidget(window.widget)
+        buttons = [
+            window.increment,
+            window.increment,
+            window.increment,
+            window.decrement,
+            window.decrement,
+            window.decrement,
+            window.decrement,
+        ]
+        for button in buttons:
+            # TODO: Doesn't work reliably on macOS in GitHub Actions.  Seems to
+            #       sometimes just miss the click entirely.
+            # qtbot.mouseClick(button, QtCore.Qt.LeftButton)
+            button.click()
+            await trio.testing.wait_all_tasks_blocked(cushion=0.01)
+            results.append(window.label.text())
 
-        results = []
+        window.widget.close()
 
-        async def user():
-            await emissions.channel.receive()
+    async with trio.open_nursery() as nursery:
+        async with qtrio.enter_emissions_channel(
+            signals=[window.widget.shown],
+        ) as emissions:
+            nursery.start_soon(user)
 
-            buttons = [
-                window.increment,
-                window.increment,
-                window.increment,
-                window.decrement,
-                window.decrement,
-                window.decrement,
-                window.decrement,
-            ]
-            for button in buttons:
-                qtbot.mouseClick(button, QtCore.Qt.LeftButton)
-                await trio.testing.wait_all_tasks_blocked(cushion=0.01)
-                results.append(window.label.text())
+            await qtrio.examples.emissions.main(window=window)
 
-            window.widget.close()
-
-        async with trio.open_nursery() as nursery:
-            async with qtrio.enter_emissions_channel(
-                signals=[window.widget.shown],
-            ) as emissions:
-                nursery.start_soon(user)
-
-                await qtrio.examples.emissions.main(window=window)
-
-        assert results == ["1", "2", "3", "2", "1", "0", "-1"]
-    """
-    preshow_testdir.makepyfile(test_file)
-
-    result = preshow_testdir.runpytest_subprocess("--capture=no", timeout=timeout)
-    result.assert_outcomes(passed=1)
+    assert results == ["1", "2", "3", "2", "1", "0", "-1"]
