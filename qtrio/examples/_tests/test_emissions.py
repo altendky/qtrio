@@ -36,7 +36,7 @@ async def test_main(request, qtbot):
             print('+++ user() before mouseClick')
             qtbot.mouseClick(button, QtCore.Qt.LeftButton)
             print('+++ user() before await blocked')
-            await trio.testing.wait_all_tasks_blocked(cushion=0.01)
+            await trio.testing.wait_all_tasks_blocked(cushion=0.05)
             print('+++ user() before appending')
             results.append(window.label.text())
 
