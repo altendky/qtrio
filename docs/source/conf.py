@@ -227,6 +227,7 @@ texinfo_documents = [
     ),
 ]
 
+
 def setup(app: "sphinx.application.Sphinx") -> None:
     app.add_crossref_type(
         "fixture",
