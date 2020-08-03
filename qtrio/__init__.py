@@ -11,6 +11,7 @@ from ._exceptions import (
     EventTypeAlreadyRegisteredError,
     ReturnCodeError,
     RunnerTimedOutError,
+    UserCancelledError,
 )
 
 from ._core import (
