@@ -1,1 +1,1 @@
-Properly apply `coverage` configuration throughout CI.
+Properly apply ``coverage`` configuration throughout CI.
