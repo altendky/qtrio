@@ -104,13 +104,19 @@ async def main(window=None):
         window.widget.closed,
     ]
 
+    print('+++ main() before entering channel')
     async with qtrio.enter_emissions_channel(signals=signals) as emissions:
+        print('+++ main() before showing')
         window.show()
+        print('+++ main() after showing')
 
         async for emission in emissions.channel:
+            print('+++ main() emission received', window.count, emission)
             if emission.is_from(window.decrement.clicked):
+                print('+++ main() decrementing')
                 window.decrement_count()
             elif emission.is_from(window.increment.clicked):
+                print('+++ main() incrementing')
                 window.increment_count()
             elif emission.is_from(window.widget.closed):
                 break

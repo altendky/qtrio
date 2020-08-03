@@ -19,7 +19,9 @@ async def test_main(request, qtbot):
     results = []
 
     async def user():
+        print('+++ user() before await receive')
         await emissions.channel.receive()
+        print('+++ user() after await receive')
 
         buttons = [
             window.increment,
@@ -31,8 +33,11 @@ async def test_main(request, qtbot):
             window.decrement,
         ]
         for button in buttons:
+            print('+++ user() before mouseClick')
             qtbot.mouseClick(button, QtCore.Qt.LeftButton)
+            print('+++ user() before await blocked')
             await trio.testing.wait_all_tasks_blocked(cushion=0.01)
+            print('+++ user() before appending')
             results.append(window.label.text())
 
         window.widget.close()
@@ -41,8 +46,11 @@ async def test_main(request, qtbot):
         async with qtrio.enter_emissions_channel(
             signals=[window.widget.shown],
         ) as emissions:
+            print('+++ before start_soon')
             nursery.start_soon(user)
 
+            print('+++ before await main')
             await qtrio.examples.emissions.main(window=window)
+            print('+++ after await main')
 
     assert results == ["1", "2", "3", "2", "1", "0", "-1"]
