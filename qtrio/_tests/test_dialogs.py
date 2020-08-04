@@ -198,7 +198,7 @@ async def test_text_input_dialog_cancel(request, qtbot):
         await nursery.start(user)
         with qtrio._qt.connection(signal=dialog.shown, slot=qtbot.addWidget):
             with pytest.raises(qtrio.UserCancelledError):
-                returned_text = await dialog.wait()
+                await dialog.wait()
 
 
 def test_dialog_button_box_buttons_by_role_no_buttons(qtbot):
