@@ -12,6 +12,19 @@ import qtrio._dialogs
 import qtrio._qt
 
 
+@pytest.fixture(
+    name="builder",
+    params=[
+        qtrio._dialogs.IntegerDialog.build,
+        qtrio._dialogs.TextInputDialog.build,
+        qtrio._dialogs.FileDialog.build,
+        lambda: qtrio._dialogs.MessageBox.build_information(title="", text=""),
+    ],
+)
+def builder_fixture(request):
+    yield request.param
+
+
 @qtrio.host
 async def test_get_integer_gets_value(request, qtbot):
     dialog = qtrio._dialogs.IntegerDialog.build()
@@ -77,15 +90,6 @@ async def test_get_integer_gets_value_after_retry(request, qtbot):
     assert integer == test_value
 
 
-@pytest.mark.parametrize(
-    argnames=["builder"],
-    argvalues=[
-        [qtrio._dialogs.IntegerDialog.build],
-        [qtrio._dialogs.TextInputDialog.build],
-        [qtrio._dialogs.FileDialog.build],
-        [lambda: qtrio._dialogs.MessageBox.build_information(title="", text="")],
-    ],
-)
 def test_unused_dialog_teardown_ok(builder):
     dialog = builder()
     dialog.teardown()
@@ -163,3 +167,40 @@ async def test_text_input_dialog(request, qtbot):
             returned_text = await dialog.wait()
 
     assert returned_text == entered_text
+
+
+def test_text_input_dialog_with_title():
+    title_string = "abc123"
+    dialog = qtrio._dialogs.TextInputDialog.build(title=title_string)
+    with qtrio._dialogs.manage(dialog=dialog):
+        assert dialog.dialog.windowTitle() == title_string
+
+
+def test_text_input_dialog_with_label():
+    label_string = "lmno789"
+    dialog = qtrio._dialogs.TextInputDialog.build(label=label_string)
+    with qtrio._dialogs.manage(dialog=dialog):
+        [label] = dialog.dialog.findChildren(QtWidgets.QLabel)
+        assert label.text() == label_string
+
+
+@qtrio.host
+async def test_text_input_dialog_cancel(request, qtbot):
+    dialog = qtrio._dialogs.TextInputDialog.build()
+
+    async def user(task_status):
+        async with qtrio._core.wait_signal_context(dialog.shown):
+            task_status.started()
+
+        dialog.dialog.reject()
+
+    async with trio.open_nursery() as nursery:
+        await nursery.start(user)
+        with qtrio._qt.connection(signal=dialog.shown, slot=qtbot.addWidget):
+            with pytest.raises(qtrio.UserCancelledError):
+                returned_text = await dialog.wait()
+
+
+def test_dialog_button_box_buttons_by_role_no_buttons(qtbot):
+    dialog = QtWidgets.QDialog()
+    assert qtrio._dialogs.dialog_button_box_buttons_by_role(dialog=dialog) == {}
