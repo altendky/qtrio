@@ -13,24 +13,9 @@ import qtrio._qt
 
 
 @qtrio.host(timeout=30)
-async def test_blah(request, qtbot):
+async def test_blah(request):
     dialog = qtrio._dialogs.IntegerDialog.build()
-
-    async def user(task_status):
-        async with qtrio._core.wait_signal_context(dialog.shown):
-            task_status.started()
-
-        qtbot.keyClicks(dialog.edit_widget, str(test_value))
-        qtbot.mouseClick(dialog.ok_button, QtCore.Qt.LeftButton)
-
-    test_value = 928
-
-    async with trio.open_nursery() as nursery:
-        await nursery.start(user)
-        with qtrio._qt.connection(signal=dialog.shown, slot=qtbot.addWidget):
-            integer = await dialog.wait()
-
-    assert integer == test_value
+    dialog.dialog.show()
 
 
 @qtrio.host
