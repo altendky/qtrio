@@ -15,7 +15,7 @@ import qtrio._qt
 @qtrio.host(timeout=30)
 async def test_blah(request):
     dialog = qtrio._dialogs.IntegerDialog.build()
-    dialog.dialog.show()
+    dialog.setup()
 
 
 @qtrio.host
