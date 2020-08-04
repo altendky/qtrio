@@ -149,8 +149,6 @@ async def test_file_save_no_defaults(request, qtbot, tmp_path):
 
 @qtrio.host(timeout=10)
 async def test_file_save_cancelled(request, qtbot, tmp_path):
-    path_to_select = trio.Path(tmp_path) / "another.thing"
-
     dialog = qtrio._dialogs.FileDialog.build()
 
     async def user(task_status):
