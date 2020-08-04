@@ -12,7 +12,7 @@ import qtrio._dialogs
 import qtrio._qt
 
 
-@qtrio.host
+@qtrio.host(timeout=30)
 async def test_get_integer_gets_value(request, qtbot):
     dialog = qtrio._dialogs.IntegerDialog.build()
 
