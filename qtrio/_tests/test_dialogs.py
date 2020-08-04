@@ -1,3 +1,4 @@
+import os
 import sys
 
 from qtpy import QtCore
@@ -97,7 +98,6 @@ def test_unused_dialog_teardown_ok(builder):
 
 @qtrio.host(timeout=10)
 async def test_file_save(request, qtbot, tmp_path):
-    assert tmp_path.is_dir()
     path_to_select = trio.Path(tmp_path) / "something.new"
 
     dialog = qtrio._dialogs.FileDialog.build(
@@ -120,6 +120,54 @@ async def test_file_save(request, qtbot, tmp_path):
             selected_path = await dialog.wait()
 
     assert selected_path == path_to_select
+
+
+@qtrio.host(timeout=10)
+async def test_file_save_no_defaults(request, qtbot, tmp_path):
+    path_to_select = trio.Path(tmp_path) / "another.thing"
+
+    dialog = qtrio._dialogs.FileDialog.build()
+
+    async def user(task_status):
+        async with qtrio._core.wait_signal_context(dialog.shown):
+            task_status.started()
+
+        # allow cancellation to occur even if the signal was received before the
+        # cancellation was requested.
+        await trio.sleep(0)
+
+        dialog.dialog.selectFile(os.fspath(path_to_select))
+        dialog.dialog.accept()
+
+    async with trio.open_nursery() as nursery:
+        await nursery.start(user)
+        with qtrio._qt.connection(signal=dialog.shown, slot=qtbot.addWidget):
+            selected_path = await dialog.wait()
+
+    assert selected_path == path_to_select
+
+
+@qtrio.host(timeout=10)
+async def test_file_save_cancelled(request, qtbot, tmp_path):
+    path_to_select = trio.Path(tmp_path) / "another.thing"
+
+    dialog = qtrio._dialogs.FileDialog.build()
+
+    async def user(task_status):
+        async with qtrio._core.wait_signal_context(dialog.shown):
+            task_status.started()
+
+        # allow cancellation to occur even if the signal was received before the
+        # cancellation was requested.
+        await trio.sleep(0)
+
+        dialog.dialog.reject()
+
+    async with trio.open_nursery() as nursery:
+        await nursery.start(user)
+        with qtrio._qt.connection(signal=dialog.shown, slot=qtbot.addWidget):
+            with pytest.raises(qtrio.UserCancelledError):
+                await dialog.wait()
 
 
 @qtrio.host
@@ -146,6 +194,25 @@ async def test_information_message_box(request, qtbot):
             await dialog.wait()
 
     assert queried_text == text
+
+
+@qtrio.host
+async def test_information_message_box_cancel(request, qtbot):
+    dialog = qtrio._dialogs.MessageBox.build_information(
+        title="", text="", icon=QtWidgets.QMessageBox.Information, buttons=QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel,
+    )
+
+    async def user(task_status):
+        async with qtrio._core.wait_signal_context(dialog.shown):
+            task_status.started()
+
+        dialog.dialog.reject()
+
+    async with trio.open_nursery() as nursery:
+        await nursery.start(user)
+        with qtrio._qt.connection(signal=dialog.shown, slot=qtbot.addWidget):
+            with pytest.raises(qtrio.UserCancelledError):
+                await dialog.wait()
 
 
 @qtrio.host

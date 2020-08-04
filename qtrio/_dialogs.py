@@ -251,10 +251,10 @@ class FileDialog:
         with manage(dialog=self) as finished_event:
             await finished_event.wait()
             if self.dialog.result() != QtWidgets.QDialog.Accepted:
-                self.result = None
-            else:
-                [path_string] = self.dialog.selectedFiles()
-                self.result = trio.Path(path_string)
+                raise qtrio.UserCancelledError()
+
+            [path_string] = self.dialog.selectedFiles()
+            self.result = trio.Path(path_string)
 
             return self.result
 
