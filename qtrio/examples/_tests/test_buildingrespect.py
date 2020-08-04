@@ -1,15 +1,8 @@
 def test_main(testdir):
     conftest_file = r"""
-    import pytest
-    from qtpy import QtWidgets
-
-
-    @pytest.fixture(name="qtrio_preshow_workaround", scope="session", autouse=True)
-    def preshow_fixture(qapp):
-        widget = QtWidgets.QPushButton()
-
-        widget.show()
-        widget.hide()
+    import qtrio._tests.helpers
+    
+    qtrio_preshow_workaround_fixture = qtrio._tests.helpers.qtrio_preshow_workaround_fixture
     """
     testdir.makeconftest(conftest_file)
 
