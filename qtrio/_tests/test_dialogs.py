@@ -14,8 +14,11 @@ import qtrio._qt
 
 @qtrio.host(timeout=30)
 async def test_blah(request):
-    dialog = qtrio._dialogs.IntegerDialog.build()
-    dialog.setup()
+    dialog = QtWidgets.QMessageBox(
+        QtWidgets.QMessageBox.Information, "", "", QtWidgets.QMessageBox.Ok,
+    )
+    dialog.show()
+    dialog.hide()
 
 
 @qtrio.host
