@@ -1,7 +1,7 @@
 def test_main(testdir):
     conftest_file = r"""
     import qtrio._tests.helpers
-    
+
     qtrio_preshow_workaround_fixture = qtrio._tests.helpers.qtrio_preshow_workaround_fixture
     """
     testdir.makeconftest(conftest_file)
