@@ -199,7 +199,10 @@ async def test_information_message_box(request, qtbot):
 @qtrio.host
 async def test_information_message_box_cancel(request, qtbot):
     dialog = qtrio._dialogs.MessageBox.build_information(
-        title="", text="", icon=QtWidgets.QMessageBox.Information, buttons=QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel,
+        title="",
+        text="",
+        icon=QtWidgets.QMessageBox.Information,
+        buttons=QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel,
     )
 
     async def user(task_status):
