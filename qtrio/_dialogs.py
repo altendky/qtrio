@@ -17,8 +17,7 @@ def manage(dialog):
     finished_event = trio.Event()
 
     def slot(*args, **kwargs):
-        if not finished_event.is_set():
-            finished_event.set()
+        finished_event.set()
 
     with qtrio._qt.connection(signal=dialog.finished, slot=slot):
         try:
