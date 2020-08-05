@@ -47,7 +47,7 @@ python -m pip list
 python -m pip freeze
 
 if [ "$CHECK_DOCS" = "1" ]; then
-    git fetch --depth=100 HEAD
+    git fetch --depth=100
     git fetch --depth=100 origin master
     towncrier check
     # https://github.com/twisted/towncrier/pull/271
