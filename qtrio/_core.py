@@ -595,7 +595,10 @@ class Runner:
 
                     result = await async_fn(*args)
         except trio.TooSlowError as e:
-            if timeout_cancel_scope is not None and timeout_cancel_scope.cancelled_caught:
+            if (
+                timeout_cancel_scope is not None
+                and timeout_cancel_scope.cancelled_caught
+            ):
                 raise qtrio.RunnerTimedOutError() from e
 
             raise
