@@ -317,22 +317,3 @@ class MessageBox:
 
             if result == QtWidgets.QDialog.Rejected:
                 raise qtrio.UserCancelledError()
-
-
-@async_generator.asynccontextmanager
-async def manage_progress_dialog(
-    title: str,
-    label: str,
-    minimum: int = 0,
-    maximum: int = 0,
-    cancel_button_text: str = "Cancel",
-    parent: QtCore.QObject = None,
-):
-    dialog = QtWidgets.QProgressDialog(
-        label, cancel_button_text, minimum, maximum, parent
-    )
-    try:
-        dialog.setWindowTitle(title)
-        yield dialog
-    finally:
-        dialog.close()
