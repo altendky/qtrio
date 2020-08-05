@@ -136,7 +136,9 @@ async def test_file_save_no_defaults(request, qtbot, tmp_path):
         # cancellation was requested.
         await trio.sleep(0)
 
-        dialog.dialog.selectFile(os.fspath(path_to_select))
+        dialog.dialog.setDirectory(os.fspath(path_to_select.parent))
+        [text_edit] = dialog.dialog.findChildren(QtWidgets.QLineEdit)
+        text_edit.setText(path_to_select.name)
         dialog.dialog.accept()
 
     async with trio.open_nursery() as nursery:
