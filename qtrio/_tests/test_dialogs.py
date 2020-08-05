@@ -122,7 +122,7 @@ async def test_file_save(request, qtbot, tmp_path):
     assert selected_path == path_to_select
 
 
-@qtrio.host(timeout=10)
+@qtrio.host(timeout=30)
 async def test_file_save_no_defaults(request, qtbot, tmp_path):
     path_to_select = trio.Path(tmp_path) / "another.thing"
 
