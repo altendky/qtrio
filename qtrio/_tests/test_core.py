@@ -170,6 +170,33 @@ def test_qt_quit_cancels_trio_with_custom_application(testdir):
     result.assert_outcomes(passed=1)
 
 
+def test_run_passes_internal_too_slow_error(testdir):
+    """The async function run by :func:`qtrio.run` is executed in the Qt host thread."""
+
+    test_file = r"""
+    import math
+    import pytest
+
+    import qtrio
+    import trio
+
+
+    def test():
+        async def main():
+            with trio.fail_after(0):
+                await trio.sleep(math.inf)
+
+        outcomes = qtrio.run(main)
+
+        with pytest.raises(trio.TooSlowError):
+            outcomes.unwrap()
+    """
+    testdir.makepyfile(test_file)
+
+    result = testdir.runpytest_subprocess(timeout=timeout)
+    result.assert_outcomes(passed=1)
+
+
 def test_run_runs_in_main_thread(testdir):
     """The async function run by :func:`qtrio.run` is executed in the Qt host thread."""
 

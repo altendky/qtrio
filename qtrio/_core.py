@@ -578,24 +578,30 @@ class Runner:
         result = None
         timeout_cancel_scope = None
 
-        with trio.CancelScope() as self.cancel_scope:
-            with contextlib.ExitStack() as exit_stack:
-                if self.application.quitOnLastWindowClosed():
-                    exit_stack.enter_context(
-                        qtrio._qt.connection(
-                            signal=self.application.lastWindowClosed,
-                            slot=self.cancel_scope.cancel,
+        try:
+            with trio.CancelScope() as self.cancel_scope:
+                with contextlib.ExitStack() as exit_stack:
+                    if self.application.quitOnLastWindowClosed():
+                        exit_stack.enter_context(
+                            qtrio._qt.connection(
+                                signal=self.application.lastWindowClosed,
+                                slot=self.cancel_scope.cancel,
+                            )
                         )
-                    )
-                if self.timeout is not None:
-                    timeout_cancel_scope = exit_stack.enter_context(
-                        trio.move_on_after(self.timeout)
-                    )
+                    if self.timeout is not None:
+                        timeout_cancel_scope = exit_stack.enter_context(
+                            trio.fail_after(self.timeout)
+                        )
 
-                result = await async_fn(*args)
+                    result = await async_fn(*args)
+        except trio.TooSlowError as e:
+            if (
+                timeout_cancel_scope is not None
+                and timeout_cancel_scope.cancelled_caught
+            ):
+                raise qtrio.RunnerTimedOutError() from e
 
-        if timeout_cancel_scope is not None and timeout_cancel_scope.cancelled_caught:
-            raise qtrio.RunnerTimedOutError()
+            raise
 
         return result
 
