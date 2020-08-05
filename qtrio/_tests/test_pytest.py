@@ -41,18 +41,6 @@ def test_overrunning_test_times_out(testdir):
     """
     testdir.makepyfile(test_file)
 
-    def decode(self, input, final=False):
-        # decode input (taking the buffer into account)
-        data = self.buffer + input
-        print("-=-=-=-=-=-=-=-=-", repr(data))
-        (result, consumed) = self._buffer_decode(data, self.errors, final)
-        # keep undecoded input until the next call
-        self.buffer = data[consumed:]
-        return result
-
-    import codecs
-    codecs.BufferedIncrementalDecoder.decode = decode
-
     result = testdir.runpytest_subprocess(timeout=4 * timeout)
     result.assert_outcomes(failed=1)
     result.stdout.re_match_lines(
