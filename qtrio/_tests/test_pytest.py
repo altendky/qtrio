@@ -21,7 +21,7 @@ def test_host_decoration_options(testdir, decorator_format):
     """
     testdir.makepyfile(test_file)
 
-    result = testdir.runpytest_subprocess(timeout=30)
+    result = testdir.runpytest_subprocess(timeout=10)
     result.assert_outcomes(passed=1)
 
 
