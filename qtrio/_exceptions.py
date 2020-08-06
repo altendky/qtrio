@@ -65,3 +65,9 @@ class RunnerTimedOutError(QTrioException):
     """Raised when a :class:`qtrio.Runner` times out the run."""
 
     pass
+
+
+class InvalidInputError(QTrioException):
+    """Raised when invalid input is provided such as via a dialog."""
+
+    pass

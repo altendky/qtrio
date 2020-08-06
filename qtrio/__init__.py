@@ -12,6 +12,7 @@ from ._exceptions import (
     ReturnCodeError,
     RunnerTimedOutError,
     UserCancelledError,
+    InvalidInputError,
 )
 
 from ._core import (

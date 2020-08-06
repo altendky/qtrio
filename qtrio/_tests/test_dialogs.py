@@ -66,29 +66,21 @@ async def test_get_integer_raises_cancel_when_canceled(request, qtbot):
 
 
 @qtrio.host
-async def test_get_integer_gets_value_after_retry(request, qtbot):
+async def test_get_integer_raises_for_invalid_input(request, qtbot):
     dialog = qtrio.dialogs.IntegerDialog.build()
-
-    test_value = 928
 
     async def user(task_status):
         async with qtrio._core.wait_signal_context(dialog.shown):
             task_status.started()
 
         qtbot.keyClicks(dialog.edit_widget, "abc")
-
-        async with qtrio._core.wait_signal_context(dialog.shown):
-            qtbot.mouseClick(dialog.ok_button, QtCore.Qt.LeftButton)
-
-        qtbot.keyClicks(dialog.edit_widget, str(test_value))
         qtbot.mouseClick(dialog.ok_button, QtCore.Qt.LeftButton)
 
     async with trio.open_nursery() as nursery:
         await nursery.start(user)
         with qtrio._qt.connection(signal=dialog.shown, slot=qtbot.addWidget):
-            integer = await dialog.wait()
-
-    assert integer == test_value
+            with pytest.raises(qtrio.InvalidInputError):
+                await dialog.wait()
 
 
 def test_unused_dialog_teardown_ok(builder):

@@ -78,19 +78,18 @@ class IntegerDialog:
         self.edit_widget = None
 
     async def wait(self):
-        while True:
-            with manage(dialog=self) as finished_event:
-                await finished_event.wait()
+        with manage(dialog=self) as finished_event:
+            await finished_event.wait()
 
-                if self.dialog.result() != QtWidgets.QDialog.Accepted:
-                    raise qtrio.UserCancelledError()
+            if self.dialog.result() != QtWidgets.QDialog.Accepted:
+                raise qtrio.UserCancelledError()
 
-                try:
-                    self.result = int(self.dialog.textValue())
-                except ValueError:
-                    continue
+            try:
+                self.result = int(self.dialog.textValue())
+            except ValueError:
+                raise qtrio.InvalidInputError()
 
-                return self.result
+            return self.result
 
 
 @attr.s(auto_attribs=True)
