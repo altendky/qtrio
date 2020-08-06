@@ -1,3 +1,6 @@
+timeout = 40
+
+
 def test_main(testdir):
     conftest_file = r"""
     import qtrio._tests.helpers
@@ -46,5 +49,5 @@ def test_main(testdir):
     """
     testdir.makepyfile(test_file)
 
-    result = testdir.runpytest_subprocess("--capture=no", timeout=20)
+    result = testdir.runpytest_subprocess("--capture=no", timeout=timeout)
     result.assert_outcomes(passed=1)
