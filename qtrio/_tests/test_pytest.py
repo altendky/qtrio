@@ -45,11 +45,14 @@ def test_overrunning_test_times_out(testdir):
     def decode(self, input, final=False):
         # decode input (taking the buffer into account)
         data = self.buffer + input
-        print("-=-=-=-=-=-=-=-=-", repr(data))
-        import traceback
-        traceback.print_stack()
-        print("-=-=-=-=-=-=-=-=-")
-        (result, consumed) = self._buffer_decode(data, self.errors, final)
+        try:
+            (result, consumed) = self._buffer_decode(data, self.errors, final)
+        except UnicodeDecodeError:
+            print("-=-=-=-=-=-=-=-=-", repr(data))
+            import traceback
+            traceback.print_stack()
+            print("-=-=-=-=-=-=-=-=-")
+            raise
         # keep undecoded input until the next call
         self.buffer = data[consumed:]
         return result
