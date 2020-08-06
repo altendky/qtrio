@@ -34,11 +34,9 @@ class IntegerDialog:
     edit_widget: typing.Optional[QtWidgets.QWidget] = None
     ok_button: typing.Optional[QtWidgets.QPushButton] = None
     cancel_button: typing.Optional[QtWidgets.QPushButton] = None
-    attempt: typing.Optional[int] = None
     result: typing.Optional[int] = None
 
     shown = qtrio._qt.Signal(QtWidgets.QInputDialog)
-    hidden = qtrio._qt.Signal()
     finished = qtrio._qt.Signal(int)  # QtWidgets.QDialog.DialogCode
 
     @classmethod
@@ -60,11 +58,6 @@ class IntegerDialog:
         self.cancel_button = buttons.get(QtWidgets.QDialogButtonBox.RejectRole)
 
         [self.edit_widget] = self.dialog.findChildren(QtWidgets.QLineEdit)
-
-        if self.attempt is None:
-            self.attempt = 0
-        else:
-            self.attempt += 1
 
         self.shown.emit(self.dialog)
 
