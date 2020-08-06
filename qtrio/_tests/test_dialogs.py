@@ -9,17 +9,17 @@ import trio
 
 import qtrio
 import qtrio._core
-import qtrio._dialogs
+import qtrio.dialogs
 import qtrio._qt
 
 
 @pytest.fixture(
     name="builder",
     params=[
-        qtrio._dialogs.IntegerDialog.build,
-        qtrio._dialogs.TextInputDialog.build,
-        qtrio._dialogs.FileDialog.build,
-        lambda: qtrio._dialogs.MessageBox.build_information(title="", text=""),
+        qtrio.dialogs.IntegerDialog.build,
+        qtrio.dialogs.TextInputDialog.build,
+        qtrio.dialogs.FileDialog.build,
+        lambda: qtrio.dialogs.MessageBox.build_information(title="", text=""),
     ],
 )
 def builder_fixture(request):
@@ -28,7 +28,7 @@ def builder_fixture(request):
 
 @qtrio.host
 async def test_get_integer_gets_value(request, qtbot):
-    dialog = qtrio._dialogs.IntegerDialog.build()
+    dialog = qtrio.dialogs.IntegerDialog.build()
 
     async def user(task_status):
         async with qtrio._core.wait_signal_context(dialog.shown):
@@ -49,7 +49,7 @@ async def test_get_integer_gets_value(request, qtbot):
 
 @qtrio.host
 async def test_get_integer_raises_cancel_when_canceled(request, qtbot):
-    dialog = qtrio._dialogs.IntegerDialog.build()
+    dialog = qtrio.dialogs.IntegerDialog.build()
 
     async def user(task_status):
         async with qtrio._core.wait_signal_context(dialog.shown):
@@ -67,7 +67,7 @@ async def test_get_integer_raises_cancel_when_canceled(request, qtbot):
 
 @qtrio.host
 async def test_get_integer_gets_value_after_retry(request, qtbot):
-    dialog = qtrio._dialogs.IntegerDialog.build()
+    dialog = qtrio.dialogs.IntegerDialog.build()
 
     test_value = 928
 
@@ -100,7 +100,7 @@ def test_unused_dialog_teardown_ok(builder):
 async def test_file_save(request, qtbot, tmp_path):
     path_to_select = trio.Path(tmp_path) / "something.new"
 
-    dialog = qtrio._dialogs.FileDialog.build(
+    dialog = qtrio.dialogs.FileDialog.build(
         default_directory=path_to_select.parent, default_file=path_to_select,
     )
 
@@ -126,7 +126,7 @@ async def test_file_save(request, qtbot, tmp_path):
 async def test_file_save_no_defaults(request, qtbot, tmp_path):
     path_to_select = trio.Path(tmp_path) / "another.thing"
 
-    dialog = qtrio._dialogs.FileDialog.build()
+    dialog = qtrio.dialogs.FileDialog.build()
 
     async def user(task_status):
         async with qtrio._core.wait_signal_context(dialog.shown):
@@ -151,7 +151,7 @@ async def test_file_save_no_defaults(request, qtbot, tmp_path):
 
 @qtrio.host(timeout=10)
 async def test_file_save_cancelled(request, qtbot, tmp_path):
-    dialog = qtrio._dialogs.FileDialog.build()
+    dialog = qtrio.dialogs.FileDialog.build()
 
     async def user(task_status):
         async with qtrio._core.wait_signal_context(dialog.shown):
@@ -175,7 +175,7 @@ async def test_information_message_box(request, qtbot):
     text = "Consider yourself informed."
     queried_text = None
 
-    dialog = qtrio._dialogs.MessageBox.build_information(
+    dialog = qtrio.dialogs.MessageBox.build_information(
         title="Information", text=text, icon=QtWidgets.QMessageBox.Information,
     )
 
@@ -198,7 +198,7 @@ async def test_information_message_box(request, qtbot):
 
 @qtrio.host
 async def test_information_message_box_cancel(request, qtbot):
-    dialog = qtrio._dialogs.MessageBox.build_information(
+    dialog = qtrio.dialogs.MessageBox.build_information(
         title="",
         text="",
         icon=QtWidgets.QMessageBox.Information,
@@ -220,7 +220,7 @@ async def test_information_message_box_cancel(request, qtbot):
 
 @qtrio.host
 async def test_text_input_dialog(request, qtbot):
-    dialog = qtrio._dialogs.TextInputDialog.build()
+    dialog = qtrio.dialogs.TextInputDialog.build()
 
     entered_text = "etcetera"
 
@@ -241,22 +241,22 @@ async def test_text_input_dialog(request, qtbot):
 
 def test_text_input_dialog_with_title():
     title_string = "abc123"
-    dialog = qtrio._dialogs.TextInputDialog.build(title=title_string)
-    with qtrio._dialogs.manage(dialog=dialog):
+    dialog = qtrio.dialogs.TextInputDialog.build(title=title_string)
+    with qtrio.dialogs.manage(dialog=dialog):
         assert dialog.dialog.windowTitle() == title_string
 
 
 def test_text_input_dialog_with_label():
     label_string = "lmno789"
-    dialog = qtrio._dialogs.TextInputDialog.build(label=label_string)
-    with qtrio._dialogs.manage(dialog=dialog):
+    dialog = qtrio.dialogs.TextInputDialog.build(label=label_string)
+    with qtrio.dialogs.manage(dialog=dialog):
         [label] = dialog.dialog.findChildren(QtWidgets.QLabel)
         assert label.text() == label_string
 
 
 @qtrio.host
 async def test_text_input_dialog_cancel(request, qtbot):
-    dialog = qtrio._dialogs.TextInputDialog.build()
+    dialog = qtrio.dialogs.TextInputDialog.build()
 
     async def user(task_status):
         async with qtrio._core.wait_signal_context(dialog.shown):
@@ -273,4 +273,4 @@ async def test_text_input_dialog_cancel(request, qtbot):
 
 def test_dialog_button_box_buttons_by_role_no_buttons(qtbot):
     dialog = QtWidgets.QDialog()
-    assert qtrio._dialogs.dialog_button_box_buttons_by_role(dialog=dialog) == {}
+    assert qtrio.dialogs.dialog_button_box_buttons_by_role(dialog=dialog) == {}
