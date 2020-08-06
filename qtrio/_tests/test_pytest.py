@@ -14,11 +14,10 @@ def test_host_decoration_options(testdir, decorator_format):
 
     test_file = rf"""
     import qtrio
-    import trio
 
     @{decorator_string}
     async def test(request):
-        True
+        pass
     """
     testdir.makepyfile(test_file)
 
