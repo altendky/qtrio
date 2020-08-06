@@ -45,6 +45,9 @@ def test_overrunning_test_times_out(testdir):
         # decode input (taking the buffer into account)
         data = self.buffer + input
         print("-=-=-=-=-=-=-=-=-", repr(data))
+        import traceback
+        traceback.print_stack()
+        print("-=-=-=-=-=-=-=-=-")
         (result, consumed) = self._buffer_decode(data, self.errors, final)
         # keep undecoded input until the next call
         self.buffer = data[consumed:]
