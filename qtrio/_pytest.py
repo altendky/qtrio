@@ -20,7 +20,7 @@ def host(
 
 @typing.overload
 def host(
-    *, timeout: float = 3
+    *, timeout: float = 20
 ) -> typing.Callable[
     [typing.Callable[..., typing.Awaitable[object]]], typing.Callable[..., object]
 ]:
