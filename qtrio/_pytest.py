@@ -38,7 +38,7 @@ def host(func, timeout=3, clock=None, *args, **kwargs):
     can be used in any of the following forms.  Positional arguments other than a call
     with only the test function are not supported.
 
-    .. literalinclude:: ../../qtrio/examples/_tests/docs/test_qtrio_host.py
+    .. literalinclude:: ../../qtrio/_tests/examples/docs/test_qtrio_host.py
 
     Note:
         Presently the test is required to specify the
