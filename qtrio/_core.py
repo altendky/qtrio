@@ -42,7 +42,7 @@ def registered_event_type() -> typing.Optional[QtCore.QEvent.Type]:
     return _reenter_event_type
 
 
-def register_event_type():
+def register_event_type() -> None:
     """Register a Qt event type for use by Trio to reenter into the Qt event loop.
     Raises :class:`qtrio.EventTypeAlreadyRegisteredError` if an event type
     has already been registered.  Raises :class:`qtrio.EventTypeRegistrationFailedError`

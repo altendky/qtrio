@@ -19,7 +19,7 @@ class Signal:
     access, so does this so it can 'redirect' to the signal on the other object.
     """
 
-    attribute_name = None
+    attribute_name: str = ""
 
     def __init__(self, *args, **kwargs):
         class _SignalQObject(QtCore.QObject):

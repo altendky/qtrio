@@ -21,7 +21,7 @@ class EventTypeRegistrationError(QTrioException):
 class EventTypeRegistrationFailedError(EventTypeRegistrationError):
     """Raised if the attempt to register a new event type fails."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(
             "Failed to register the event hint, either no available hints remain or the"
             + " program is shutting down."
@@ -31,7 +31,7 @@ class EventTypeRegistrationFailedError(EventTypeRegistrationError):
 class RequestedEventTypeUnavailableError(EventTypeRegistrationError):
     """Raised if the requested event type is unavailable."""
 
-    def __init__(self, requested_type, returned_type):
+    def __init__(self, requested_type, returned_type) -> None:
         super().__init__(
             f"Failed acquire the requested type ({requested_type}), got back"
             + f" ({returned_type}) instead."
@@ -42,7 +42,7 @@ class EventTypeAlreadyRegisteredError(EventTypeRegistrationError):
     """Raised when a request is made to register an event type but a type has already
     been registered previously."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(
             "An event type has already been registered, this must only happen once."
         )
