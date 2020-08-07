@@ -1,5 +1,7 @@
 """A central location to define QTrio specific exceptions and avoid introducing
 inter-module dependency issues."""
+import typing
+from qtpy import QtCore
 
 
 class QTrioException(Exception):
@@ -31,7 +33,11 @@ class EventTypeRegistrationFailedError(EventTypeRegistrationError):
 class RequestedEventTypeUnavailableError(EventTypeRegistrationError):
     """Raised if the requested event type is unavailable."""
 
-    def __init__(self, requested_type, returned_type) -> None:
+    def __init__(
+        self,
+        requested_type: typing.Union[int, QtCore.QEvent.Type],
+        returned_type: typing.Union[int, QtCore.QEvent.Type],
+    ) -> None:
         super().__init__(
             f"Failed acquire the requested type ({requested_type}), got back"
             + f" ({returned_type}) instead."
@@ -51,8 +57,15 @@ class EventTypeAlreadyRegisteredError(EventTypeRegistrationError):
 class ReturnCodeError(QTrioException):
     """Wraps a QApplication return code as an exception."""
 
-    def __eq__(self, other):
-        return type(self) == type(other) and self.args == other.args
+    def __eq__(self, other: object) -> bool:
+        # TODO: workaround for https://github.com/python/mypy/issues/4445
+        if not isinstance(other, type(self)):
+            return False
+        
+        if type(self) != type(other):
+            return False
+
+        return self.args == other.args
 
 
 class UserCancelledError(QTrioException):

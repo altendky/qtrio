@@ -22,15 +22,7 @@ import trio.abc
 
 import qtrio
 import qtrio._qt
-
-
-# https://github.com/spyder-ide/qtpy/pull/214
-SignalInstance: typing.Any
-if qtpy.API in qtpy.PYQT5_API and not hasattr(QtCore, "SignalInstance"):
-    SignalInstance = QtCore.pyqtBoundSignal
-else:
-    SignalInstance = QtCore.SignalInstance
-
+import qtrio._util
 
 _reenter_event_type: typing.Optional[QtCore.QEvent.Type] = None
 
@@ -63,7 +55,7 @@ def register_event_type() -> None:
 
 def register_requested_event_type(
     requested_value: typing.Union[int, QtCore.QEvent.Type]
-):
+) -> None:
     """Register the requested Qt event type for use by Trio to reenter into the Qt event
     loop.  Raises :class:`qtrio.EventTypeAlreadyRegisteredError` if an event type
     has already been registered.  Raises :class:`qtrio.EventTypeRegistrationFailedError`
@@ -111,7 +103,7 @@ class Reenter(QtCore.QObject):
         return False
 
 
-async def wait_signal(signal: SignalInstance) -> typing.Tuple[typing.Any, ...]:
+async def wait_signal(signal: qtrio._util.SignalInstance) -> typing.Tuple[object, ...]:
     """Block for the next emission of `signal` and return the emitted arguments.
 
     Warning:
@@ -122,9 +114,9 @@ async def wait_signal(signal: SignalInstance) -> typing.Tuple[typing.Any, ...]:
         signal: The signal instance to wait for emission of.
     """
     event = trio.Event()
-    result: typing.Tuple[typing.Any, ...] = ()
+    result: typing.Tuple[object, ...] = ()
 
-    def slot(*args):
+    def slot(*args: object) -> None:
         """Receive and store the emitted arguments and set the event so we can continue.
 
         Args:
@@ -150,7 +142,7 @@ class Emission:
     Note:
         Each time you access a signal such as `a_qobject.some_signal` you get a
         different signal instance object so the `signal` attribute generally will not
-        be the same object.  A signal instance is a `QtCore.SignalInstance` in PySide2
+        be the same object.  A signal instance is a `QtCore.qtrio._util.SignalInstance` in PySide2
         or `QtCore.pyqtBoundSignal` in PyQt5.
 
     Attributes:
@@ -158,10 +150,10 @@ class Emission:
         args: A tuple of the arguments emitted by the signal.
     """
 
-    signal: SignalInstance
+    signal: qtrio._util.SignalInstance
     args: typing.Tuple[typing.Any, ...]
 
-    def is_from(self, signal: SignalInstance) -> bool:
+    def is_from(self, signal: qtrio._util.SignalInstance) -> bool:
         """Check if this emission came from `signal`.
 
         Args:
@@ -179,7 +171,11 @@ class Emission:
 
         raise qtrio.QTrioException()  # pragma: no cover
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
+        # TODO: workaround for https://github.com/python/mypy/issues/4445
+        if not isinstance(other, type(self)):
+            return False
+
         if type(other) != type(self):
             return False
 
@@ -203,16 +199,17 @@ class Emissions:
     # TODO: for Sphinx...
     __module__ = "qtrio"
 
-    async def aclose(self):
+    async def aclose(self) -> None:
         """Asynchronously close the send channel when signal emissions are no longer of
         interest.
         """
-        return await self.send_channel.aclose()
+        await self.send_channel.aclose()
 
 
 @async_generator.asynccontextmanager
 async def open_emissions_channel(
-    signals: typing.Collection[SignalInstance], max_buffer_size=math.inf,
+    signals: typing.Collection[qtrio._util.SignalInstance],
+    max_buffer_size: typing.Union[int, float] = math.inf,
 ) -> typing.AsyncGenerator[Emissions, None]:
     """Create a memory channel fed by the emissions of the signals.  Each signal
     emission will be converted to a :class:`qtrio.Emission` object.  On exit the send
@@ -238,7 +235,9 @@ async def open_emissions_channel(
         with contextlib.ExitStack() as stack:
             for signal in signals:
 
-                def slot(*args, internal_signal=signal):
+                def slot(
+                    *args: object, internal_signal: qtrio._util.SignalInstance = signal
+                ) -> None:
                     try:
                         send_channel.send_nowait(
                             Emission(signal=internal_signal, args=args)
@@ -254,7 +253,8 @@ async def open_emissions_channel(
 
 @async_generator.asynccontextmanager
 async def enter_emissions_channel(
-    signals: typing.Collection[SignalInstance], max_buffer_size=math.inf,
+    signals: typing.Collection[qtrio._util.SignalInstance],
+    max_buffer_size: typing.Union[int, float] = math.inf,
 ) -> typing.AsyncGenerator[trio.MemoryReceiveChannel, None]:
     """Create a memory channel fed by the emissions of the signals and enter both the
     send and receive channels' context managers.
@@ -295,25 +295,25 @@ class EmissionsNursery:
 
     def connect(
         self,
-        signal: SignalInstance,
+        signal: qtrio._util.SignalInstance,
         slot: typing.Callable[..., typing.Awaitable[object]],
     ) -> None:
         if self.wrapper is not None:
 
-            def starter(*args):
+            def starter(*args: object) -> None:
                 self.nursery.start_soon(self.wrapper, slot, *args)
 
         else:
 
-            def starter(*args):
+            def starter(*args: object) -> None:
                 self.nursery.start_soon(slot, *args)
 
         self.exit_stack.enter_context(qtrio._qt.connection(signal, starter))
 
     def connect_sync(
-        self, signal: SignalInstance, slot: typing.Callable[..., object]
+        self, signal: qtrio._util.SignalInstance, slot: typing.Callable[..., object]
     ) -> None:
-        async def async_slot(*args):
+        async def async_slot(*args: object) -> None:
             slot(*args)
 
         self.connect(signal=signal, slot=async_slot)
@@ -325,7 +325,7 @@ class EmissionsNursery:
 
 @async_generator.asynccontextmanager
 async def open_emissions_nursery(
-    until: typing.Optional[SignalInstance] = None,
+    until: typing.Optional[qtrio._util.SignalInstance] = None,
     wrapper: typing.Optional[typing.Callable[..., typing.Awaitable[object]]] = None,
 ) -> typing.AsyncGenerator[EmissionsNursery, None]:
     """Open a nursery for handling callbacks triggered by signal emissions.  This allows
@@ -353,7 +353,7 @@ async def open_emissions_nursery(
 
 @async_generator.asynccontextmanager
 async def wait_signal_context(
-    signal: SignalInstance,
+    signal: qtrio._util.SignalInstance,
 ) -> typing.AsyncGenerator[None, None]:
     """Connect a signal during the context and wait for it on exit.  Presently no
     mechanism is provided for retrieving the emitted arguments.
@@ -363,7 +363,7 @@ async def wait_signal_context(
     """
     event = trio.Event()
 
-    def slot(*args, **kwargs):
+    def slot(*args: object, **kwargs: object) -> None:
         event.set()
 
     with qtrio._qt.connection(signal=signal, slot=slot):
@@ -386,7 +386,7 @@ class Outcomes:
     qt: typing.Optional[outcome.Outcome] = None
     trio: typing.Optional[outcome.Outcome] = None
 
-    def unwrap(self):
+    def unwrap(self) -> object:
         """Unwrap either the Trio or Qt outcome.  First, errors are given priority over
         success values.  Second, the Trio outcome gets priority over the Qt outcome.  If
         both are still None a :class:`qtrio.NoOutcomesError` is raised.
@@ -511,7 +511,7 @@ class Runner:
     def run(
         self,
         async_fn: typing.Callable[[], typing.Awaitable[object]],
-        *args,
+        *args: object,
         execute_application: bool = True,
     ) -> Outcomes:
         """Start the guest loop executing `async_fn`.

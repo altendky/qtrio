@@ -1,10 +1,12 @@
 """This module provides general Qt related utilities that are not Trio specific."""
 
 import contextlib
+import typing
 
 from qtpy import QtCore
 
 import qtrio._python
+import qtrio._util
 
 
 class Signal:
@@ -21,13 +23,17 @@ class Signal:
 
     attribute_name: str = ""
 
-    def __init__(self, *args, **kwargs):
+    def __init__(
+        self, *args: object, **kwargs: object
+    ) -> None:
         class _SignalQObject(QtCore.QObject):
             signal = QtCore.Signal(*args, **kwargs)
 
         self.object_cls = _SignalQObject
 
-    def __get__(self, instance, owner):
+    def __get__(
+        self, instance: object, owner: object
+    ) -> qtrio._util.SignalInstance:
         if instance is None:
             return self
 
@@ -35,7 +41,7 @@ class Signal:
 
         return o.signal
 
-    def object(self, instance):
+    def object(self, instance: object) -> QtCore.QObject:
         d = getattr(instance, self.attribute_name, None)
 
         if d is None:
@@ -54,7 +60,13 @@ Signal.attribute_name = qtrio._python.identifier_path(Signal)
 
 
 @contextlib.contextmanager
-def connection(signal, slot):
+def connection(
+    signal: qtrio._util.SignalInstance, slot: typing.Callable[..., object]
+) -> typing.Generator[
+    typing.Union[QtCore.QMetaObject.Connection, typing.Callable[..., object]],
+    None,
+    None,
+]:
     """Connect a signal and slot for the duration of the context manager.
 
     Args:
@@ -73,6 +85,8 @@ def connection(signal, slot):
     try:
         yield this_connection
     finally:
+        expected_exception: typing.Type[Exception]
+
         if qtpy.PYSIDE2:
             expected_exception = RuntimeError
         else:
