@@ -23,17 +23,13 @@ class Signal:
 
     attribute_name: str = ""
 
-    def __init__(
-        self, *args: object, **kwargs: object
-    ) -> None:
+    def __init__(self, *args: object, **kwargs: object) -> None:
         class _SignalQObject(QtCore.QObject):
             signal = QtCore.Signal(*args, **kwargs)
 
         self.object_cls = _SignalQObject
 
-    def __get__(
-        self, instance: object, owner: object
-    ) -> qtrio._util.SignalInstance:
+    def __get__(self, instance: object, owner: object) -> qtrio._util.SignalInstance:
         if instance is None:
             return self
 

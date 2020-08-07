@@ -9,7 +9,12 @@ def test_emissions_help_entry_point():
     """The console script entry point doesn't fail when asked for --help for the
     emissions example.
     """
-    scripts = pathlib.Path(sysconfig.get_path("scripts"))
+    scripts_string = sysconfig.get_path("scripts")
+
+    if scripts_string is None:
+        assert False, "No scripts path found in sysconfig paths"
+
+    scripts = pathlib.Path(scripts_string)
     subprocess.run(
         [os.fspath(scripts / "qtrio"), "examples", "emissions", "--help"], check=True
     )

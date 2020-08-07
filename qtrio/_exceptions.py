@@ -61,7 +61,7 @@ class ReturnCodeError(QTrioException):
         # TODO: workaround for https://github.com/python/mypy/issues/4445
         if not isinstance(other, type(self)):
             return False
-        
+
         if type(self) != type(other):
             return False
 

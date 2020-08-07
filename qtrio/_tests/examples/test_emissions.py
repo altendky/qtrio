@@ -1,3 +1,5 @@
+import typing
+
 import qtrio
 from qtpy import QtCore
 import trio
@@ -11,7 +13,7 @@ async def test_main(request, qtbot):
     window = qtrio.examples.emissions.Window.build()
     qtbot.addWidget(window.widget)
 
-    results = []
+    results: typing.List[int] = []
 
     async def user():
         await emissions.channel.receive()

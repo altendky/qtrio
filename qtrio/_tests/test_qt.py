@@ -130,5 +130,5 @@ def test_failed_connection_raises():
 
     # TODO: get more specific about the exception
     with pytest.raises(TypeError):
-        with qtrio._qt.connection(instance.signal, 2):
+        with qtrio._qt.connection(instance.signal, 2):  # type: ignore
             pass  # pragma: no cover
