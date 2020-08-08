@@ -87,7 +87,7 @@ def register_requested_event_type(
 class ReenterEvent(QtCore.QEvent):
     """A proper `ReenterEvent` for reentering into the Qt host loop."""
 
-    def __init__(self, fn: typing.Callable[[], typing.Any]):
+    def __init__(self, fn: typing.Callable[[], object]):
         super().__init__(_reenter_event_type)
         self.fn = fn
 
@@ -151,7 +151,7 @@ class Emission:
     """
 
     signal: qtrio._util.SignalInstance
-    args: typing.Tuple[typing.Any, ...]
+    args: typing.Tuple[object, ...]
 
     def is_from(self, signal: qtrio._util.SignalInstance) -> bool:
         """Check if this emission came from `signal`.
@@ -417,7 +417,7 @@ class Outcomes:
 
 def run(
     async_fn: typing.Callable[[], typing.Awaitable[None]],
-    *args: typing.Tuple[typing.Any, ...],
+    *args: typing.Tuple[object, ...],
     done_callback: typing.Optional[typing.Callable[[Outcomes], None]] = None,
     clock: trio.abc.Clock = None,
 ) -> Outcomes:
@@ -549,7 +549,7 @@ class Runner:
 
         return self.outcomes
 
-    def run_sync_soon_threadsafe(self, fn: typing.Callable[[], typing.Any]) -> None:
+    def run_sync_soon_threadsafe(self, fn: typing.Callable[[], object]) -> None:
         """Helper for the Trio guest to execute a sync function in the Qt host
         thread when called from the Trio guest thread.  This call will not block waiting
         for completion of `fn` nor will it return the result of calling `fn`.
@@ -563,7 +563,7 @@ class Runner:
     async def trio_main(
         self,
         async_fn: typing.Callable[..., typing.Awaitable[None]],
-        args: typing.Tuple[typing.Any, ...],
+        args: typing.Tuple[object, ...],
     ) -> None:
         """Will be run as the main async function by the Trio guest.  It creates a
         cancellation scope to be cancelled when `QtGui.QGuiApplication.lastWindowClosed`

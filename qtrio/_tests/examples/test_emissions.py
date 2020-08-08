@@ -13,7 +13,7 @@ async def test_main(request, qtbot):
     window = qtrio.examples.emissions.Window.build()
     qtbot.addWidget(window.widget)
 
-    results: typing.List[int] = []
+    results: typing.List[str] = []
 
     async def user():
         await emissions.channel.receive()
