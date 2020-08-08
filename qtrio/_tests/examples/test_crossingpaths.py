@@ -1,3 +1,5 @@
+import typing
+
 import qtrio
 from qtpy import QtCore
 from qtpy import QtWidgets
@@ -18,7 +20,7 @@ async def test_main(request, qtbot):
     label = SignaledLabel()
     qtbot.addWidget(label)
 
-    results = []
+    results: typing.List[str] = []
 
     async def user():
         async for emission in emissions.channel:

@@ -8,9 +8,9 @@ import trio
 async def main(
     label: typing.Optional[QtWidgets.QWidget] = None,
     message: str = "Hello world.",
-    change_delay=0.5,
-    close_delay=3,
-):
+    change_delay: float = 0.5,
+    close_delay: float = 3,
+) -> None:
     if label is None:  # pragma: no cover
         label = QtWidgets.QLabel()
     # start big enough to fit the whole message

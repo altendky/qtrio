@@ -7,6 +7,7 @@ import decorator
 import outcome
 import _pytest.fixtures
 import pytest
+import trio.abc
 
 import qtrio
 
@@ -20,7 +21,7 @@ def host(
 
 @typing.overload
 def host(
-    *, timeout: float = 20
+    *, timeout: float = 20, clock: trio.abc.Clock = None,
 ) -> typing.Callable[
     [typing.Callable[..., typing.Awaitable[object]]], typing.Callable[..., object]
 ]:
@@ -32,7 +33,13 @@ def host(
 # qtrio/_pytest.py:37: error: Overloaded function implementation does not accept all possible arguments of signature 2
 @decorator.decorator  # type: ignore
 @pytest.mark.usefixtures("qapp")  # type: ignore
-def host(func, timeout=3, clock=None, *args, **kwargs):
+def host(
+    func: typing.Callable[..., typing.Awaitable[object]],
+    timeout: float = 3,
+    clock: trio.abc.Clock = None,
+    *args: object,
+    **kwargs: object,
+) -> None:
     """
     Decorate your tests that you want run in a Trio guest and a Qt Host.  This decorator
     can be used in any of the following forms.  Positional arguments other than a call
