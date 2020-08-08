@@ -1,5 +1,8 @@
+import typing
+
 import attr
 from qtpy import QtCore
+from qtpy import QtGui
 from qtpy import QtWidgets
 
 import qtrio
@@ -15,7 +18,7 @@ class QSignaledWidget(QtWidgets.QWidget):
     closed = QtCore.Signal()
     shown = QtCore.Signal()
 
-    def closeEvent(self, event):
+    def closeEvent(self, event: QtGui.QCloseEvent) -> None:
         """Detect close events and emit the `closed` signal."""
 
         super().closeEvent(event)
@@ -24,7 +27,7 @@ class QSignaledWidget(QtWidgets.QWidget):
         else:  # pragma: no cover
             pass
 
-    def showEvent(self, event):
+    def showEvent(self, event: QtGui.QShowEvent) -> None:
         """Detect show events and emit the `shown` signal."""
 
         super().showEvent(event)
@@ -48,7 +51,11 @@ class Window:
     count: int = 0
 
     @classmethod
-    def build(cls, title="QTrio Emissions Example", parent=None):
+    def build(
+        cls,
+        title: str = "QTrio Emissions Example",
+        parent: typing.Optional[QtWidgets.QWidget] = None,
+    ) -> "Window":
         """Build and lay out the widgets that make up this window."""
 
         self = cls(
@@ -73,25 +80,25 @@ class Window:
 
         return self
 
-    def increment_count(self):
+    def increment_count(self) -> None:
         """Increment the counter and update the label."""
 
         self.count += 1
         self.label.setText(str(self.count))
 
-    def decrement_count(self):
+    def decrement_count(self) -> None:
         """Decrement the counter and update the label."""
 
         self.count -= 1
         self.label.setText(str(self.count))
 
-    def show(self):
+    def show(self) -> None:
         """Show the primary widget for this window."""
 
         self.widget.show()
 
 
-async def main(window=None):
+async def main(window: typing.Optional[Window] = None) -> None:
     """Show the example window and iterate over the relevant signal emissions to respond
     to user interactions with the GUI.
     """

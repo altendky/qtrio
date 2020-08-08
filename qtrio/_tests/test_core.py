@@ -1,5 +1,6 @@
 import threading
 import time
+import typing
 
 import outcome
 import pytest
@@ -863,7 +864,12 @@ async def test_enter_emissions_channel_closes_both_channels(request):
         emissions.send_channel.send_nowait(None)
 
 
-def emissions_nursery_connect_maybe_async(is_async, nursery, signal, slot):
+def emissions_nursery_connect_maybe_async(
+    is_async: bool,
+    nursery: trio.Nursery,
+    signal: qtrio._util.SignalInstance,
+    slot: typing.Callable[..., object],
+) -> None:
     if is_async:
 
         async def async_slot(*args):
@@ -1046,7 +1052,7 @@ async def test_emissions_nursery_wraps(request, is_async):
     class LocalUniqueException(Exception):
         pass
 
-    result = None
+    result: qtrio.Outcomes
 
     event = trio.Event()
     signal_host = SignalHost()
