@@ -61,10 +61,6 @@ class ReturnCodeError(QTrioException):
         if type(self) != type(other):
             return False
 
-        # TODO: workaround for https://github.com/python/mypy/issues/4445
-        if not isinstance(other, type(self)):  # pragma: no cover
-            return False
-
         return self.args == other.args
 
 
