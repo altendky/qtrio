@@ -1,1 +1,1 @@
-Remove workaround for lack of :class:`QtCore.SignalInstance` in qtpy for PyQt5.
+Remove workaround for lack of ``QtCore.SignalInstance`` in qtpy for PyQt5.
