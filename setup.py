@@ -39,7 +39,8 @@ setup(
         "decorator",
         "outcome",
         "pytest",
-        "qtpy",
+        # >= 1.9.0 https://github.com/spyder-ide/qtpy/pull/214
+        "qtpy >= 1.9.0",
         "trio>=0.16",
     ],
     extras_require={

@@ -867,7 +867,7 @@ async def test_enter_emissions_channel_closes_both_channels(request):
 def emissions_nursery_connect_maybe_async(
     is_async: bool,
     nursery: trio.Nursery,
-    signal: qtrio._util.SignalInstance,
+    signal: QtCore.SignalInstance,
     slot: typing.Callable[..., object],
 ) -> None:
     if is_async:

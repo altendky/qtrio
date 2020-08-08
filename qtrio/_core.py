@@ -22,7 +22,6 @@ import trio.abc
 
 import qtrio
 import qtrio._qt
-import qtrio._util
 
 _reenter_event_type: typing.Optional[QtCore.QEvent.Type] = None
 
@@ -103,7 +102,7 @@ class Reenter(QtCore.QObject):
         return False
 
 
-async def wait_signal(signal: qtrio._util.SignalInstance) -> typing.Tuple[object, ...]:
+async def wait_signal(signal: QtCore.SignalInstance) -> typing.Tuple[object, ...]:
     """Block for the next emission of `signal` and return the emitted arguments.
 
     Warning:
@@ -142,7 +141,7 @@ class Emission:
     Note:
         Each time you access a signal such as `a_qobject.some_signal` you get a
         different signal instance object so the `signal` attribute generally will not
-        be the same object.  A signal instance is a `QtCore.qtrio._util.SignalInstance` in PySide2
+        be the same object.  A signal instance is a `QtCore.QtCore.SignalInstance` in PySide2
         or `QtCore.pyqtBoundSignal` in PyQt5.
 
     Attributes:
@@ -150,10 +149,10 @@ class Emission:
         args: A tuple of the arguments emitted by the signal.
     """
 
-    signal: qtrio._util.SignalInstance
+    signal: QtCore.SignalInstance
     args: typing.Tuple[object, ...]
 
-    def is_from(self, signal: qtrio._util.SignalInstance) -> bool:
+    def is_from(self, signal: QtCore.SignalInstance) -> bool:
         """Check if this emission came from `signal`.
 
         Args:
@@ -208,7 +207,7 @@ class Emissions:
 
 @async_generator.asynccontextmanager
 async def open_emissions_channel(
-    signals: typing.Collection[qtrio._util.SignalInstance],
+    signals: typing.Collection[QtCore.SignalInstance],
     max_buffer_size: typing.Union[int, float] = math.inf,
 ) -> typing.AsyncGenerator[Emissions, None]:
     """Create a memory channel fed by the emissions of the signals.  Each signal
@@ -236,7 +235,7 @@ async def open_emissions_channel(
             for signal in signals:
 
                 def slot(
-                    *args: object, internal_signal: qtrio._util.SignalInstance = signal
+                    *args: object, internal_signal: QtCore.SignalInstance = signal
                 ) -> None:
                     try:
                         send_channel.send_nowait(
@@ -253,7 +252,7 @@ async def open_emissions_channel(
 
 @async_generator.asynccontextmanager
 async def enter_emissions_channel(
-    signals: typing.Collection[qtrio._util.SignalInstance],
+    signals: typing.Collection[QtCore.SignalInstance],
     max_buffer_size: typing.Union[int, float] = math.inf,
 ) -> typing.AsyncGenerator[trio.MemoryReceiveChannel, None]:
     """Create a memory channel fed by the emissions of the signals and enter both the
@@ -295,7 +294,7 @@ class EmissionsNursery:
 
     def connect(
         self,
-        signal: qtrio._util.SignalInstance,
+        signal: QtCore.SignalInstance,
         slot: typing.Callable[..., typing.Awaitable[object]],
     ) -> None:
         if self.wrapper is not None:
@@ -311,7 +310,7 @@ class EmissionsNursery:
         self.exit_stack.enter_context(qtrio._qt.connection(signal, starter))
 
     def connect_sync(
-        self, signal: qtrio._util.SignalInstance, slot: typing.Callable[..., object]
+        self, signal: QtCore.SignalInstance, slot: typing.Callable[..., object]
     ) -> None:
         async def async_slot(*args: object) -> None:
             slot(*args)
@@ -325,7 +324,7 @@ class EmissionsNursery:
 
 @async_generator.asynccontextmanager
 async def open_emissions_nursery(
-    until: typing.Optional[qtrio._util.SignalInstance] = None,
+    until: typing.Optional[QtCore.SignalInstance] = None,
     wrapper: typing.Optional[typing.Callable[..., typing.Awaitable[object]]] = None,
 ) -> typing.AsyncGenerator[EmissionsNursery, None]:
     """Open a nursery for handling callbacks triggered by signal emissions.  This allows
@@ -353,7 +352,7 @@ async def open_emissions_nursery(
 
 @async_generator.asynccontextmanager
 async def wait_signal_context(
-    signal: qtrio._util.SignalInstance,
+    signal: QtCore.SignalInstance,
 ) -> typing.AsyncGenerator[None, None]:
     """Connect a signal during the context and wait for it on exit.  Presently no
     mechanism is provided for retrieving the emitted arguments.
