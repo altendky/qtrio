@@ -58,11 +58,11 @@ class ReturnCodeError(QTrioException):
     """Wraps a QApplication return code as an exception."""
 
     def __eq__(self, other: object) -> bool:
-        # TODO: workaround for https://github.com/python/mypy/issues/4445
-        if not isinstance(other, type(self)):
+        if type(self) != type(other):
             return False
 
-        if type(self) != type(other):
+        # TODO: workaround for https://github.com/python/mypy/issues/4445
+        if not isinstance(other, type(self)):  # pragma: no cover
             return False
 
         return self.args == other.args

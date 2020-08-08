@@ -172,11 +172,11 @@ class Emission:
         raise qtrio.QTrioException()  # pragma: no cover
 
     def __eq__(self, other: object) -> bool:
-        # TODO: workaround for https://github.com/python/mypy/issues/4445
-        if not isinstance(other, type(self)):
+        if type(other) != type(self):
             return False
 
-        if type(other) != type(self):
+        # TODO: workaround for https://github.com/python/mypy/issues/4445
+        if not isinstance(other, type(self)):  # pragma: no cover
             return False
 
         return self.is_from(signal=other.signal) and self.args == other.args

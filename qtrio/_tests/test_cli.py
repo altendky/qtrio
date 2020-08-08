@@ -11,7 +11,7 @@ def test_emissions_help_entry_point():
     """
     scripts_string = sysconfig.get_path("scripts")
 
-    if scripts_string is None:
+    if scripts_string is None:  # pragma: no cover
         assert False, "No scripts path found in sysconfig paths"
 
     scripts = pathlib.Path(scripts_string)
