@@ -84,3 +84,7 @@ class InvalidInputError(QTrioException):
     """Raised when invalid input is provided such as via a dialog."""
 
     pass
+
+
+class InternalError(QTrioException):
+    """Raised when an internal state is inconsistent."""

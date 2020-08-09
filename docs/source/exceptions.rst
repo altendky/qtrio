@@ -8,3 +8,4 @@ Exceptions
 .. autoclass:: qtrio.RequestedEventTypeUnavailableError
 .. autoclass:: qtrio.EventTypeAlreadyRegisteredError
 .. autoclass:: qtrio.ReturnCodeError
+.. autoclass:: qtrio.InternalError

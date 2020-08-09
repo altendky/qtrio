@@ -12,6 +12,7 @@
    tutorial.rst
    core.rst
    testing.rst
+   dialogs.rst
    exceptions.rst
    examples/examples.rst
    development/index.rst

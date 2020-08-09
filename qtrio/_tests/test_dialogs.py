@@ -85,7 +85,7 @@ async def test_get_integer_raises_for_invalid_input(request, qtbot):
 
 def test_unused_dialog_teardown_ok(builder):
     dialog = builder()
-    dialog.teardown()
+    dialog._teardown()
 
 
 @qtrio.host(timeout=10)
@@ -103,6 +103,8 @@ async def test_file_save(request, qtbot, tmp_path):
         # allow cancellation to occur even if the signal was received before the
         # cancellation was requested.
         await trio.sleep(0)
+
+        assert dialog.dialog is not None
 
         dialog.dialog.accept()
 
@@ -127,6 +129,8 @@ async def test_file_save_no_defaults(request, qtbot, tmp_path):
         # allow cancellation to occur even if the signal was received before the
         # cancellation was requested.
         await trio.sleep(0)
+
+        assert dialog.dialog is not None
 
         dialog.dialog.setDirectory(os.fspath(path_to_select.parent))
         [text_edit] = dialog.dialog.findChildren(QtWidgets.QLineEdit)
@@ -153,6 +157,8 @@ async def test_file_save_cancelled(request, qtbot, tmp_path):
         # cancellation was requested.
         await trio.sleep(0)
 
+        assert dialog.dialog is not None
+
         dialog.dialog.reject()
 
     async with trio.open_nursery() as nursery:
@@ -176,6 +182,8 @@ async def test_information_message_box(request, qtbot):
 
         async with qtrio._core.wait_signal_context(dialog.shown):
             task_status.started()
+
+        assert dialog.dialog is not None
 
         queried_text = dialog.dialog.text()
         dialog.dialog.accept()
@@ -201,6 +209,8 @@ async def test_information_message_box_cancel(request, qtbot):
         async with qtrio._core.wait_signal_context(dialog.shown):
             task_status.started()
 
+        assert dialog.dialog is not None
+
         dialog.dialog.reject()
 
     async with trio.open_nursery() as nursery:
@@ -221,6 +231,9 @@ async def test_text_input_dialog(request, qtbot):
             task_status.started()
 
         qtbot.keyClicks(dialog.line_edit, entered_text)
+
+        assert dialog.dialog is not None
+
         dialog.dialog.accept()
 
     async with trio.open_nursery() as nursery:
@@ -234,14 +247,18 @@ async def test_text_input_dialog(request, qtbot):
 def test_text_input_dialog_with_title():
     title_string = "abc123"
     dialog = qtrio.dialogs.TextInputDialog.build(title=title_string)
-    with qtrio.dialogs.manage(dialog=dialog):
+    with qtrio.dialogs._manage(dialog=dialog):
+        assert dialog.dialog is not None
+
         assert dialog.dialog.windowTitle() == title_string
 
 
 def test_text_input_dialog_with_label():
     label_string = "lmno789"
     dialog = qtrio.dialogs.TextInputDialog.build(label=label_string)
-    with qtrio.dialogs.manage(dialog=dialog):
+    with qtrio.dialogs._manage(dialog=dialog):
+        assert dialog.dialog is not None
+
         [label] = dialog.dialog.findChildren(QtWidgets.QLabel)
         assert label.text() == label_string
 
@@ -254,6 +271,8 @@ async def test_text_input_dialog_cancel(request, qtbot):
         async with qtrio._core.wait_signal_context(dialog.shown):
             task_status.started()
 
+        assert dialog.dialog is not None
+
         dialog.dialog.reject()
 
     async with trio.open_nursery() as nursery:
@@ -265,4 +284,4 @@ async def test_text_input_dialog_cancel(request, qtbot):
 
 def test_dialog_button_box_buttons_by_role_no_buttons(qtbot):
     dialog = QtWidgets.QDialog()
-    assert qtrio.dialogs.dialog_button_box_buttons_by_role(dialog=dialog) == {}
+    assert qtrio.dialogs._dialog_button_box_buttons_by_role(dialog=dialog) == {}

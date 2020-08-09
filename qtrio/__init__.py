@@ -13,6 +13,7 @@ from ._exceptions import (
     RunnerTimedOutError,
     UserCancelledError,
     InvalidInputError,
+    InternalError,
 )
 
 from ._core import (

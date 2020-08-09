@@ -1,3 +1,4 @@
+import abc
 import contextlib
 import os
 import sys
@@ -12,28 +13,70 @@ import trio
 import qtrio._qt
 
 
+class AbstractDialog:
+    @property
+    @abc.abstractmethod
+    def finished(self) -> qtrio._qt.Signal:
+        # should really be QtWidgets.QDialog.DialogCode not int
+        pass
+
+    @abc.abstractmethod
+    def _setup(self) -> None:
+        ...
+
+    @abc.abstractmethod
+    def _teardown(self) -> None:
+        ...
+
+
 @contextlib.contextmanager
-def manage(dialog):
+def _manage(dialog: AbstractDialog) -> typing.Generator[trio.Event, None, None]:
     finished_event = trio.Event()
 
-    def slot(*args, **kwargs):
+    def slot(*args: object, **kwargs: object) -> None:
         finished_event.set()
 
     with qtrio._qt.connection(signal=dialog.finished, slot=slot):
         try:
-            dialog.setup()
+            dialog._setup()
             yield finished_event
         finally:
-            dialog.teardown()
+            dialog._teardown()
+
+
+def _dialog_button_box_buttons_by_role(
+    dialog: QtWidgets.QDialog,
+) -> typing.Mapping[QtWidgets.QDialogButtonBox.ButtonRole, QtWidgets.QAbstractButton]:
+    hits = dialog.findChildren(QtWidgets.QDialogButtonBox)
+
+    if len(hits) == 0:
+        return {}
+
+    [button_box] = hits
+    return {button_box.buttonRole(button): button for button in button_box.buttons()}
 
 
 @attr.s(auto_attribs=True)
-class IntegerDialog:
+class IntegerDialog(AbstractDialog):
+    """Manage a dialog for inputting an integer from the user.
+
+    Attributes:
+        parent: The parent widget for the dialog.
+        dialog: The actual dialog widget instance.
+        edit_widget: The line edit that the user will enter the input into.
+        ok_button: The entry confirmation button.
+        cancel_button: The input cancellation button.
+        result: The result of parsing the user input.
+        shown: The signal emitted when the dialog is shown.
+        finished: The signal emitted when the dialog is finished.
+    """
     parent: QtWidgets.QWidget
+
     dialog: typing.Optional[QtWidgets.QInputDialog] = None
-    edit_widget: typing.Optional[QtWidgets.QWidget] = None
+    edit_widget: typing.Optional[QtWidgets.QLineEdit] = None
     ok_button: typing.Optional[QtWidgets.QPushButton] = None
     cancel_button: typing.Optional[QtWidgets.QPushButton] = None
+
     result: typing.Optional[int] = None
 
     shown = qtrio._qt.Signal(QtWidgets.QInputDialog)
@@ -41,9 +84,13 @@ class IntegerDialog:
 
     @classmethod
     def build(cls, parent: QtCore.QObject = None,) -> "IntegerDialog":
-        return cls(parent=parent)
+        return IntegerDialog(parent=parent)
 
-    def setup(self):
+    def _setup(self) -> None:
+        """Create the actual dialog widget and perform related setup activities
+        including showing the widget and emitting
+        :attr:`qtrio.dialogs.IntegerDialog.shown` when done.
+        """
         self.result = None
 
         self.dialog = QtWidgets.QInputDialog(self.parent)
@@ -53,7 +100,7 @@ class IntegerDialog:
 
         self.dialog.show()
 
-        buttons = dialog_button_box_buttons_by_role(dialog=self.dialog)
+        buttons = _dialog_button_box_buttons_by_role(dialog=self.dialog)
         self.ok_button = buttons.get(QtWidgets.QDialogButtonBox.AcceptRole)
         self.cancel_button = buttons.get(QtWidgets.QDialogButtonBox.RejectRole)
 
@@ -61,7 +108,8 @@ class IntegerDialog:
 
         self.shown.emit(self.dialog)
 
-    def teardown(self):
+    def _teardown(self) -> None:
+        """Teardown the dialog, signal and slot connections, widget references, etc."""
         if self.dialog is not None:
             self.dialog.close()
             self.dialog.finished.disconnect(self.finished)
@@ -70,8 +118,16 @@ class IntegerDialog:
         self.cancel_button = None
         self.edit_widget = None
 
-    async def wait(self):
-        with manage(dialog=self) as finished_event:
+    async def wait(self) -> int:
+        """Setup the dialog, wait for the user input, teardown, and return the user
+        input.  Raises :class:`qtrio.UserCancelledError` if the user cancels the dialog.
+        Raises :class:`qtrio.InvalidInputError` if the input can't be parsed as an
+        integer.
+        """
+        with _manage(dialog=self) as finished_event:
+            if self.dialog is None:
+                raise qtrio.InternalError("Dialog not assigned while it is being managed.")
+
             await finished_event.wait()
 
             if self.dialog.result() != QtWidgets.QDialog.Accepted:
@@ -86,7 +142,22 @@ class IntegerDialog:
 
 
 @attr.s(auto_attribs=True)
-class TextInputDialog:
+class TextInputDialog(AbstractDialog):
+    """Manage a dialog for inputting an integer from the user.
+
+    Attributes:
+        title: The title of the dialog.
+        label: The label for the input widget.
+        parent: The parent widget for the dialog.
+
+        dialog: The actual dialog widget instance.
+        edit_widget: The line edit that the user will enter the input into.
+        ok_button: The entry confirmation button.
+        cancel_button: The input cancellation button.
+        result: The result of parsing the user input.
+        shown: The signal emitted when the dialog is shown.
+        finished: The signal emitted when the dialog is finished.
+    """
     title: typing.Optional[str] = None
     label: typing.Optional[str] = None
     parent: typing.Optional[QtCore.QObject] = None
@@ -95,6 +166,7 @@ class TextInputDialog:
     accept_button: typing.Optional[QtWidgets.QPushButton] = None
     reject_button: typing.Optional[QtWidgets.QPushButton] = None
     line_edit: typing.Optional[QtWidgets.QLineEdit] = None
+
     result: typing.Optional[str] = None
 
     shown = qtrio._qt.Signal(QtWidgets.QInputDialog)
@@ -107,9 +179,9 @@ class TextInputDialog:
         label: typing.Optional[str] = None,
         parent: typing.Optional[QtCore.QObject] = None,
     ) -> "TextInputDialog":
-        return cls(title=title, label=label, parent=parent)
+        return TextInputDialog(title=title, label=label, parent=parent)
 
-    def setup(self):
+    def _setup(self) -> None:
         self.result = None
 
         self.dialog = QtWidgets.QInputDialog(parent=self.parent)
@@ -122,7 +194,7 @@ class TextInputDialog:
         self.dialog.finished.connect(self.finished)
         self.dialog.show()
 
-        buttons = dialog_button_box_buttons_by_role(dialog=self.dialog)
+        buttons = _dialog_button_box_buttons_by_role(dialog=self.dialog)
         self.accept_button = buttons[QtWidgets.QDialogButtonBox.AcceptRole]
         self.reject_button = buttons[QtWidgets.QDialogButtonBox.RejectRole]
 
@@ -130,7 +202,7 @@ class TextInputDialog:
 
         self.shown.emit(self.dialog)
 
-    def teardown(self):
+    def _teardown(self) -> None:
         if self.dialog is not None:
             self.dialog.close()
             self.dialog.finished.disconnect(self.finished)
@@ -138,34 +210,29 @@ class TextInputDialog:
         self.accept_button = None
         self.reject_button = None
 
-    async def wait(self):
-        with manage(dialog=self) as finished_event:
+    async def wait(self) -> str:
+        with _manage(dialog=self) as finished_event:
+            if self.dialog is None:
+                raise qtrio.InternalError("Dialog not assigned while it is being managed.")
+
             await finished_event.wait()
 
-            result = self.dialog.result()
+            dialog_result = self.dialog.result()
 
-            if result == QtWidgets.QDialog.Rejected:
+            if dialog_result == QtWidgets.QDialog.Rejected:
                 raise qtrio.UserCancelledError()
 
-            self.result = self.dialog.textValue()
+            # TODO: `: str` is a workaround for
+            #       https://github.com/spyder-ide/qtpy/pull/217
+            text_result: str = self.dialog.textValue()
 
-            return self.result
+            self.result = text_result
 
-
-def dialog_button_box_buttons_by_role(
-    dialog: QtWidgets.QDialog,
-) -> typing.Mapping[QtWidgets.QDialogButtonBox.ButtonRole, QtWidgets.QAbstractButton]:
-    hits = dialog.findChildren(QtWidgets.QDialogButtonBox)
-
-    if len(hits) == 0:
-        return {}
-
-    [button_box] = hits
-    return {button_box.buttonRole(button): button for button in button_box.buttons()}
+            return text_result
 
 
 @attr.s(auto_attribs=True)
-class FileDialog:
+class FileDialog(AbstractDialog):
     file_mode: QtWidgets.QFileDialog.FileMode
     accept_mode: QtWidgets.QFileDialog.AcceptMode
     dialog: typing.Optional[QtWidgets.QFileDialog] = None
@@ -188,7 +255,7 @@ class FileDialog:
         default_file: typing.Optional[trio.Path] = None,
         options: QtWidgets.QFileDialog.Options = QtWidgets.QFileDialog.Options(),
     ) -> "FileDialog":
-        return cls(
+        return FileDialog(
             parent=parent,
             default_directory=default_directory,
             default_file=default_file,
@@ -197,7 +264,7 @@ class FileDialog:
             accept_mode=QtWidgets.QFileDialog.AcceptSave,
         )
 
-    def setup(self):
+    def _setup(self) -> None:
         self.result = None
 
         extras = {}
@@ -213,6 +280,7 @@ class FileDialog:
         self.dialog = QtWidgets.QFileDialog(
             parent=self.parent, options=options, **extras
         )
+        print('-------', self.dialog)
 
         if self.default_file is not None:
             self.dialog.selectFile(os.fspath(self.default_file))
@@ -225,13 +293,13 @@ class FileDialog:
 
         self.dialog.show()
 
-        buttons = dialog_button_box_buttons_by_role(dialog=self.dialog)
+        buttons = _dialog_button_box_buttons_by_role(dialog=self.dialog)
         self.accept_button = buttons.get(QtWidgets.QDialogButtonBox.AcceptRole)
         self.reject_button = buttons.get(QtWidgets.QDialogButtonBox.RejectRole)
 
         self.shown.emit(self.dialog)
 
-    def teardown(self):
+    def _teardown(self) -> None:
         if self.dialog is not None:
             self.dialog.close()
             self.dialog.finished.disconnect(self.finished)
@@ -239,8 +307,11 @@ class FileDialog:
         self.accept_button = None
         self.reject_button = None
 
-    async def wait(self):
-        with manage(dialog=self) as finished_event:
+    async def wait(self) -> trio.Path:
+        with _manage(dialog=self) as finished_event:
+            if self.dialog is None:
+                raise qtrio.InternalError("Dialog not assigned while it is being managed.")
+
             await finished_event.wait()
             if self.dialog.result() != QtWidgets.QDialog.Accepted:
                 raise qtrio.UserCancelledError()
@@ -252,7 +323,7 @@ class FileDialog:
 
 
 @attr.s(auto_attribs=True)
-class MessageBox:
+class MessageBox(AbstractDialog):
     icon: QtWidgets.QMessageBox.Icon
     title: str
     text: str
@@ -275,10 +346,10 @@ class MessageBox:
         icon: QtWidgets.QMessageBox.Icon = QtWidgets.QMessageBox.Information,
         buttons: QtWidgets.QMessageBox.StandardButtons = QtWidgets.QMessageBox.Ok,
         parent: typing.Optional[QtCore.QObject] = None,
-    ):
-        return cls(icon=icon, title=title, text=text, buttons=buttons, parent=parent)
+    ) -> "MessageBox":
+        return MessageBox(icon=icon, title=title, text=text, buttons=buttons, parent=parent)
 
-    def setup(self):
+    def _setup(self) -> None:
         self.result = None
 
         self.dialog = QtWidgets.QMessageBox(
@@ -290,19 +361,22 @@ class MessageBox:
 
         self.dialog.show()
 
-        buttons = dialog_button_box_buttons_by_role(dialog=self.dialog)
+        buttons = _dialog_button_box_buttons_by_role(dialog=self.dialog)
         self.accept_button = buttons[QtWidgets.QDialogButtonBox.AcceptRole]
 
         self.shown.emit(self.dialog)
 
-    def teardown(self):
+    def _teardown(self) -> None:
         if self.dialog is not None:
             self.dialog.close()
         self.dialog = None
         self.accept_button = None
 
-    async def wait(self):
-        with manage(dialog=self) as finished_event:
+    async def wait(self) -> None:
+        with _manage(dialog=self) as finished_event:
+            if self.dialog is None:
+                raise qtrio.InternalError("Dialog not assigned while it is being managed.")
+
             await finished_event.wait()
 
             result = self.dialog.result()
