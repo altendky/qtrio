@@ -43,7 +43,7 @@ python setup.py sdist --formats=zip
 INSTALL_ARTIFACT=$(ls dist/*.zip)
 try-harder python -m pip install ${INSTALL_ARTIFACT}${INSTALL_EXTRAS}
 
-python -m pip install --upgrade git+https://github.com/pytest-dev/pytest.git@refs/pull/7627/head
+python -m pip install --upgrade git+https://github.com/altendky/pytest@pytester-popen-missing_env
 
 python -m pip list
 python -m pip freeze
