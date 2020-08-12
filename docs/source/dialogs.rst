@@ -4,10 +4,6 @@ Dialogs
 Usage Pattern
 -------------
 
-.. autoclass:: qtrio.dialogs.AbstractDialog
-   :members:
-
-
 Creation Functions
 ------------------
 
@@ -31,3 +27,12 @@ Classes
 
 .. autoclass:: qtrio.dialogs.MessageBox
    :members:
+
+
+Protocol
+--------
+
+.. autoclass:: qtrio.dialogs.DialogProtocol
+   :members:
+
+.. autofunction:: qtrio.dialogs.check_dialog_protocol

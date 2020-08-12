@@ -13,38 +13,61 @@ import trio
 import qtrio._qt
 
 
-class AbstractDialog:
-    """The common interface used for working with QTrio dialogs.  To minimize the
-    involvement of inheritance this class does not use :class:`abc.ABC` or
-    :class:`abc.ABCMeta`.  Also note that ``@property`` is used for instance attributes.
-    While only using :func:`abc.abstractmethod` means there is no runtime check made,
-    ``mypy`` is able to check for instantiation of abstract classes.
+class DialogProtocol(typing.Protocol):
+    """The common interface used for working with QTrio dialogs.  To check that a class
+    implements this protocol, decorate it with
+    :func:`qtrio.dialogs.check_dialog_protocol`.
+
+    Attributes:
+        shown: The signal to be emitted when the dialog is shown.
+        finished: The signal to be emitted when the dialog is finished.
     """
-    @property
-    @abc.abstractmethod
-    def finished(self) -> qtrio._qt.Signal:
-        """The signal emitted when the dialog is finished."""
-        # should really be QtWidgets.QDialog.DialogCode not int
 
-    @abc.abstractmethod
+    shown: qtrio._qt.Signal
+    finished: qtrio._qt.Signal
+
     def setup(self) -> None:
-        """Setup and show the dialog."""
+        """Setup and show the dialog.  Emit :attr:`qtrio.dialogs.DialogProtocol.shown`
+        when done.
+        """
 
-    @abc.abstractmethod
     def teardown(self) -> None:
-        """Teardown and hide the dialog."""
+        """Hide and teardown the dialog."""
 
-    @abc.abstractmethod
     async def wait(self) -> object:
-        """Show the dialog, wait for the user interction, and return the result.  Raises
-        :class:`qtrio.UserCancelledError` if the user cancels the dialog."""
+        """Show the dialog, wait for the user interaction, and return the result.
+        Raises :class:`qtrio.UserCancelledError` if the user cancels the dialog.
+        """
+
+
+DialogProtocolT = typing.TypeVar("DialogProtocolT", bound=DialogProtocol)
+
+
+def check_dialog_protocol(
+    cls: typing.Type[DialogProtocolT],
+) -> typing.Type[DialogProtocolT]:
+    """Decorate a class with this to verify it implements the :class:`DialogProtocol`
+    when a type hint checker such as mypy is run against the code.  At runtime the
+    passed class is cleanly returned.
+
+    Arguments:
+        cls: The class to trigger a protocol check against.
+    """
+    return cls
 
 
 @contextlib.contextmanager
-def _manage(dialog: AbstractDialog) -> typing.Generator[trio.Event, None, None]:
+def _manage(dialog: DialogProtocol) -> typing.ContextManager[trio.Event]:
+    """Manage the setup and teardown of a dialog including yielding a
+    :class:`trio.Event` that is set when the dialog is finished.
+
+    Arguments:
+        dialog: The dialog to be managed.
+    """
     finished_event = trio.Event()
 
     def slot(*args: object, **kwargs: object) -> None:
+        """Accept and ignore all arguments, then set the event."""
         finished_event.set()
 
     with qtrio._qt.connection(signal=dialog.finished, slot=slot):
@@ -58,6 +81,8 @@ def _manage(dialog: AbstractDialog) -> typing.Generator[trio.Event, None, None]:
 def _dialog_button_box_buttons_by_role(
     dialog: QtWidgets.QDialog,
 ) -> typing.Mapping[QtWidgets.QDialogButtonBox.ButtonRole, QtWidgets.QAbstractButton]:
+    """Create mapping from button roles to their corresponding buttons."""
+
     hits = dialog.findChildren(QtWidgets.QDialogButtonBox)
 
     if len(hits) == 0:
@@ -67,22 +92,26 @@ def _dialog_button_box_buttons_by_role(
     return {button_box.buttonRole(button): button for button in button_box.buttons()}
 
 
+@check_dialog_protocol
 @attr.s(auto_attribs=True)
-class IntegerDialog(AbstractDialog):
+class IntegerDialog:
     """Manage a dialog for inputting an integer from the user.
 
     Attributes:
         parent: The parent widget for the dialog.
+
         dialog: The actual dialog widget instance.
         edit_widget: The line edit that the user will enter the input into.
         ok_button: The entry confirmation button.
         cancel_button: The input cancellation button.
+
         result: The result of parsing the user input.
-        shown: The signal emitted when the dialog is shown.
-        finished: The signal emitted when the dialog is finished.
+
+        shown: See :attr:`qtrio.dialogs.DialogProtocol.shown`.
+        finished: See :attr:`qtrio.dialogs.DialogProtocol.finished`.
     """
 
-    parent: QtWidgets.QWidget
+    parent: QtWidgets.QWidget = None
 
     dialog: typing.Optional[QtWidgets.QInputDialog] = None
     edit_widget: typing.Optional[QtWidgets.QLineEdit] = None
@@ -95,10 +124,8 @@ class IntegerDialog(AbstractDialog):
     finished = qtrio._qt.Signal(int)  # QtWidgets.QDialog.DialogCode
 
     def setup(self) -> None:
-        """Create the actual dialog widget and perform related setup activities
-        including showing the widget and emitting
-        :attr:`qtrio.dialogs.IntegerDialog.shown` when done.
-        """
+        """See :meth:`qtrio.dialogs.DialogProtocol.setup`."""
+
         self.result = None
 
         self.dialog = QtWidgets.QInputDialog(self.parent)
@@ -117,7 +144,8 @@ class IntegerDialog(AbstractDialog):
         self.shown.emit(self.dialog)
 
     def teardown(self) -> None:
-        """Teardown the dialog, signal and slot connections, widget references, etc."""
+        """See :meth:`qtrio.dialogs.DialogProtocol.teardown`."""
+
         if self.dialog is not None:
             self.dialog.close()
             self.dialog.finished.disconnect(self.finished)
@@ -155,8 +183,9 @@ def create_integer_dialog(parent: QtCore.QObject = None,) -> IntegerDialog:
     return IntegerDialog(parent=parent)
 
 
+@check_dialog_protocol
 @attr.s(auto_attribs=True)
-class TextInputDialog(AbstractDialog):
+class TextInputDialog:
     """Manage a dialog for inputting an integer from the user.
 
     Attributes:
@@ -168,9 +197,11 @@ class TextInputDialog(AbstractDialog):
         edit_widget: The line edit that the user will enter the input into.
         ok_button: The entry confirmation button.
         cancel_button: The input cancellation button.
+
         result: The result of parsing the user input.
-        shown: The signal emitted when the dialog is shown.
-        finished: The signal emitted when the dialog is finished.
+
+        shown: See :attr:`qtrio.dialogs.DialogProtocol.shown`.
+        finished: See :attr:`qtrio.dialogs.DialogProtocol.finished`.
     """
 
     title: typing.Optional[str] = None
@@ -188,6 +219,8 @@ class TextInputDialog(AbstractDialog):
     finished = qtrio._qt.Signal(int)  # QtWidgets.QDialog.DialogCode
 
     def setup(self) -> None:
+        """See :meth:`qtrio.dialogs.DialogProtocol.setup`."""
+
         self.result = None
 
         self.dialog = QtWidgets.QInputDialog(parent=self.parent)
@@ -209,6 +242,8 @@ class TextInputDialog(AbstractDialog):
         self.shown.emit(self.dialog)
 
     def teardown(self) -> None:
+        """See :meth:`qtrio.dialogs.DialogProtocol.teardown`."""
+
         if self.dialog is not None:
             self.dialog.close()
             self.dialog.finished.disconnect(self.finished)
@@ -217,6 +252,8 @@ class TextInputDialog(AbstractDialog):
         self.reject_button = None
 
     async def wait(self) -> str:
+        """See :meth:`qtrio.dialogs.DialogProtocol.teardown`."""
+
         with _manage(dialog=self) as finished_event:
             if self.dialog is None:
                 raise qtrio.InternalError(
@@ -247,23 +284,48 @@ def create_text_input_dialog(
     return TextInputDialog(title=title, label=label, parent=parent)
 
 
+@check_dialog_protocol
 @attr.s(auto_attribs=True)
-class FileDialog(AbstractDialog):
+class FileDialog:
+    """Manage a dialog for inputting an integer from the user.
+
+    Attributes:
+        file_mode:
+        accept_mode:
+        default_directory:
+        default_file:
+        options:
+        parent: The parent widget for the dialog.
+
+        dialog: The actual dialog widget instance.
+        accept_button: The confirmation button.
+        reject_button: The cancellation button.
+
+        result: The selected path.
+
+        shown: See :attr:`qtrio.dialogs.DialogProtocol.shown`.
+        finished: See :attr:`qtrio.dialogs.DialogProtocol.finished`.
+    """
+
     file_mode: QtWidgets.QFileDialog.FileMode
     accept_mode: QtWidgets.QFileDialog.AcceptMode
-    dialog: typing.Optional[QtWidgets.QFileDialog] = None
-    parent: typing.Optional[QtCore.QObject] = None
     default_directory: typing.Optional[trio.Path] = None
     default_file: typing.Optional[trio.Path] = None
-    options: QtWidgets.QFileDialog.Options = QtWidgets.QFileDialog.Options()
+    options: QtWidgets.QFileDialog.Option = QtWidgets.QFileDialog.Option()
+    parent: typing.Optional[QtCore.QObject] = None
+
+    dialog: typing.Optional[QtWidgets.QFileDialog] = None
     accept_button: typing.Optional[QtWidgets.QPushButton] = None
     reject_button: typing.Optional[QtWidgets.QPushButton] = None
+
     result: typing.Optional[trio.Path] = None
 
     shown = qtrio._qt.Signal(QtWidgets.QFileDialog)
     finished = qtrio._qt.Signal(int)  # QtWidgets.QDialog.DialogCode
 
     def setup(self) -> None:
+        """See :meth:`qtrio.dialogs.DialogProtocol.setup`."""
+
         self.result = None
 
         extras = {}
@@ -298,6 +360,8 @@ class FileDialog(AbstractDialog):
         self.shown.emit(self.dialog)
 
     def teardown(self) -> None:
+        """See :meth:`qtrio.dialogs.DialogProtocol.teardown`."""
+
         if self.dialog is not None:
             self.dialog.close()
             self.dialog.finished.disconnect(self.finished)
@@ -306,6 +370,8 @@ class FileDialog(AbstractDialog):
         self.reject_button = None
 
     async def wait(self) -> trio.Path:
+        """See :meth:`qtrio.dialogs.DialogProtocol.teardown`."""
+
         with _manage(dialog=self) as finished_event:
             if self.dialog is None:
                 raise qtrio.InternalError(
@@ -326,8 +392,15 @@ def create_file_save_dialog(
     parent: typing.Optional[QtCore.QObject] = None,
     default_directory: typing.Optional[trio.Path] = None,
     default_file: typing.Optional[trio.Path] = None,
-    options: QtWidgets.QFileDialog.Options = QtWidgets.QFileDialog.Options(),
+    options: QtWidgets.QFileDialog.Option = QtWidgets.QFileDialog.Option(),
 ) -> FileDialog:
+    """
+    Arguments:
+        parent:
+        default_directory:
+        default_file:
+        options:
+    """
     return FileDialog(
         parent=parent,
         default_directory=default_directory,
@@ -338,23 +411,26 @@ def create_file_save_dialog(
     )
 
 
+@check_dialog_protocol
 @attr.s(auto_attribs=True)
-class MessageBox(AbstractDialog):
-    icon: QtWidgets.QMessageBox.Icon
+class MessageBox:
     title: str
     text: str
+    icon: QtWidgets.QMessageBox.Icon
     buttons: QtWidgets.QMessageBox.StandardButtons
-
     parent: typing.Optional[QtCore.QObject] = None
 
     dialog: typing.Optional[QtWidgets.QMessageBox] = None
     accept_button: typing.Optional[QtWidgets.QPushButton] = None
+
     result: typing.Optional[trio.Path] = None
 
     shown = qtrio._qt.Signal(QtWidgets.QMessageBox)
     finished = qtrio._qt.Signal(int)  # QtWidgets.QDialog.DialogCode
 
     def setup(self) -> None:
+        """See :meth:`qtrio.dialogs.DialogProtocol.setup`."""
+
         self.result = None
 
         self.dialog = QtWidgets.QMessageBox(
@@ -372,12 +448,16 @@ class MessageBox(AbstractDialog):
         self.shown.emit(self.dialog)
 
     def teardown(self) -> None:
+        """See :meth:`qtrio.dialogs.DialogProtocol.teardown`."""
+
         if self.dialog is not None:
             self.dialog.close()
         self.dialog = None
         self.accept_button = None
 
     async def wait(self) -> None:
+        """See :meth:`qtrio.dialogs.DialogProtocol.teardown`."""
+
         with _manage(dialog=self) as finished_event:
             if self.dialog is None:
                 raise qtrio.InternalError(
