@@ -148,6 +148,7 @@ class Emission:
         signal: An instance of the original signal.
         args: A tuple of the arguments emitted by the signal.
     """
+
     signal: qtrio._util.SignalInstance
     args: typing.Tuple[object, ...]
 
@@ -190,6 +191,7 @@ class Emissions:
         channel: A memory receive channel to be fed by signal emissions.
         send_channel: A memory send channel collecting signal emissions.
     """
+
     channel: trio.MemoryReceiveChannel
     send_channel: trio.MemorySendChannel
 
