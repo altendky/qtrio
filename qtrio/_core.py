@@ -28,8 +28,7 @@ _reenter_event_type: typing.Optional[QtCore.QEvent.Type] = None
 
 
 def registered_event_type() -> typing.Optional[QtCore.QEvent.Type]:
-    """Get the registered event type.  :py:obj:`None` if no event type has been
-    registered.
+    """Get the registered event type.  :obj:`None` if no event type has been registered.
     """
     return _reenter_event_type
 
@@ -140,10 +139,10 @@ class Emission:
     :func:`qtrio.enter_emissions_channel`.
 
     Note:
-        Each time you access a signal such as `a_qobject.some_signal` you get a
-        different signal instance object so the `signal` attribute generally will not
-        be the same object.  A signal instance is a `QtCore.qtrio._util.SignalInstance` in PySide2
-        or `QtCore.pyqtBoundSignal` in PyQt5.
+        Each time you access a signal such as ``a_qobject.some_signal`` you get a
+        different signal instance object so the ``signal`` attribute generally will not
+        be the same object.  A signal instance is a ``QtCore.SignalInstance`` in
+        PySide2 or ``QtCore.pyqtBoundSignal`` in PyQt5.
 
     Attributes:
         signal: An instance of the original signal.
@@ -154,7 +153,7 @@ class Emission:
     args: typing.Tuple[object, ...]
 
     def is_from(self, signal: qtrio._util.SignalInstance) -> bool:
-        """Check if this emission came from `signal`.
+        """Check if this emission came from ``signal``.
 
         Args:
             signal: The signal instance to check for being the source.
@@ -389,7 +388,7 @@ class Outcomes:
     def unwrap(self) -> object:
         """Unwrap either the Trio or Qt outcome.  First, errors are given priority over
         success values.  Second, the Trio outcome gets priority over the Qt outcome.  If
-        both are still None a :class:`qtrio.NoOutcomesError` is raised.
+        both are still :obj:`None` a :class:`qtrio.NoOutcomesError` is raised.
         """
 
         if self.trio is not None:
@@ -469,19 +468,19 @@ class Runner:
 
         application: The Qt application object to run as the host.  If not set before
             calling :meth:`run` the application will be created as
-            `QtWidgets.QApplication(sys.argv[1:])` and
-            `.setQuitOnLastWindowClosed(False)` will be called on it to allow the
+            ``QtWidgets.QApplication(sys.argv[1:])`` and
+            ``.setQuitOnLastWindowClosed(False)`` will be called on it to allow the
             application to continue throughout the lifetime of the async function passed
             to :meth:`qtrio.Runner.run`.
         quit_application: When true, the :meth:`done_callback` method will quit the
             application when the async function passed to :meth:`qtrio.Runner.run` has
             completed.
-        timeout: If not :py:object`None`, use :func:`trio.move_on_after()` to cancel
-            after ``timeout`` seconds and raise.
+        timeout: If not :obj:`None`, use :func:`trio.move_on_after()` to cancel after
+            ``timeout`` seconds and raise.
         clock: The clock to use for this run.  This is primarily used to speed up tests
             that include timeouts.  The value will be passed on to
             :func:`trio.lowlevel.start_guest_run`.
-        reenter: The `QObject` instance which will receive the events requesting
+        reenter: The :class:`QtCore.QObject` instance which will receive the events requesting
             execution of the needed Trio and user code in the host's event loop and
             thread.
         done_callback: The builtin :meth:`done_callback` will be passed to
@@ -514,18 +513,18 @@ class Runner:
         *args: object,
         execute_application: bool = True,
     ) -> Outcomes:
-        """Start the guest loop executing `async_fn`.
+        """Start the guest loop executing ``async_fn``.
 
         Args:
             async_fn: The async function to be run in the Qt host loop by the Trio
                 guest.
-            args: Arguments to pass when calling `async_fn`.
+            args: Arguments to pass when calling ``async_fn``.
             execute_application: If True, the Qt application will be executed and this
                 call will block until it finishes.
 
         Returns:
-            If `execute_application` is true, an :class:`Outcomes` containing outcomes
-            from the Qt application and `async_fn` will be returned.  Otherwise, an
+            If ``execute_application`` is true, an :class:`Outcomes` containing outcomes
+            from the Qt application and ``async_fn`` will be returned.  Otherwise, an
             empty :class:`Outcomes`.
         """
         if _reenter_event_type is None:
@@ -552,7 +551,7 @@ class Runner:
     def run_sync_soon_threadsafe(self, fn: typing.Callable[[], object]) -> None:
         """Helper for the Trio guest to execute a sync function in the Qt host
         thread when called from the Trio guest thread.  This call will not block waiting
-        for completion of `fn` nor will it return the result of calling `fn`.
+        for completion of ``fn`` nor will it return the result of calling ``fn``.
 
         Args:
             fn: A no parameter callable.
@@ -566,14 +565,14 @@ class Runner:
         args: typing.Tuple[object, ...],
     ) -> None:
         """Will be run as the main async function by the Trio guest.  It creates a
-        cancellation scope to be cancelled when `QtGui.QGuiApplication.lastWindowClosed`
-        is emitted.  Within this scope the application's `async_fn` will be run and
-        passed `args`.
+        cancellation scope to be cancelled when
+        :meth:`QtGui.QGuiApplication.lastWindowClosed` is emitted.  Within this scope
+        the application's ``async_fn`` will be run and passed ``args``.
 
         Args:
             async_fn: The application's main async function to be run by Trio in the Qt
                 host's thread.
-            args: Positional arguments to be passed to `async_fn`
+            args: Positional arguments to be passed to ``async_fn``
         """
         result = None
         timeout_cancel_scope = None
@@ -608,8 +607,8 @@ class Runner:
     def trio_done(self, run_outcome: outcome.Outcome) -> None:
         """Will be called after the Trio guest run has finished.  This allows collection
         of the :class:`outcome.Outcome` and execution of any application provided done
-        callback.  Finally, if `quit_application` was set when creating the instance
-        then the Qt application will be requested to quit().
+        callback.  Finally, if :attr:`qtrio.Runner.quit_application` was set when
+        creating the instance then the Qt application will be requested to quit.
 
         Actions such as outputting error information or unwrapping the outcomes need
         to be further considered.
