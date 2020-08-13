@@ -4,7 +4,6 @@ import functools
 import typing
 
 import decorator
-import outcome
 import _pytest.fixtures
 import pytest
 import trio.abc
