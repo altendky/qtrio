@@ -29,13 +29,6 @@ nitpicky = True
 nitpick_ignore = [
     # Format is ("sphinx reference type", "string"), e.g.:
     ("py:obj", "bytes-like"),
-    # TODO: https://github.com/sphinx-doc/sphinx/issues/8015
-    ("py:class", "typing.Callable[..., typing.Awaitable[object]]"),
-    ("py:class", "typing.Callable[..., object]"),
-    (
-        "py:class",
-        "typing.Callable[[typing.Callable[..., typing.Awaitable[object]]], typing.Callable[..., object]]",
-    ),
 ]
 
 # -- General configuration ------------------------------------------------

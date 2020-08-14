@@ -45,7 +45,7 @@ setup(
     extras_require={
         "checks": ["black", "flake8", "mypy", towncrier],
         "docs": [
-            "sphinx >= 1.7.0",
+            "sphinx >= 3.2",
             "sphinx-autodoc-typehints",
             "sphinx-qt-documentation>=0.3",
             "sphinx_rtd_theme",
