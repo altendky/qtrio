@@ -50,7 +50,7 @@ if [ "$CHECK_DOCS" = "1" ]; then
     git fetch --deepen=100
     git fetch --depth=100 origin master
     git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)'
-    git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)' master
+    git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)' origin/master
     towncrier check
     # https://github.com/twisted/towncrier/pull/271
     towncrier build --yes --name QTrio  # catch errors in newsfragments
