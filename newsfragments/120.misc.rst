@@ -1,0 +1,1 @@
+Coverage excludes correctly use ``\.`` for literal periods.

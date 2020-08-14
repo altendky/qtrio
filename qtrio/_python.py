@@ -1,9 +1,12 @@
 """This module provides general Python related utilities that are not Qt nor Trio
 specific.
 """
+import typing
 
 
-def identifier_path(it):
+# TODO: could support some more things
+#       https://docs.python.org/3/library/stdtypes.html#definition.__qualname__
+def identifier_path(it: typing.Union[typing.Type[object], typing.Callable]) -> str:
     """Generate an identifier based on an object's module and qualified name.  This can
     be useful such as for adding attributes to existing objects while minimizing odds
     of collisions and maximizing traceability of the related party.

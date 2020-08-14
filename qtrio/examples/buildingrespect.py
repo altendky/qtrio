@@ -4,7 +4,7 @@ import qtrio
 from qtpy import QtWidgets
 
 
-async def main(button: typing.Optional[QtWidgets.QPushButton] = None):
+async def main(button: typing.Optional[QtWidgets.QPushButton] = None) -> None:
     if button is None:  # pragma: no cover
         button = QtWidgets.QPushButton()
 
