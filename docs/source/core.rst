@@ -5,12 +5,9 @@ Running
 -------
 
 .. autofunction:: qtrio.run
-
 .. autoclass:: qtrio.Runner
-   :members:
-
 .. autoclass:: qtrio.Outcomes
-   :members:
+.. autoclass:: qtrio.Reenter
 
 Emissions
 ---------
@@ -21,22 +18,16 @@ for connection of signals prior to showing a window and subsequent iteration of 
 emissions.  See the :doc:`emissions example <examples/emissions>` for an example usage.
 
 .. autofunction:: qtrio.enter_emissions_channel
-
 .. autoclass:: qtrio.Emission
-   :members:
-
 .. autoclass:: qtrio.Emissions
-   :members:
+    :noindex:
 
 If you need a more Qt-like callback mechanism :func:`qtrio.open_emissions_nursery`
 offers that.  Instead of tossing the callbacks behind the couch where they can leave
 their errors on the floor they will be run inside a nursery.
 
 .. autofunction:: qtrio.open_emissions_nursery
-
 .. autoclass:: qtrio.EmissionsNursery
-   :members:
-
 
 Reentry Events
 --------------

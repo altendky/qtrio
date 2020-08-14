@@ -45,7 +45,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.coverage",
     "sphinx.ext.napoleon",
-    "sphinx_autodoc_typehints",
+    # "sphinx_autodoc_typehints",
     "sphinx_qt_documentation",
     "sphinxcontrib_trio",
 ]
@@ -60,7 +60,36 @@ intersphinx_mapping = {
 
 qt_documentation = "Qt5"
 
-autodoc_member_order = "bysource"
+autodoc_default_options = {
+    'member-order': 'bysource',
+    'members': True,
+    'show-inheritance': True,
+    'undoc-members': True,
+}
+
+# import inspect
+from sphinx.locale import __
+from sphinx.util import logging
+logger = logging.getLogger(__name__)
+
+autodoc_typehints = 'description'
+
+def warn_undocumented_members(app, what, name, obj, options, lines):
+    try:
+        if len(lines) == 0:
+            # module_name = name
+            # while module_name not in sys.modules:
+            #
+            # parent_name = name.rpartition('.')[0]
+            # parent_
+            #
+            # path = inspect.getfile(obj)
+            # source_lines, line_number = inspect.getsourcelines(obj)
+            # logger.warning(__(f"{path} line {line_number}: {what} {name} is undocumented"))
+            logger.warning(__(f"{what} {name} is undocumented"))
+            lines.append(f".. Warning:: {what} ``{name}`` undocumented")
+    except Exception as e:
+        raise
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = []
@@ -228,3 +257,4 @@ def setup(app: "sphinx.application.Sphinx") -> None:
         objname="built-in fixture",
         indextemplate="pair: %s; fixture",
     )
+    app.connect('autodoc-process-docstring', warn_undocumented_members)

@@ -94,6 +94,8 @@ class ReenterEvent(QtCore.QEvent):
 class Reenter(QtCore.QObject):
     """A `QtCore.QObject` for handling reenter events."""
 
+    __module__ = 'qtrio'
+
     def event(self, event: QtCore.QEvent) -> bool:
         """Qt calls this when the object receives an event."""
 
@@ -143,14 +145,12 @@ class Emission:
         different signal instance object so the ``signal`` attribute generally will not
         be the same object.  A signal instance is a ``QtCore.SignalInstance`` in
         PySide2 or ``QtCore.pyqtBoundSignal`` in PyQt5.
-
-    Attributes:
-        signal: An instance of the original signal.
-        args: A tuple of the arguments emitted by the signal.
     """
 
     signal: qtrio._util.SignalInstance
+    """An instance of the original signal."""
     args: typing.Tuple[object, ...]
+    """A tuple of the arguments emitted by the signal."""
 
     def is_from(self, signal: qtrio._util.SignalInstance) -> bool:
         """Check if this emission came from ``signal``.
@@ -186,17 +186,15 @@ class Emissions:
     """Hold elements useful for the application to work with emissions from signals.
     Do not construct this class directly.  Instead, use
     :func:`qtrio.enter_emissions_channel`.
-
-    Attributes:
-        channel: A memory receive channel to be fed by signal emissions.
-        send_channel: A memory send channel collecting signal emissions.
     """
 
     channel: trio.MemoryReceiveChannel
+    """A memory receive channel to be fed by signal emissions."""
     send_channel: trio.MemorySendChannel
+    """A memory send channel collecting signal emissions."""
 
     # TODO: for Sphinx...
-    __module__ = "qtrio"
+    # __module__ = "qtrio"
 
     async def aclose(self) -> None:
         """Asynchronously close the send channel when signal emissions are no longer of
@@ -275,22 +273,20 @@ async def enter_emissions_channel(
 class EmissionsNursery:
     """Holds the nursery, exit stack, and wrapper needed to support connecting signals
     to both async and sync slots in the nursery.
-
-    Attributes:
-        nursery: The Trio nursery that will handle execution of the slots.
-        exit_stack: The exit stack that will manage the connections so they get
-            disconnected.
-        wrapper: The wrapper for handling the slots.  This could, for example, handle
-            exceptions and present a dialog to avoid cancelling the entire nursery.
     """
 
     nursery: trio.Nursery
+    """The Trio nursery that will handle execution of the slots."""
     exit_stack: contextlib.ExitStack
+    """The exit stack that will manage the connections so they get disconnected."""
     wrapper: typing.Optional[
         typing.Callable[
             [typing.Callable[..., typing.Awaitable[object]]], typing.Awaitable[object],
         ]
     ] = None
+    """The wrapper for handling the slots.  This could, for example, handle exceptions
+    and present a dialog to avoid cancelling the entire nursery.
+    """
 
     def connect(
         self,
@@ -376,14 +372,12 @@ class Outcomes:
     application execution.  Do not construct instances directly.  Instead, an instance
     will be returned from :func:`qtrio.run` or available on instances of
     :attr:`qtrio.Runner.outcomes`.
-
-    Attributes:
-        qt: The Qt application :class:`outcome.Outcome`
-        trio: The Trio async function :class:`outcome.Outcome`
     """
 
     qt: typing.Optional[outcome.Outcome] = None
+    """The Qt application :class:`outcome.Outcome`"""
     trio: typing.Optional[outcome.Outcome] = None
+    """The Trio async function :class:`outcome.Outcome`"""
 
     def unwrap(self) -> object:
         """Unwrap either the Trio or Qt outcome.  First, errors are given priority over
@@ -411,7 +405,7 @@ class Outcomes:
     # TODO: this is a workaround for these sphinx warnings.  unaroundwork this...
     # /home/altendky/repos/qtrio/qtrio/_core.py:docstring of qtrio.run:8: WARNING: py:class reference target not found: qtrio._core.Outcomes
     # /home/altendky/repos/qtrio/qtrio/_core.py:docstring of qtrio.run:11: WARNING: py:class reference target not found: qtrio._core.Outcomes
-    __module__ = "qtrio"
+    # __module__ = "qtrio"
 
 
 def run(
@@ -462,50 +456,50 @@ def build_application() -> QtGui.QGuiApplication:
 
 @attr.s(auto_attribs=True, slots=True)
 class Runner:
-    """This class helps run Trio in guest mode on a Qt host application.
-
-    Attributes:
-
-        application: The Qt application object to run as the host.  If not set before
-            calling :meth:`run` the application will be created as
-            ``QtWidgets.QApplication(sys.argv[1:])`` and
-            ``.setQuitOnLastWindowClosed(False)`` will be called on it to allow the
-            application to continue throughout the lifetime of the async function passed
-            to :meth:`qtrio.Runner.run`.
-        quit_application: When true, the :meth:`done_callback` method will quit the
-            application when the async function passed to :meth:`qtrio.Runner.run` has
-            completed.
-        timeout: If not :obj:`None`, use :func:`trio.move_on_after()` to cancel after
-            ``timeout`` seconds and raise.
-        clock: The clock to use for this run.  This is primarily used to speed up tests
-            that include timeouts.  The value will be passed on to
-            :func:`trio.lowlevel.start_guest_run`.
-        reenter: The :class:`QtCore.QObject` instance which will receive the events requesting
-            execution of the needed Trio and user code in the host's event loop and
-            thread.
-        done_callback: The builtin :meth:`done_callback` will be passed to
-            :func:`trio.lowlevel.start_guest_run` but will call the callback passed here
-            before (maybe) quitting the application.  The :class:`outcome.Outcome` from
-            the completion of the async function passed to :meth:`run` will be passed to
-            this callback.
-        outcomes: The outcomes from the Qt and Trio runs.
-        cancel_scope: An all encompassing cancellation scope for the Trio execution.
-    """
+    """This class helps run Trio in guest mode on a Qt host application."""
 
     application: QtGui.QGuiApplication = attr.ib(factory=build_application)
+    """The Qt application object to run as the host.  If not set before calling
+    :meth:`run` the application will be created as
+    ``QtWidgets.QApplication(sys.argv[1:])`` and ``.setQuitOnLastWindowClosed(False)``
+    will be called on it to allow the application to continue throughout the lifetime of
+    the async function passed to :meth:`qtrio.Runner.run`.
+    """
     quit_application: bool = True
+    """When true, the :meth:`done_callback` method will quit the application when the
+    async function passed to :meth:`qtrio.Runner.run` has completed.
+    """
     timeout: typing.Optional[float] = None
+    """If not :obj:`None`, use :func:`trio.move_on_after()` to cancel after ``timeout``
+    seconds and raise.
+    """
     clock: trio.abc.Clock = None
+    """The clock to use for this run.  This is primarily used to speed up tests that
+    include timeouts.  The value will be passed on to
+    :func:`trio.lowlevel.start_guest_run`.
+    """
 
     reenter: Reenter = attr.ib(factory=Reenter)
+    """The :class:`QtCore.QObject` instance which will receive the events requesting
+    execution of the needed Trio and user code in the host's event loop and thread.
+    """
 
     done_callback: typing.Optional[typing.Callable[[Outcomes], None]] = attr.ib(
         default=None
     )
+    """The builtin :meth:`done_callback` will be passed to
+    :func:`trio.lowlevel.start_guest_run` but will call the callback passed here before
+    (maybe) quitting the application.  The :class:`outcome.Outcome` from the completion
+    of the async function passed to :meth:`run` will be passed to this callback.
+    """
 
     outcomes: Outcomes = attr.ib(factory=Outcomes, init=False)
+    """The outcomes from the Qt and Trio runs."""
     cancel_scope: trio.CancelScope = attr.ib(default=None, init=False)
-    done: bool = attr.ib(default=False, init=False)
+    """An all encompassing cancellation scope for the Trio execution."""
+
+    _done: bool = attr.ib(default=False, init=False)
+    """Just an indicator that the run is done.  Presently used only for a test."""
 
     def run(
         self,
@@ -627,4 +621,4 @@ class Runner:
         if self.quit_application:
             self.application.quit()
 
-        self.done = True
+        self._done = True
