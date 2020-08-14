@@ -64,7 +64,7 @@ autodoc_default_options = {
     'member-order': 'bysource',
     'members': True,
     'show-inheritance': True,
-    'undoc-members': True,
+    # 'undoc-members': True,
 }
 
 # import inspect
