@@ -575,6 +575,7 @@ class Runner:
                 host's thread.
             args: Positional arguments to be passed to ``async_fn``
         """
+        result: object = None
         timeout_cancel_scope = None
 
         try:
@@ -592,7 +593,7 @@ class Runner:
                             trio.fail_after(self.timeout)
                         )
 
-                    return await async_fn(*args)
+                    result = await async_fn(*args)
         except trio.TooSlowError as e:
             if (
                 timeout_cancel_scope is not None
@@ -601,6 +602,8 @@ class Runner:
                 raise qtrio.RunnerTimedOutError() from e
 
             raise
+
+        return result
 
     def trio_done(self, run_outcome: outcome.Outcome) -> None:
         """Will be called after the Trio guest run has finished.  This allows collection
