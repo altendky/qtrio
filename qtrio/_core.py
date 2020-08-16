@@ -84,7 +84,7 @@ def register_requested_event_type(
 
 
 class ReenterEvent(QtCore.QEvent):
-    """A proper `ReenterEvent` for reentering into the Qt host loop."""
+    """A proper ``ReenterEvent`` for reentering into the Qt host loop."""
 
     def __init__(self, fn: typing.Callable[[], object]):
         super().__init__(_reenter_event_type)
@@ -92,7 +92,7 @@ class ReenterEvent(QtCore.QEvent):
 
 
 class Reenter(QtCore.QObject):
-    """A `QtCore.QObject` for handling reenter events."""
+    """A ``QtCore.QObject`` for handling reenter events."""
 
     __module__ = "qtrio"
 
@@ -105,7 +105,7 @@ class Reenter(QtCore.QObject):
 
 
 async def wait_signal(signal: qtrio._util.SignalInstance) -> typing.Tuple[object, ...]:
-    """Block for the next emission of `signal` and return the emitted arguments.
+    """Block for the next emission of ``signal`` and return the emitted arguments.
 
     Warning:
         In many cases this can result in a race condition since you are unable to
