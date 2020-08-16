@@ -293,6 +293,9 @@ class EmissionsNursery:
         signal: qtrio._util.SignalInstance,
         slot: typing.Callable[..., typing.Awaitable[object]],
     ) -> None:
+        """Connect to an async slot to this emissions nursery so when called the slot
+        will be run in the nursery.
+        """
         if self.wrapper is not None:
 
             def starter(*args: object) -> None:
@@ -308,6 +311,9 @@ class EmissionsNursery:
     def connect_sync(
         self, signal: qtrio._util.SignalInstance, slot: typing.Callable[..., object]
     ) -> None:
+        """Connect to a sync slot to this emissions nursery so when called the slot will
+        be run in the nursery.
+        """
         async def async_slot(*args: object) -> None:
             slot(*args)
 
@@ -555,7 +561,7 @@ class Runner:
 
     async def trio_main(
         self,
-        async_fn: typing.Callable[..., typing.Awaitable[None]],
+        async_fn: typing.Callable[..., typing.Awaitable[object]],
         args: typing.Tuple[object, ...],
     ) -> None:
         """Will be run as the main async function by the Trio guest.  It creates a
