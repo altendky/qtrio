@@ -51,7 +51,6 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.coverage",
     "sphinx.ext.napoleon",
-    # "sphinx_autodoc_typehints",
     "sphinx_qt_documentation",
     "sphinxcontrib_trio",
 ]
