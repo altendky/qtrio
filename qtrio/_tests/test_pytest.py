@@ -45,7 +45,7 @@ def test_overrunning_test_times_out(testdir):
     result = testdir.runpytest_subprocess(timeout=timeout)
     result.assert_outcomes(failed=1)
     result.stdout.re_match_lines(
-        lines2=[r"E\s+qtrio\._exceptions\.RunnerTimedOutError"]
+        lines2=[r"E\s+qtrio\.RunnerTimedOutError"]
     )
 
 
