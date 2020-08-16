@@ -83,21 +83,9 @@ autodoc_typehints = "description"
 
 
 def warn_undocumented_members(app, what, name, obj, options, lines):
-    try:
-        if len(lines) == 0:
-            # module_name = name
-            # while module_name not in sys.modules:
-            #
-            # parent_name = name.rpartition('.')[0]
-            # parent_
-            #
-            # path = inspect.getfile(obj)
-            # source_lines, line_number = inspect.getsourcelines(obj)
-            # logger.warning(__(f"{path} line {line_number}: {what} {name} is undocumented"))
-            logger.warning(__(f"{what} {name} is undocumented"))
-            lines.append(f".. Warning:: {what} ``{name}`` undocumented")
-    except Exception as e:
-        raise
+    if len(lines) == 0:
+        logger.warning(__(f"{what} {name} is undocumented"))
+        lines.append(f".. Warning:: {what} ``{name}`` undocumented")
 
 
 # Add any paths that contain templates here, relative to this directory.
