@@ -94,7 +94,7 @@ class ReenterEvent(QtCore.QEvent):
 class Reenter(QtCore.QObject):
     """A `QtCore.QObject` for handling reenter events."""
 
-    __module__ = 'qtrio'
+    __module__ = "qtrio"
 
     def event(self, event: QtCore.QEvent) -> bool:
         """Qt calls this when the object receives an event."""
@@ -314,6 +314,7 @@ class EmissionsNursery:
         """Connect to a sync slot to this emissions nursery so when called the slot will
         be run in the nursery.
         """
+
         async def async_slot(*args: object) -> None:
             slot(*args)
 

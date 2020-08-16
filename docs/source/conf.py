@@ -67,18 +67,20 @@ intersphinx_mapping = {
 qt_documentation = "Qt5"
 
 autodoc_default_options = {
-    'member-order': 'bysource',
-    'members': True,
-    'show-inheritance': True,
-    'undoc-members': True,
+    "member-order": "bysource",
+    "members": True,
+    "show-inheritance": True,
+    "undoc-members": True,
 }
 
 # import inspect
 from sphinx.locale import __
 from sphinx.util import logging
+
 logger = logging.getLogger(__name__)
 
-autodoc_typehints = 'description'
+autodoc_typehints = "description"
+
 
 def warn_undocumented_members(app, what, name, obj, options, lines):
     try:
@@ -96,6 +98,7 @@ def warn_undocumented_members(app, what, name, obj, options, lines):
             lines.append(f".. Warning:: {what} ``{name}`` undocumented")
     except Exception as e:
         raise
+
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = []
@@ -263,4 +266,4 @@ def setup(app: "sphinx.application.Sphinx") -> None:
         objname="built-in fixture",
         indextemplate="pair: %s; fixture",
     )
-    app.connect('autodoc-process-docstring', warn_undocumented_members)
+    app.connect("autodoc-process-docstring", warn_undocumented_members)

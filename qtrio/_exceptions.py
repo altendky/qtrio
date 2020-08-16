@@ -7,25 +7,25 @@ from qtpy import QtCore
 class QTrioException(Exception):
     """Base exception for all QTrio exceptions."""
 
-    __module__ = 'qtrio'
+    __module__ = "qtrio"
 
 
 class NoOutcomesError(QTrioException):
     """Raised if you try to unwrap a :class:`qtrio.Outcomes` which has no outcomes."""
 
-    __module__ = 'qtrio'
+    __module__ = "qtrio"
 
 
 class EventTypeRegistrationError(QTrioException):
     """Base class for various event type registration exceptions to inherit from."""
 
-    __module__ = 'qtrio'
+    __module__ = "qtrio"
 
 
 class EventTypeRegistrationFailedError(EventTypeRegistrationError):
     """Raised if the attempt to register a new event type fails."""
 
-    __module__ = 'qtrio'
+    __module__ = "qtrio"
 
     def __init__(self) -> None:
         super().__init__(
@@ -37,7 +37,7 @@ class EventTypeRegistrationFailedError(EventTypeRegistrationError):
 class RequestedEventTypeUnavailableError(EventTypeRegistrationError):
     """Raised if the requested event type is unavailable."""
 
-    __module__ = 'qtrio'
+    __module__ = "qtrio"
 
     def __init__(
         self,
@@ -54,7 +54,7 @@ class EventTypeAlreadyRegisteredError(EventTypeRegistrationError):
     """Raised when a request is made to register an event type but a type has already
     been registered previously."""
 
-    __module__ = 'qtrio'
+    __module__ = "qtrio"
 
     def __init__(self) -> None:
         super().__init__(
@@ -65,7 +65,7 @@ class EventTypeAlreadyRegisteredError(EventTypeRegistrationError):
 class ReturnCodeError(QTrioException):
     """Wraps a QApplication return code as an exception."""
 
-    __module__ = 'qtrio'
+    __module__ = "qtrio"
 
     def __eq__(self, other: object) -> bool:
         if type(self) != type(other):
@@ -81,10 +81,10 @@ class ReturnCodeError(QTrioException):
 class UserCancelledError(QTrioException):
     """Raised when a user requested cancellation of an operation."""
 
-    __module__ = 'qtrio'
+    __module__ = "qtrio"
 
 
 class RunnerTimedOutError(QTrioException):
     """Raised when a :class:`qtrio.Runner` times out the run."""
 
-    __module__ = 'qtrio'
+    __module__ = "qtrio"
