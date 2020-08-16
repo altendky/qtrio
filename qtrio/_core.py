@@ -564,7 +564,7 @@ class Runner:
         self,
         async_fn: typing.Callable[..., typing.Awaitable[object]],
         args: typing.Tuple[object, ...],
-    ) -> None:
+    ) -> object:
         """Will be run as the main async function by the Trio guest.  It creates a
         cancellation scope to be cancelled when
         :meth:`QtGui.QGuiApplication.lastWindowClosed` is emitted.  Within this scope
@@ -592,7 +592,7 @@ class Runner:
                             trio.fail_after(self.timeout)
                         )
 
-                    await async_fn(*args)
+                    return await async_fn(*args)
         except trio.TooSlowError as e:
             if (
                 timeout_cancel_scope is not None
