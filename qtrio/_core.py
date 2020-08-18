@@ -101,8 +101,6 @@ class ReenterEvent(QtCore.QEvent):
 class Reenter(QtCore.QObject):
     """A ``QtCore.QObject`` for handling reenter events."""
 
-    __module__ = "qtrio"
-
     def event(self, event: QtCore.QEvent) -> bool:
         """Qt calls this when the object receives an event."""
 
@@ -199,9 +197,6 @@ class Emissions:
     """A memory receive channel to be fed by signal emissions."""
     send_channel: trio.MemorySendChannel
     """A memory send channel collecting signal emissions."""
-
-    # TODO: for Sphinx...
-    # __module__ = "qtrio"
 
     async def aclose(self) -> None:
         """Asynchronously close the send channel when signal emissions are no longer of
@@ -327,10 +322,6 @@ class EmissionsNursery:
 
         self.connect(signal=signal, slot=async_slot)
 
-    # TODO: this is a workaround for these sphinx warnings.  unaroundwork this...
-    # /home/altendky/repos/preqtrio/qtrio/_core.py:docstring of qtrio.open_emissions_nursery:13: WARNING: py:class reference target not found: qtrio._core.EmissionsNursery
-    __module__ = "qtrio"
-
 
 @async_generator.asynccontextmanager
 async def open_emissions_nursery(
@@ -417,11 +408,6 @@ class Outcomes:
 
         # neither Trio nor Qt outcomes have been set so we have nothing to unwrap()
         raise qtrio.NoOutcomesError()
-
-    # TODO: this is a workaround for these sphinx warnings.  unaroundwork this...
-    # /home/altendky/repos/qtrio/qtrio/_core.py:docstring of qtrio.run:8: WARNING: py:class reference target not found: qtrio._core.Outcomes
-    # /home/altendky/repos/qtrio/qtrio/_core.py:docstring of qtrio.run:11: WARNING: py:class reference target not found: qtrio._core.Outcomes
-    # __module__ = "qtrio"
 
 
 def run(
