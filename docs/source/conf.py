@@ -51,9 +51,10 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.coverage",
     "sphinx.ext.napoleon",
-    # "sphinx_autodoc_typehints",
+    "sphinx_autodoc_typehints",
     "sphinx_qt_documentation",
     "sphinxcontrib_trio",
+    "sphinx_rst_builder",
 ]
 
 intersphinx_mapping = {
@@ -79,7 +80,11 @@ from sphinx.util import logging
 
 logger = logging.getLogger(__name__)
 
-autodoc_typehints = "description"
+# autodoc_typehints = "none"
+set_type_checking_flag = True
+typehints_fully_qualified = False
+# always_document_param_types = True
+typehints_document_rtype = True
 
 
 def warn_undocumented_members(app, what, name, obj, options, lines):

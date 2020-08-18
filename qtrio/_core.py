@@ -35,9 +35,13 @@ def registered_event_type() -> typing.Optional[QtCore.QEvent.Type]:
 
 def register_event_type() -> None:
     """Register a Qt event type for use by Trio to reenter into the Qt event loop.
-    Raises :class:`qtrio.EventTypeAlreadyRegisteredError` if an event type
-    has already been registered.  Raises :class:`qtrio.EventTypeRegistrationFailedError`
-    if a type was not able to be registered."""
+
+    Raises:
+        qtrio.EventTypeAlreadyRegisteredError: if an event type has already been
+            registered.
+        qtrio.EventTypeRegistrationFailedError:  if a type was not able to be
+            registered.
+    """
     global _reenter_event_type
 
     if _reenter_event_type is not None:
@@ -56,14 +60,17 @@ def register_requested_event_type(
     requested_value: typing.Union[int, QtCore.QEvent.Type]
 ) -> None:
     """Register the requested Qt event type for use by Trio to reenter into the Qt event
-    loop.  Raises :class:`qtrio.EventTypeAlreadyRegisteredError` if an event type
-    has already been registered.  Raises :class:`qtrio.EventTypeRegistrationFailedError`
-    if a type was not able to be registered.  Raises
-    :class:`qtrio.RequestedEventTypeUnavailableError` if the type returned by Qt does
-    not match the requested type.
+    loop.
 
     Arguments:
         requested_value: The value to ask Qt to use for the event type being registered.
+
+    Raises:
+        qtrio.EventTypeAlreadyRegisteredError: if an event type has already been
+            registered.
+        qtrio.EventTypeRegistrationFailedError: if a type was not able to be registered.
+        qtrio.RequestedEventTypeUnavailableError: if the type returned by Qt does not
+            match the requested type.
     """
     global _reenter_event_type
 
@@ -388,8 +395,10 @@ class Outcomes:
 
     def unwrap(self) -> object:
         """Unwrap either the Trio or Qt outcome.  First, errors are given priority over
-        success values.  Second, the Trio outcome gets priority over the Qt outcome.  If
-        both are still :obj:`None` a :class:`qtrio.NoOutcomesError` is raised.
+        success values.  Second, the Trio outcome gets priority over the Qt outcome.
+
+        Raises:
+            qtrio.NoOutcomesError: if both are still :obj:`None`.
         """
 
         if self.trio is not None:
