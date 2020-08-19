@@ -32,8 +32,9 @@ nitpick_ignore = [
     # https://github.com/sphinx-doc/sphinx/issues/8127
     ("py:class", ".."),
     # https://github.com/sphinx-doc/sphinx/issues/7493
-    ("py:class", "qtrio._core.Outcomes"),
+    ("py:class", "qtrio._core.Emissions"),
     ("py:class", "qtrio._core.EmissionsNursery"),
+    ("py:class", "qtrio._core.Outcomes"),
     ("py:class", "qtrio._core.Reenter"),
     # https://github.com/Czaki/sphinx-qt-documentation/issues/10
     ("py:class", "<class 'PySide2.QtCore.QEvent.Type'>"),
@@ -85,7 +86,7 @@ logger = logging.getLogger(__name__)
 # autodoc_typehints = "none"
 set_type_checking_flag = True
 typehints_fully_qualified = False
-# always_document_param_types = True
+always_document_param_types = False
 typehints_document_rtype = True
 
 

@@ -39,6 +39,14 @@ class Signal:
         return o.signal
 
     def object(self, instance: object) -> QtCore.QObject:
+        """Get the :class:`QtCore.QObject` that hosts the real signal.
+
+        Arguments:
+            instance: The object on which this descriptor instance is hosted.
+
+        Returns:
+            The signal-hosting :class:`QtCore.QObject`.
+        """
         d = getattr(instance, self.attribute_name, None)
 
         if d is None:
@@ -59,10 +67,8 @@ Signal.attribute_name = qtrio._python.identifier_path(Signal)
 @contextlib.contextmanager
 def connection(
     signal: qtrio._util.SignalInstance, slot: typing.Callable[..., object]
-) -> typing.Generator[
+) -> typing.ContextManager[
     typing.Union[QtCore.QMetaObject.Connection, typing.Callable[..., object]],
-    None,
-    None,
 ]:
     """Connect a signal and slot for the duration of the context manager.
 

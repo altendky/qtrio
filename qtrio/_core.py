@@ -28,7 +28,11 @@ _reenter_event_type: typing.Optional[QtCore.QEvent.Type] = None
 
 
 def registered_event_type() -> typing.Optional[QtCore.QEvent.Type]:
-    """Get the registered event type.  :obj:`None` if no event type has been registered.
+    """Get the registered event type.
+
+    Returns:
+        The type registered with Qt for the reenter event.  :obj:`None` if no event type
+        has been registered yet.
     """
     return _reenter_event_type
 
@@ -118,6 +122,9 @@ async def wait_signal(signal: qtrio._util.SignalInstance) -> typing.Tuple[object
 
     Args:
         signal: The signal instance to wait for emission of.
+
+    Returns:
+        A tuple containing the values emitted by the signal.
     """
     event = trio.Event()
     result: typing.Tuple[object, ...] = ()
@@ -162,6 +169,9 @@ class Emission:
 
         Args:
             signal: The signal instance to check for being the source.
+
+        Returns:
+            Whether the passed signal was the source of this emission.
         """
 
         # TODO: `repr()` here seems really bad.
@@ -209,17 +219,22 @@ class Emissions:
 async def open_emissions_channel(
     signals: typing.Collection[qtrio._util.SignalInstance],
     max_buffer_size: typing.Union[int, float] = math.inf,
-) -> typing.AsyncGenerator[Emissions, None]:
+) -> typing.AsyncContextManager[Emissions]:
     """Create a memory channel fed by the emissions of the signals.  Each signal
     emission will be converted to a :class:`qtrio.Emission` object.  On exit the send
     channel is closed.  Management of the receive channel is left to the caller.
-    Use this only if you need to process emissions *after* exiting the context manager.
-    Otherwise use :func:`qtrio.enter_emissions_channel`.
+
+    Note:
+        Use this only if you need to process emissions *after* exiting the context
+        manager.  Otherwise use :func:`qtrio.enter_emissions_channel`.
 
     Args:
         signals: A collection of signals which will be monitored for emissions.
         max_buffer_size: When the number of unhandled emissions in the channel reaches
             this limit then additional emissions will be silently thrown out the window.
+
+    Returns:
+        The emissions manager with the signals connected to it.
     """
 
     # Infinite buffer because I don't think there's any use in storing the emission
@@ -254,7 +269,7 @@ async def open_emissions_channel(
 async def enter_emissions_channel(
     signals: typing.Collection[qtrio._util.SignalInstance],
     max_buffer_size: typing.Union[int, float] = math.inf,
-) -> typing.AsyncGenerator[trio.MemoryReceiveChannel, None]:
+) -> typing.AsyncContextManager[Emissions]:
     """Create a memory channel fed by the emissions of the signals and enter both the
     send and receive channels' context managers.
 
@@ -262,6 +277,9 @@ async def enter_emissions_channel(
         signals: A collection of signals which will be monitored for emissions.
         max_buffer_size: When the number of unhandled emissions in the channel reaches
             this limit then additional emissions will be silently thrown out the window.
+
+    Returns:
+        The emissions manager.
     """
     async with open_emissions_channel(
         signals=signals, max_buffer_size=max_buffer_size
@@ -327,7 +345,7 @@ class EmissionsNursery:
 async def open_emissions_nursery(
     until: typing.Optional[qtrio._util.SignalInstance] = None,
     wrapper: typing.Optional[typing.Callable[..., typing.Awaitable[object]]] = None,
-) -> typing.AsyncGenerator[EmissionsNursery, None]:
+) -> typing.AsyncContextManager[EmissionsNursery]:
     """Open a nursery for handling callbacks triggered by signal emissions.  This allows
     a 'normal' Qt callback structure while still executing the callbacks within a Trio
     nursery such that errors have a place to go.  Both async and sync callbacks can be
@@ -337,6 +355,9 @@ async def open_emissions_nursery(
     Arguments:
         until: Keep the nursery open until this signal is emitted.
         wrapper: A wrapper for the callbacks such as to process exceptions.
+
+    Returns:
+        The emissions manager.
     """
     async with trio.open_nursery() as nursery:
         with contextlib.ExitStack() as exit_stack:
@@ -354,7 +375,7 @@ async def open_emissions_nursery(
 @async_generator.asynccontextmanager
 async def wait_signal_context(
     signal: qtrio._util.SignalInstance,
-) -> typing.AsyncGenerator[None, None]:
+) -> typing.ContextManager[None]:
     """Connect a signal during the context and wait for it on exit.  Presently no
     mechanism is provided for retrieving the emitted arguments.
 
@@ -388,8 +409,12 @@ class Outcomes:
         """Unwrap either the Trio or Qt outcome.  First, errors are given priority over
         success values.  Second, the Trio outcome gets priority over the Qt outcome.
 
+        Returns:
+            Whatever captured value was selected.
+
         Raises:
-            qtrio.NoOutcomesError: if both are still :obj:`None`.
+            Exception: Whatever captured exception was selected.
+            qtrio.NoOutcomesError: if no value or exception has been captured.
         """
 
         if self.trio is not None:
@@ -425,7 +450,6 @@ def run(
         done_callback: See :class:`qtrio.Runner.done_callback`.
         clock: See :class:`qtrio.Runner.clock`.
 
-
     Returns:
         The :class:`qtrio.Outcomes` with both the Trio and Qt outcomes.
     """
@@ -441,6 +465,9 @@ def outcome_from_application_return_code(return_code: int) -> outcome.Outcome:
 
     Args:
         return_code: The return code to be processed.
+
+    Returns:
+        The outcome wrapping the passed in return code.
     """
 
     if return_code == 0:
@@ -519,9 +546,9 @@ class Runner:
                 call will block until it finishes.
 
         Returns:
-            If ``execute_application`` is true, an :class:`Outcomes` containing outcomes
-            from the Qt application and ``async_fn`` will be returned.  Otherwise, an
-            empty :class:`Outcomes`.
+            If ``execute_application`` is true, a :class:`qtrio.Outcomes` containing
+            outcomes from the Qt application and ``async_fn`` will be returned.
+            Otherwise, an empty :class:`qtrio.Outcomes`.
         """
         if _reenter_event_type is None:
             register_event_type()
@@ -569,6 +596,9 @@ class Runner:
             async_fn: The application's main async function to be run by Trio in the Qt
                 host's thread.
             args: Positional arguments to be passed to ``async_fn``
+
+        Returns:
+            The result returned by `async_fn`.
         """
         result: object = None
         timeout_cancel_scope = None
@@ -608,6 +638,9 @@ class Runner:
 
         Actions such as outputting error information or unwrapping the outcomes need
         to be further considered.
+
+        Arguments:
+            run_outcome: The outcome of the Trio guest run.
         """
         self.outcomes = attr.evolve(self.outcomes, trio=run_outcome)
 
