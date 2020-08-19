@@ -67,8 +67,10 @@ Signal.attribute_name = qtrio._python.identifier_path(Signal)
 @contextlib.contextmanager
 def connection(
     signal: qtrio._util.SignalInstance, slot: typing.Callable[..., object]
-) -> typing.ContextManager[
+) -> typing.Generator[
     typing.Union[QtCore.QMetaObject.Connection, typing.Callable[..., object]],
+    None,
+    None,
 ]:
     """Connect a signal and slot for the duration of the context manager.
 

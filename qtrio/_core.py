@@ -219,7 +219,7 @@ class Emissions:
 async def open_emissions_channel(
     signals: typing.Collection[qtrio._util.SignalInstance],
     max_buffer_size: typing.Union[int, float] = math.inf,
-) -> typing.AsyncContextManager[Emissions]:
+) -> typing.AsyncGenerator[Emissions, None]:
     """Create a memory channel fed by the emissions of the signals.  Each signal
     emission will be converted to a :class:`qtrio.Emission` object.  On exit the send
     channel is closed.  Management of the receive channel is left to the caller.
@@ -265,11 +265,11 @@ async def open_emissions_channel(
             yield Emissions(channel=receive_channel, send_channel=send_channel)
 
 
-@async_generator.asynccontextmanager
+@contextlib.asynccontextmanager
 async def enter_emissions_channel(
     signals: typing.Collection[qtrio._util.SignalInstance],
     max_buffer_size: typing.Union[int, float] = math.inf,
-) -> typing.AsyncContextManager[Emissions]:
+) -> typing.AsyncGenerator[Emissions, None]:
     """Create a memory channel fed by the emissions of the signals and enter both the
     send and receive channels' context managers.
 
@@ -345,7 +345,7 @@ class EmissionsNursery:
 async def open_emissions_nursery(
     until: typing.Optional[qtrio._util.SignalInstance] = None,
     wrapper: typing.Optional[typing.Callable[..., typing.Awaitable[object]]] = None,
-) -> typing.AsyncContextManager[EmissionsNursery]:
+) -> typing.AsyncGenerator[EmissionsNursery, None]:
     """Open a nursery for handling callbacks triggered by signal emissions.  This allows
     a 'normal' Qt callback structure while still executing the callbacks within a Trio
     nursery such that errors have a place to go.  Both async and sync callbacks can be
@@ -375,7 +375,7 @@ async def open_emissions_nursery(
 @async_generator.asynccontextmanager
 async def wait_signal_context(
     signal: qtrio._util.SignalInstance,
-) -> typing.ContextManager[None]:
+) -> typing.AsyncGenerator[None, None]:
     """Connect a signal during the context and wait for it on exit.  Presently no
     mechanism is provided for retrieving the emitted arguments.
 
