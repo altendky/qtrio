@@ -265,7 +265,7 @@ async def open_emissions_channel(
             yield Emissions(channel=receive_channel, send_channel=send_channel)
 
 
-@contextlib.asynccontextmanager
+@async_generator.asynccontextmanager
 async def enter_emissions_channel(
     signals: typing.Collection[qtrio._util.SignalInstance],
     max_buffer_size: typing.Union[int, float] = math.inf,
