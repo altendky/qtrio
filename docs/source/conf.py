@@ -38,6 +38,8 @@ nitpick_ignore = [
     ("py:class", "qtrio._core.Reenter"),
     # https://github.com/Czaki/sphinx-qt-documentation/issues/10
     ("py:class", "<class 'PySide2.QtCore.QEvent.Type'>"),
+    # https://github.com/sphinx-doc/sphinx/issues/8136
+    ("py:class", "typing.AbstractAsyncContextManager"),
 ]
 
 # -- General configuration ------------------------------------------------
