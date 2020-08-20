@@ -20,7 +20,6 @@ emissions.  See the :doc:`emissions example <examples/emissions>` for an example
 .. autofunction:: qtrio.enter_emissions_channel
 .. autoclass:: qtrio.Emission
 .. autoclass:: qtrio.Emissions
-    :noindex:
 
 If you need a more Qt-like callback mechanism :func:`qtrio.open_emissions_nursery`
 offers that.  Instead of tossing the callbacks behind the couch where they can leave

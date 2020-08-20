@@ -20,6 +20,9 @@
 import os
 import sys
 
+import sphinx.locale
+import sphinx.util
+
 # So autodoc can import our package
 sys.path.insert(0, os.path.abspath("../.."))
 
@@ -78,13 +81,8 @@ autodoc_default_options = {
     "undoc-members": True,
 }
 
-# import inspect
-from sphinx.locale import __
-from sphinx.util import logging
+logger = sphinx.util.logging.getLogger(__name__)
 
-logger = logging.getLogger(__name__)
-
-# autodoc_typehints = "none"
 set_type_checking_flag = True
 typehints_fully_qualified = False
 always_document_param_types = False
@@ -93,7 +91,7 @@ typehints_document_rtype = True
 
 def warn_undocumented_members(app, what, name, obj, options, lines):
     if len(lines) == 0:
-        logger.warning(__(f"{what} {name} is undocumented"))
+        logger.warning(sphinx.locale.__(f"{what} {name} is undocumented"))
         lines.append(f".. Warning:: {what} ``{name}`` undocumented")
 
 
