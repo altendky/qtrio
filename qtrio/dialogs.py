@@ -98,6 +98,7 @@ def _dialog_button_box_buttons_by_role(
 class IntegerDialog:
     """Manage a dialog for inputting an integer from the user.  Generally instances
     should be built via :func:`qtrio.dialogs.create_integer_dialog`."""
+
     parent: QtWidgets.QWidget = None
     """The parent widget for the dialog."""
 
@@ -403,6 +404,7 @@ def create_file_save_dialog(
 @attr.s(auto_attribs=True)
 class MessageBox:
     """Generally instances should be built via :func:`qtrio.dialogs.create_message_box`."""
+
     title: str
     """The message box title."""
     text: str
