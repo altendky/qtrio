@@ -158,7 +158,7 @@ class IntegerDialog:
         integer.
         """
         with _manage(dialog=self) as finished_event:
-            if self.dialog is None:
+            if self.dialog is None:  # pragma: no cover
                 raise qtrio.InternalError(
                     "Dialog not assigned while it is being managed."
                 )
@@ -247,7 +247,7 @@ class TextInputDialog:
         """See :meth:`qtrio.dialogs.DialogProtocol.teardown`."""
 
         with _manage(dialog=self) as finished_event:
-            if self.dialog is None:
+            if self.dialog is None:  # pragma: no cover
                 raise qtrio.InternalError(
                     "Dialog not assigned while it is being managed."
                 )
@@ -362,7 +362,7 @@ class FileDialog:
         """See :meth:`qtrio.dialogs.DialogProtocol.teardown`."""
 
         with _manage(dialog=self) as finished_event:
-            if self.dialog is None:
+            if self.dialog is None:  # pragma: no cover
                 raise qtrio.InternalError(
                     "Dialog not assigned while it is being managed."
                 )
@@ -461,7 +461,7 @@ class MessageBox:
         """See :meth:`qtrio.dialogs.DialogProtocol.teardown`."""
 
         with _manage(dialog=self) as finished_event:
-            if self.dialog is None:
+            if self.dialog is None:  # pragma: no cover
                 raise qtrio.InternalError(
                     "Dialog not assigned while it is being managed."
                 )
