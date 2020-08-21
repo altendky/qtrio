@@ -3,17 +3,18 @@ import os
 import sys
 import typing
 
-try:
-    from typing import Protocol
-except ImportError:
-    from typing_extensions import Protocol
-
 import attr
 from qtpy import QtWidgets
 import trio
 
 import qtrio
 import qtrio._qt
+
+
+if sys.version_info >= (3, 8):
+    from typing import Protocol
+else:
+    from typing_extensions import Protocol
 
 
 class DialogProtocol(Protocol):
@@ -58,7 +59,7 @@ def check_dialog_protocol(
 
 
 @contextlib.contextmanager
-def _manage(dialog: DialogProtocol) -> typing.ContextManager[trio.Event]:
+def _manage(dialog: DialogProtocol) -> typing.Generator[trio.Event, None, None]:
     """Manage the setup and teardown of a dialog including yielding a
     :class:`trio.Event` that is set when the dialog is finished.
 
