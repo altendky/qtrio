@@ -34,11 +34,6 @@ nitpick_ignore = [
     ("py:obj", "bytes-like"),
     # https://github.com/sphinx-doc/sphinx/issues/8127
     ("py:class", ".."),
-    # https://github.com/sphinx-doc/sphinx/issues/7493
-    ("py:class", "qtrio._core.Emissions"),
-    ("py:class", "qtrio._core.EmissionsNursery"),
-    ("py:class", "qtrio._core.Outcomes"),
-    ("py:class", "qtrio._core.Reenter"),
     # https://github.com/Czaki/sphinx-qt-documentation/issues/10
     ("py:class", "<class 'PySide2.QtCore.QEvent.Type'>"),
     # https://github.com/sphinx-doc/sphinx/issues/8136
