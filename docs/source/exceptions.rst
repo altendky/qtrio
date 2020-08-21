@@ -8,9 +8,6 @@ Exceptions
 .. autoclass:: qtrio.RequestedEventTypeUnavailableError
 .. autoclass:: qtrio.EventTypeAlreadyRegisteredError
 .. autoclass:: qtrio.ReturnCodeError
-<<<<<<< HEAD
 .. autoclass:: qtrio.InternalError
 .. autoclass:: qtrio.UserCancelledError
 .. autoclass:: qtrio.InvalidInputError
-=======
->>>>>>> master

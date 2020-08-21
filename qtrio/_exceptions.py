@@ -85,6 +85,13 @@ class ReturnCodeError(QTrioException):
         return self.args == other.args
 
 
+class InternalError(QTrioException):
+    """Raised when an internal state is inconsistent."""
+
+    # https://github.com/sphinx-doc/sphinx/issues/7493
+    __module__ = "qtrio"
+
+
 class UserCancelledError(QTrioException):
     """Raised when a user requested cancellation of an operation."""
 
@@ -101,13 +108,6 @@ class RunnerTimedOutError(QTrioException):
 
 class InvalidInputError(QTrioException):
     """Raised when invalid input is provided such as via a dialog."""
-
-    # https://github.com/sphinx-doc/sphinx/issues/7493
-    __module__ = "qtrio"
-
-
-class InternalError(QTrioException):
-    """Raised when an internal state is inconsistent."""
 
     # https://github.com/sphinx-doc/sphinx/issues/7493
     __module__ = "qtrio"

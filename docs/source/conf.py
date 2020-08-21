@@ -39,8 +39,13 @@ nitpick_ignore = [
     ("py:class", "qtrio._core.EmissionsNursery"),
     ("py:class", "qtrio._core.Outcomes"),
     ("py:class", "qtrio._core.Reenter"),
+    ("py:class", "qtrio._qt.Signal"),
     # https://github.com/Czaki/sphinx-qt-documentation/issues/10
     ("py:class", "<class 'PySide2.QtCore.QEvent.Type'>"),
+    ("py:class", "<class 'PySide2.QtWidgets.QFileDialog.FileMode'>"),
+    ("py:class", "<class 'PySide2.QtWidgets.QFileDialog.AcceptMode'>"),
+    ("py:class", "<class 'PySide2.QtWidgets.QFileDialog.Option'>"),
+    ("py:class", "<class 'PySide2.QtWidgets.QMessageBox.Icon'>"),
     # https://github.com/sphinx-doc/sphinx/issues/8136
     ("py:class", "typing.AbstractAsyncContextManager"),
 ]

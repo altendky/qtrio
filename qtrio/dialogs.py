@@ -1,15 +1,13 @@
-import abc
 import contextlib
 import os
 import sys
 import typing
 
-import async_generator
 import attr
-from qtpy import QtCore
 from qtpy import QtWidgets
 import trio
 
+import qtrio
 import qtrio._qt
 
 
@@ -17,14 +15,12 @@ class DialogProtocol(typing.Protocol):
     """The common interface used for working with QTrio dialogs.  To check that a class
     implements this protocol, decorate it with
     :func:`qtrio.dialogs.check_dialog_protocol`.
-
-    Attributes:
-        shown: The signal to be emitted when the dialog is shown.
-        finished: The signal to be emitted when the dialog is finished.
     """
 
-    shown: qtrio._qt.Signal
-    finished: qtrio._qt.Signal
+    shown: qtrio.Signal
+    """The signal to be emitted when the dialog is shown."""
+    finished: qtrio.Signal
+    """The signal to be emitted when the dialog is finished."""
 
     def setup(self) -> None:
         """Setup and show the dialog.  Emit :attr:`qtrio.dialogs.DialogProtocol.shown`
@@ -51,7 +47,7 @@ def check_dialog_protocol(
     passed class is cleanly returned.
 
     Arguments:
-        cls: The class to trigger a protocol check against.
+        cls:
     """
     return cls
 
@@ -95,33 +91,27 @@ def _dialog_button_box_buttons_by_role(
 @check_dialog_protocol
 @attr.s(auto_attribs=True)
 class IntegerDialog:
-    """Manage a dialog for inputting an integer from the user.
-
-    Attributes:
-        parent: The parent widget for the dialog.
-
-        dialog: The actual dialog widget instance.
-        edit_widget: The line edit that the user will enter the input into.
-        ok_button: The entry confirmation button.
-        cancel_button: The input cancellation button.
-
-        result: The result of parsing the user input.
-
-        shown: See :attr:`qtrio.dialogs.DialogProtocol.shown`.
-        finished: See :attr:`qtrio.dialogs.DialogProtocol.finished`.
-    """
-
+    """Manage a dialog for inputting an integer from the user.  Generally instances
+    should be built via :func:`qtrio.dialogs.create_integer_dialog`."""
     parent: QtWidgets.QWidget = None
+    """The parent widget for the dialog."""
 
     dialog: typing.Optional[QtWidgets.QInputDialog] = None
+    """The actual dialog widget instance."""
     edit_widget: typing.Optional[QtWidgets.QLineEdit] = None
+    """The line edit that the user will enter the input into."""
     ok_button: typing.Optional[QtWidgets.QPushButton] = None
+    """The entry confirmation button."""
     cancel_button: typing.Optional[QtWidgets.QPushButton] = None
+    """The input cancellation button."""
 
     result: typing.Optional[int] = None
+    """The result of parsing the user input."""
 
-    shown = qtrio._qt.Signal(QtWidgets.QInputDialog)
-    finished = qtrio._qt.Signal(int)  # QtWidgets.QDialog.DialogCode
+    shown = qtrio.Signal(QtWidgets.QInputDialog)
+    """See :attr:`qtrio.dialogs.DialogProtocol.shown`."""
+    finished = qtrio.Signal(int)  # QtWidgets.QDialog.DialogCode
+    """See :attr:`qtrio.dialogs.DialogProtocol.finished`."""
 
     def setup(self) -> None:
         """See :meth:`qtrio.dialogs.DialogProtocol.setup`."""
@@ -156,8 +146,8 @@ class IntegerDialog:
 
     async def wait(self) -> int:
         """Setup the dialog, wait for the user input, teardown, and return the user
-        input.  Raises :class:`qtrio.UserCancelledError` if the user cancels the dialog.
-        Raises :class:`qtrio.InvalidInputError` if the input can't be parsed as an
+        input.  Raises :exc:`qtrio.UserCancelledError` if the user cancels the dialog.
+        Raises :exc:`qtrio.InvalidInputError` if the input can't be parsed as an
         integer.
         """
         with _manage(dialog=self) as finished_event:
@@ -179,44 +169,39 @@ class IntegerDialog:
             return self.result
 
 
-def create_integer_dialog(parent: QtCore.QObject = None,) -> IntegerDialog:
+def create_integer_dialog(parent: QtWidgets.QWidget = None,) -> IntegerDialog:
     return IntegerDialog(parent=parent)
 
 
 @check_dialog_protocol
 @attr.s(auto_attribs=True)
 class TextInputDialog:
-    """Manage a dialog for inputting an integer from the user.
-
-    Attributes:
-        title: The title of the dialog.
-        label: The label for the input widget.
-        parent: The parent widget for the dialog.
-
-        dialog: The actual dialog widget instance.
-        edit_widget: The line edit that the user will enter the input into.
-        ok_button: The entry confirmation button.
-        cancel_button: The input cancellation button.
-
-        result: The result of parsing the user input.
-
-        shown: See :attr:`qtrio.dialogs.DialogProtocol.shown`.
-        finished: See :attr:`qtrio.dialogs.DialogProtocol.finished`.
-    """
+    """Manage a dialog for inputting an integer from the user.  Generally instances
+    should be built via :func:`qtrio.dialogs.create_text_input_dialog`."""
 
     title: typing.Optional[str] = None
+    """The title of the dialog."""
     label: typing.Optional[str] = None
-    parent: typing.Optional[QtCore.QObject] = None
+    """The label for the input widget."""
+    parent: typing.Optional[QtWidgets.QWidget] = None
+    """The parent widget for the dialog."""
 
     dialog: typing.Optional[QtWidgets.QInputDialog] = None
+    """The actual dialog widget instance."""
     accept_button: typing.Optional[QtWidgets.QPushButton] = None
+    """The entry confirmation button."""
     reject_button: typing.Optional[QtWidgets.QPushButton] = None
+    """The input cancellation button."""
     line_edit: typing.Optional[QtWidgets.QLineEdit] = None
+    """The line edit that the user will enter the input into."""
 
     result: typing.Optional[str] = None
+    """The result of parsing the user input."""
 
-    shown = qtrio._qt.Signal(QtWidgets.QInputDialog)
-    finished = qtrio._qt.Signal(int)  # QtWidgets.QDialog.DialogCode
+    shown = qtrio.Signal(QtWidgets.QInputDialog)
+    """See :attr:`qtrio.dialogs.DialogProtocol.shown`."""
+    finished = qtrio.Signal(int)  # QtWidgets.QDialog.DialogCode
+    """See :attr:`qtrio.dialogs.DialogProtocol.finished`."""
 
     def setup(self) -> None:
         """See :meth:`qtrio.dialogs.DialogProtocol.setup`."""
@@ -279,7 +264,7 @@ class TextInputDialog:
 def create_text_input_dialog(
     title: typing.Optional[str] = None,
     label: typing.Optional[str] = None,
-    parent: typing.Optional[QtCore.QObject] = None,
+    parent: typing.Optional[QtWidgets.QWidget] = None,
 ) -> TextInputDialog:
     return TextInputDialog(title=title, label=label, parent=parent)
 
@@ -287,41 +272,38 @@ def create_text_input_dialog(
 @check_dialog_protocol
 @attr.s(auto_attribs=True)
 class FileDialog:
-    """Manage a dialog for inputting an integer from the user.
-
-    Attributes:
-        file_mode:
-        accept_mode:
-        default_directory:
-        default_file:
-        options:
-        parent: The parent widget for the dialog.
-
-        dialog: The actual dialog widget instance.
-        accept_button: The confirmation button.
-        reject_button: The cancellation button.
-
-        result: The selected path.
-
-        shown: See :attr:`qtrio.dialogs.DialogProtocol.shown`.
-        finished: See :attr:`qtrio.dialogs.DialogProtocol.finished`.
-    """
+    """Manage a dialog for allowing the user to select a file or directory.  Generally
+    instances should be built via :func:`qtrio.dialogs.create_file_save_dialog`."""
 
     file_mode: QtWidgets.QFileDialog.FileMode
+    """Controls whether the dialog is for picking an existing vs. new file or directory,
+    etc.
+    """
     accept_mode: QtWidgets.QFileDialog.AcceptMode
+    """Specify an open vs. a save dialog."""
     default_directory: typing.Optional[trio.Path] = None
+    """The directory to be initially presented in the dialog."""
     default_file: typing.Optional[trio.Path] = None
+    """The file to be initially selected in the dialog."""
     options: QtWidgets.QFileDialog.Option = QtWidgets.QFileDialog.Option()
-    parent: typing.Optional[QtCore.QObject] = None
+    """Miscellanious options.  See the Qt documentation."""
+    parent: typing.Optional[QtWidgets.QWidget] = None
+    """The parent widget for the dialog."""
 
     dialog: typing.Optional[QtWidgets.QFileDialog] = None
+    """The actual dialog widget instance."""
     accept_button: typing.Optional[QtWidgets.QPushButton] = None
+    """The confirmation button."""
     reject_button: typing.Optional[QtWidgets.QPushButton] = None
+    """The cancellation button."""
 
     result: typing.Optional[trio.Path] = None
+    """The path selected by the user."""
 
-    shown = qtrio._qt.Signal(QtWidgets.QFileDialog)
-    finished = qtrio._qt.Signal(int)  # QtWidgets.QDialog.DialogCode
+    shown = qtrio.Signal(QtWidgets.QFileDialog)
+    """See :attr:`qtrio.dialogs.DialogProtocol.shown`."""
+    finished = qtrio.Signal(int)  # QtWidgets.QDialog.DialogCode
+    """See :attr:`qtrio.dialogs.DialogProtocol.finished`."""
 
     def setup(self) -> None:
         """See :meth:`qtrio.dialogs.DialogProtocol.setup`."""
@@ -389,17 +371,18 @@ class FileDialog:
 
 
 def create_file_save_dialog(
-    parent: typing.Optional[QtCore.QObject] = None,
+    parent: typing.Optional[QtWidgets.QWidget] = None,
     default_directory: typing.Optional[trio.Path] = None,
     default_file: typing.Optional[trio.Path] = None,
     options: QtWidgets.QFileDialog.Option = QtWidgets.QFileDialog.Option(),
 ) -> FileDialog:
-    """
+    """Create an open or save dialog.
+
     Arguments:
-        parent:
-        default_directory:
-        default_file:
-        options:
+        parent: See :attr:`qtrio.dialogs.FileDialog.parent`.
+        default_directory: See :attr:`qtrio.dialogs.FileDialog.default_directory`.
+        default_file: See :attr:`qtrio.dialogs.FileDialog.default_file`.
+        options: See :attr:`qtrio.dialogs.FileDialog.options`.
     """
     return FileDialog(
         parent=parent,
@@ -414,19 +397,30 @@ def create_file_save_dialog(
 @check_dialog_protocol
 @attr.s(auto_attribs=True)
 class MessageBox:
+    """Generally instances should be built via :func:`qtrio.dialogs.create_message_box`."""
     title: str
+    """The message box title."""
     text: str
+    """The message text shown inside the dialog."""
     icon: QtWidgets.QMessageBox.Icon
+    """The icon shown inside the dialog."""
     buttons: QtWidgets.QMessageBox.StandardButtons
-    parent: typing.Optional[QtCore.QObject] = None
+    """The buttons to be shown in the dialog."""
+    parent: typing.Optional[QtWidgets.QWidget] = None
+    """The parent widget for the dialog."""
 
     dialog: typing.Optional[QtWidgets.QMessageBox] = None
+    """The actual dialog widget instance."""
     accept_button: typing.Optional[QtWidgets.QPushButton] = None
+    """The button to accept the dialog."""
 
     result: typing.Optional[trio.Path] = None
+    """Not generally relevant for a message box."""
 
-    shown = qtrio._qt.Signal(QtWidgets.QMessageBox)
-    finished = qtrio._qt.Signal(int)  # QtWidgets.QDialog.DialogCode
+    shown = qtrio.Signal(QtWidgets.QMessageBox)
+    """See :attr:`qtrio.dialogs.DialogProtocol.shown`."""
+    finished = qtrio.Signal(int)  # QtWidgets.QDialog.DialogCode
+    """See :attr:`qtrio.dialogs.DialogProtocol.finished`."""
 
     def setup(self) -> None:
         """See :meth:`qtrio.dialogs.DialogProtocol.setup`."""
@@ -477,6 +471,15 @@ def create_message_box(
     text: str,
     icon: QtWidgets.QMessageBox.Icon = QtWidgets.QMessageBox.Information,
     buttons: QtWidgets.QMessageBox.StandardButtons = QtWidgets.QMessageBox.Ok,
-    parent: typing.Optional[QtCore.QObject] = None,
+    parent: typing.Optional[QtWidgets.QWidget] = None,
 ) -> MessageBox:
+    """Create an open or save dialog.
+
+    Arguments:
+        title: See :attr:`qtrio.dialogs.MessageBox.title`.
+        text: See :attr:`qtrio.dialogs.MessageBox.text`.
+        icon: See :attr:`qtrio.dialogs.MessageBox.icon`.
+        buttons: See :attr:`qtrio.dialogs.MessageBox.buttons`.
+        parent: See :attr:`qtrio.dialogs.MessageBox.parent`.
+    """
     return MessageBox(icon=icon, title=title, text=text, buttons=buttons, parent=parent)

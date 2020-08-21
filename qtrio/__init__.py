@@ -31,4 +31,5 @@ from ._core import (
     Reenter,
 )
 
+from ._qt import Signal
 from ._pytest import host
