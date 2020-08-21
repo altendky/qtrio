@@ -20,6 +20,9 @@
 import os
 import sys
 
+import sphinx.locale
+import sphinx.util
+
 # So autodoc can import our package
 sys.path.insert(0, os.path.abspath("../.."))
 
@@ -29,13 +32,17 @@ nitpicky = True
 nitpick_ignore = [
     # Format is ("sphinx reference type", "string"), e.g.:
     ("py:obj", "bytes-like"),
-    # TODO: https://github.com/sphinx-doc/sphinx/issues/8015
-    ("py:class", "typing.Callable[..., typing.Awaitable[object]]"),
-    ("py:class", "typing.Callable[..., object]"),
-    (
-        "py:class",
-        "typing.Callable[[typing.Callable[..., typing.Awaitable[object]]], typing.Callable[..., object]]",
-    ),
+    # https://github.com/sphinx-doc/sphinx/issues/8127
+    ("py:class", ".."),
+    # https://github.com/sphinx-doc/sphinx/issues/7493
+    ("py:class", "qtrio._core.Emissions"),
+    ("py:class", "qtrio._core.EmissionsNursery"),
+    ("py:class", "qtrio._core.Outcomes"),
+    ("py:class", "qtrio._core.Reenter"),
+    # https://github.com/Czaki/sphinx-qt-documentation/issues/10
+    ("py:class", "<class 'PySide2.QtCore.QEvent.Type'>"),
+    # https://github.com/sphinx-doc/sphinx/issues/8136
+    ("py:class", "typing.AbstractAsyncContextManager"),
 ]
 
 # -- General configuration ------------------------------------------------
@@ -67,7 +74,26 @@ intersphinx_mapping = {
 
 qt_documentation = "Qt5"
 
-autodoc_member_order = "bysource"
+autodoc_default_options = {
+    "member-order": "bysource",
+    "members": True,
+    "show-inheritance": True,
+    "undoc-members": True,
+}
+
+logger = sphinx.util.logging.getLogger(__name__)
+
+set_type_checking_flag = True
+typehints_fully_qualified = False
+always_document_param_types = False
+typehints_document_rtype = True
+
+
+def warn_undocumented_members(app, what, name, obj, options, lines):
+    if len(lines) == 0:
+        logger.warning(sphinx.locale.__(f"{what} {name} is undocumented"))
+        lines.append(f".. Warning:: {what} ``{name}`` undocumented")
+
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = []
@@ -235,3 +261,4 @@ def setup(app: "sphinx.application.Sphinx") -> None:
         objname="built-in fixture",
         indextemplate="pair: %s; fixture",
     )
+    app.connect("autodoc-process-docstring", warn_undocumented_members)

@@ -1156,7 +1156,7 @@ def test_not_quitting_application_does_not(testdir):
             pass
 
         def cycle():
-            if runner.done and 'done' not in results:
+            if runner._done and 'done' not in results:
                 results.append('done')
 
                 timer.stop()

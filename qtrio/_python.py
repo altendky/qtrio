@@ -13,5 +13,8 @@ def identifier_path(it: typing.Union[typing.Type[object], typing.Callable]) -> s
 
     Args:
         it: The object to generate the identifer from.
+
+    Returns:
+        The generated identifier string.
     """
     return "__" + "_".join(it.__module__.split(".") + [it.__qualname__])

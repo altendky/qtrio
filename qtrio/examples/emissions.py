@@ -19,7 +19,7 @@ class QSignaledWidget(QtWidgets.QWidget):
     shown = QtCore.Signal()
 
     def closeEvent(self, event: QtGui.QCloseEvent) -> None:
-        """Detect close events and emit the `closed` signal."""
+        """Detect close events and emit the ``closed`` signal."""
 
         super().closeEvent(event)
         if event.isAccepted():
@@ -28,7 +28,7 @@ class QSignaledWidget(QtWidgets.QWidget):
             pass
 
     def showEvent(self, event: QtGui.QShowEvent) -> None:
-        """Detect show events and emit the `shown` signal."""
+        """Detect show events and emit the ``shown`` signal."""
 
         super().showEvent(event)
         if event.isAccepted():

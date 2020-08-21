@@ -11,14 +11,15 @@ import qtrio._util
 
 class Signal:
     """This is a (nearly) drop-in replacement for QtCore.Signal.  The useful difference
-    is that it does not require inheriting from `QtCore.QObject`.  The not-quite part is
-    that it will be a bit more complicated to change thread affinity of the relevant
-    `QtCore.QObject`.  If you need this, maybe just inherit.
+    is that it does not require inheriting from :class:`QtCore.QObject`.  The not-quite
+    part is that it will be a bit more complicated to change thread affinity of the
+    relevant :class:`QtCore.QObject`.  If you need this, maybe just inherit.
 
     This signal gets around the normally required inheritance by creating
-    `QtCore.QObject` instances behind the scenes to host the real signals.  Just as
-    `QtCore.Signal` uses the Python descriptor protocol to intercept the attribute
-    access, so does this so it can 'redirect' to the signal on the other object.
+    :class:`QtCore.QObject` instances behind the scenes to host the real signals.  Just
+    as :class:`QtCore.Signal` uses the Python descriptor protocol to intercept the
+    attribute access, so does this so it can 'redirect' to the signal on the other
+    object.
     """
 
     attribute_name: str = ""
@@ -38,6 +39,14 @@ class Signal:
         return o.signal
 
     def object(self, instance: object) -> QtCore.QObject:
+        """Get the :class:`QtCore.QObject` that hosts the real signal.
+
+        Arguments:
+            instance: The object on which this descriptor instance is hosted.
+
+        Returns:
+            The signal-hosting :class:`QtCore.QObject`.
+        """
         d = getattr(instance, self.attribute_name, None)
 
         if d is None:
