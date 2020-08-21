@@ -41,6 +41,7 @@ setup(
         "pytest",
         "qtpy",
         "trio>=0.16",
+        "typing-extensions",
     ],
     extras_require={
         "checks": ["black", "flake8", "mypy", towncrier],

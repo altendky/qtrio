@@ -3,6 +3,11 @@ import os
 import sys
 import typing
 
+try:
+    from typing import Protocol
+except ImportError:
+    from typing_extensions import Protocol
+
 import attr
 from qtpy import QtWidgets
 import trio
@@ -11,7 +16,7 @@ import qtrio
 import qtrio._qt
 
 
-class DialogProtocol(typing.Protocol):
+class DialogProtocol(Protocol):
     """The common interface used for working with QTrio dialogs.  To check that a class
     implements this protocol, decorate it with
     :func:`qtrio.dialogs.check_dialog_protocol`.
