@@ -3,6 +3,7 @@ integration with Qt.
 """
 import os
 import time
+import typing
 
 import async_generator
 import httpcore._async.http11
@@ -14,28 +15,46 @@ import trio
 from qtpy import QtCore
 from qtpy import QtWidgets
 
+import qtrio.dialogs
+
 
 # Default is 4096
 httpcore._async.http11.AsyncHTTP11Connection.READ_NUM_BYTES = 100_000
 
 
-async def main(url, destination, fps):
+async def main(
+    url: typing.Optional[typing.Union[str, hyperlink.URL]],
+    destination: typing.Optional[typing.Union[str, os.PathLike]],
+    fps: int = 60,
+) -> None:
+    converted_url: hyperlink.URL
+    converted_destination: trio.Path
+
     try:
         if url is None:
-            url = await get_text(
-                title=create_title("Enter URL"), label="URL to download:"
+            text_input_dialog = qtrio.dialogs.create_text_input_dialog(
+                title=create_title("Enter URL"), label="URL to download:",
             )
+            url_text = await text_input_dialog.wait()
 
-        url = hyperlink.URL.from_text(url)
+            converted_url = hyperlink.URL.from_text(url_text)
+        elif isinstance(url, str):
+            converted_url = hyperlink.URL.from_text(url)
+        else:
+            converted_url = url
 
         if destination is None:
             destination = await get_save_file_path(default_filename=url.path[-1])
 
-        destination = trio.Path(destination)
+        converted_destination = trio.Path(destination)
     except qtrio.UserCancelledError:
         return
 
-    await qtrio.examples.download.get_dialog(url, destination, fps=fps)
+    await qtrio.examples.download.get_dialog(
+        url=converted_url, destination=converted_destination, fps=fps,
+    )
+
+    return
 
 
 async def get_dialog(url: hyperlink.URL, destination: trio.Path, fps: int):
@@ -93,25 +112,8 @@ async def get(url: hyperlink.URL, destination: trio.Path, update_period: float):
                         last_update = time.monotonic()
 
 
-def create_title(specific):
+def create_title(specific: str) -> str:
     return f"QTrio Download Example - {specific}"
-
-
-async def get_text(title, label, parent=None):
-    dialog = QtWidgets.QInputDialog(parent)
-    dialog.setWindowTitle(title)
-    dialog.setLabelText(label)
-
-    dialog.show()
-    # TODO: is there technically a race here?
-    [result] = await qtrio.wait_signal(dialog.finished)
-
-    if result != QtWidgets.QInputDialog.Accepted:
-        raise qtrio.UserCancelledError()
-
-    text = dialog.textValue()
-
-    return text
 
 
 async def get_save_file_path(default_filename, parent=None):
