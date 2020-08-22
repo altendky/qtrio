@@ -1,0 +1,1 @@
+Timeouts bumped to 20 seconds for :func:`qtrio.host` and 40 seconds for our subprocessed tests.

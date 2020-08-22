@@ -9,6 +9,8 @@ exec((here / "qtrio" / "_version.py").read_text(encoding="utf-8"))
 
 LONG_DESC = (here / "README.rst").read_text(encoding="utf-8")
 
+towncrier = "towncrier >= 19.9.0rc1"
+
 setup(
     name="qtrio",
     version=__version__,
@@ -16,6 +18,16 @@ setup(
         "a library bringing Qt GUIs together with ``async`` and ``await`` via Trio"
     ),
     url="https://github.com/altendky/qtrio",
+    project_urls={
+        "Documentation": "https://qtrio.readthedocs.io/",
+        "Chat": "https://gitter.im/python-trio/general",
+        "Forum": "https://trio.discourse.group/",
+        "Issues": "https://github.com/altendky/qtrio/issues",
+        "Repository": "https://github.com/altendky/qtrio",
+        "Tests": "https://github.com/altendky/qtrio/actions?query=branch%3Amaster",
+        "Coverage": "https://codecov.io/gh/altendky/qtrio",
+        "Distribution": "https://pypi.org/project/qtrio",
+    },
     long_description=LONG_DESC,
     author="Kyle Altendorf",
     author_email="sda@fstab.net",
@@ -24,19 +36,23 @@ setup(
     install_requires=[
         "async_generator",
         "attrs",
+        "decorator",
         "outcome",
         "pytest",
         "qtpy",
         "trio>=0.16",
     ],
     extras_require={
-        "checks": ["black", "flake8", "mypy", "towncrier>=19.9.0rc1"],
+        "checks": ["black", "flake8", "mypy", towncrier],
         "docs": [
-            "sphinx >= 1.7.0",
+            # >= 3.2: https://github.com/sphinx-doc/sphinx/issues/8008
+            # >= 3.2.1: https://github.com/sphinx-doc/sphinx/issues/8124
+            "sphinx >= 3.2.1",
             "sphinx-autodoc-typehints",
-            "sphinx-qt-documentation",
+            "sphinx-qt-documentation>=0.3",
             "sphinx_rtd_theme",
             "sphinxcontrib-trio",
+            towncrier,
         ],
         "examples": ["click", "httpcore", "httpx", "hyperlink"],
         "pyqt5": ["pyqt5", "pyqt5-stubs"],
@@ -62,6 +78,9 @@ setup(
         "Operating System :: MacOS :: MacOS X",
         "Operating System :: Microsoft :: Windows",
         "Programming Language :: Python :: 3 :: Only",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: Implementation :: CPython",
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",

@@ -1,0 +1,1 @@
+:fixture:`request` is properly linked in :func:`qtrio.host` documentation.

@@ -10,6 +10,16 @@ set +o allexport
 # Log some general info about the environment
 env | sort
 
+function try-harder() {
+    for BACKOFF in 0 1 2 4 8 15 15 15 15; do
+        sleep $BACKOFF
+        if "$@"; then
+            return 0
+        fi
+    done
+    return 1
+}
+
 # Curl's built-in retry system is not very robust; it gives up on lots of
 # network errors that we want to retry on. Wget might work better, but it's
 # not installed on azure pipelines's windows boxes. So... let's try some good
@@ -17,13 +27,7 @@ env | sort
 # we always want, like -f to tell curl to give an error if the server sends an
 # error response, and -L to follow redirects.)
 function curl-harder() {
-    for BACKOFF in 0 1 2 4 8 15 15 15 15; do
-        sleep $BACKOFF
-        if curl -fL --connect-timeout 5 "$@"; then
-            return 0
-        fi
-    done
-    return 1
+    try-harder curl -fL --connect-timeout 5 "$@"
 }
 
 ################################################################
@@ -37,13 +41,14 @@ python -m pip --version
 
 python setup.py sdist --formats=zip
 INSTALL_ARTIFACT=$(ls dist/*.zip)
-python -m pip install ${INSTALL_ARTIFACT}${INSTALL_EXTRAS}
+try-harder python -m pip install ${INSTALL_ARTIFACT}${INSTALL_EXTRAS}
 
 python -m pip list
 python -m pip freeze
 
 if [ "$CHECK_DOCS" = "1" ]; then
-    git fetch --depth=1 origin master
+    git fetch --deepen=100
+    git fetch --depth=100 origin master
     towncrier check
     # https://github.com/twisted/towncrier/pull/271
     towncrier build --yes --name QTrio  # catch errors in newsfragments
@@ -66,7 +71,12 @@ else
 
     INSTALLDIR=$(python -c "import os, ${PACKAGE_NAME}; print(os.path.dirname(${PACKAGE_NAME}.__file__))")
     cp ../setup.cfg $INSTALLDIR
-    if pytest -W error -r a --junitxml=../test-results.xml ${INSTALLDIR} --cov="$INSTALLDIR" --cov-config=../.coveragerc --verbose --capture=no --no-qt-log; then
+    # We have to copy .coveragerc into this directory, rather than passing
+    # --cov-config=../.coveragerc to pytest, because codecov.sh will run
+    # 'coverage xml' to generate the report that it uses, and that will only
+    # apply the ignore patterns in the current directory's .coveragerc.
+    cp ../.coveragerc .
+    if pytest -W error -ra --junitxml=../test-results.xml ${INSTALLDIR} --cov="$INSTALLDIR" --verbose; then
         PASSED=true
     else
         PASSED=false

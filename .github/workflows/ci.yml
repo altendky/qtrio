@@ -110,7 +110,8 @@ jobs:
           # Should match 'name:' up above
           JOB_NAME: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_library }})'
           INSTALL_EXTRAS: '[${{ matrix.qt_library }},tests]'
-          QT_QPA_PLATFORM: 'offscreen'
+          # TODO: https://github.com/pytest-dev/pytest/issues/7623
+          PYTHONIOENCODING: 'utf-8'
 
   Ubuntu:
     name: 'Ubuntu (${{ matrix.python }}, ${{ matrix.qt_library }})'
