@@ -10,10 +10,10 @@ import qtrio._util
 
 
 class Signal:
-    """This is a (nearly) drop-in replacement for QtCore.Signal.  The useful difference
-    is that it does not require inheriting from :class:`QtCore.QObject`.  The not-quite
-    part is that it will be a bit more complicated to change thread affinity of the
-    relevant :class:`QtCore.QObject`.  If you need this, maybe just inherit.
+    """This is a (nearly) drop-in replacement for :class:`QtCore.Signal`.  The useful
+    difference is that it does not require inheriting from :class:`QtCore.QObject`.  The
+    not-quite part is that it will be a bit more complicated to change thread affinity
+    of the relevant :class:`QtCore.QObject`.  If you need this, maybe just inherit.
 
     This signal gets around the normally required inheritance by creating
     :class:`QtCore.QObject` instances behind the scenes to host the real signals.  Just
