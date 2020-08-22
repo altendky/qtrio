@@ -19,8 +19,7 @@ else:
 
 class DialogProtocol(Protocol):
     """The common interface used for working with QTrio dialogs.  To check that a class
-    implements this protocol, decorate it with
-    :func:`qtrio.dialogs.check_dialog_protocol`.
+    implements this protocol see :func:`qtrio.dialogs.check_dialog_protocol`.
     """
 
     shown: qtrio.Signal
