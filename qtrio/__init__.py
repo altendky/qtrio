@@ -11,6 +11,9 @@ from ._exceptions import (
     EventTypeAlreadyRegisteredError,
     ReturnCodeError,
     RunnerTimedOutError,
+    UserCancelledError,
+    InvalidInputError,
+    InternalError,
 )
 
 from ._core import (
@@ -28,4 +31,5 @@ from ._core import (
     Reenter,
 )
 
+from ._qt import Signal
 from ._pytest import host

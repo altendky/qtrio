@@ -10,10 +10,10 @@ import qtrio._util
 
 
 class Signal:
-    """This is a (nearly) drop-in replacement for QtCore.Signal.  The useful difference
-    is that it does not require inheriting from :class:`QtCore.QObject`.  The not-quite
-    part is that it will be a bit more complicated to change thread affinity of the
-    relevant :class:`QtCore.QObject`.  If you need this, maybe just inherit.
+    """This is a (nearly) drop-in replacement for :class:`QtCore.Signal`.  The useful
+    difference is that it does not require inheriting from :class:`QtCore.QObject`.  The
+    not-quite part is that it will be a bit more complicated to change thread affinity
+    of the relevant :class:`QtCore.QObject`.  If you need this, maybe just inherit.
 
     This signal gets around the normally required inheritance by creating
     :class:`QtCore.QObject` instances behind the scenes to host the real signals.  Just
@@ -22,7 +22,7 @@ class Signal:
     object.
     """
 
-    attribute_name: str = ""
+    _attribute_name: typing.ClassVar[str] = ""
 
     def __init__(self, *args: object, **kwargs: object) -> None:
         class _SignalQObject(QtCore.QObject):
@@ -39,7 +39,11 @@ class Signal:
         return o.signal
 
     def object(self, instance: object) -> QtCore.QObject:
-        """Get the :class:`QtCore.QObject` that hosts the real signal.
+        """Get the :class:`QtCore.QObject` that hosts the real signal.  This can be
+        called such as ``type(instance).signal_name.object(instance)``.  Yes this is
+        non-obvious but you have to do something special to get around the
+        :ref:`descriptor protocol <python:descriptors>` so you can get at this method
+        instead of just having the underlying :class:`QtCore.SignalInstance`.
 
         Arguments:
             instance: The object on which this descriptor instance is hosted.
@@ -47,11 +51,11 @@ class Signal:
         Returns:
             The signal-hosting :class:`QtCore.QObject`.
         """
-        d = getattr(instance, self.attribute_name, None)
+        d = getattr(instance, self._attribute_name, None)
 
         if d is None:
             d = {}
-            setattr(instance, self.attribute_name, d)
+            setattr(instance, self._attribute_name, d)
 
         o = d.get(self.object_cls)
         if o is None:
@@ -61,7 +65,7 @@ class Signal:
         return o
 
 
-Signal.attribute_name = qtrio._python.identifier_path(Signal)
+Signal._attribute_name = qtrio._python.identifier_path(Signal)
 
 
 @contextlib.contextmanager

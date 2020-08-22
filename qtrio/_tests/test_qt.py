@@ -8,7 +8,7 @@ def test_signal_emits(qtbot):
     """qtrio._core.Signal emits."""
 
     class NotQObject:
-        signal = qtrio._qt.Signal()
+        signal = qtrio.Signal()
 
     instance = NotQObject()
 
@@ -20,7 +20,7 @@ def test_signal_emits_value(qtbot):
     """qtrio._core.Signal emits a value."""
 
     class NotQObject:
-        signal = qtrio._qt.Signal(int)
+        signal = qtrio.Signal(int)
 
     result = None
 
@@ -41,16 +41,16 @@ def test_accessing_signal_on_class_results_in_our_signal():
     """qtrio._core.Signal instance accessible via class attribute."""
 
     class NotQObject:
-        signal = qtrio._qt.Signal(int)
+        signal = qtrio.Signal(int)
 
-    assert isinstance(NotQObject.signal, qtrio._qt.Signal)
+    assert isinstance(NotQObject.signal, qtrio.Signal)
 
 
 def test_our_signal_object_method_returns_qobject():
     """qtrio._core.Signal instance provides access to signal-hosting QObject."""
 
     class NotQObject:
-        signal = qtrio._qt.Signal(int)
+        signal = qtrio.Signal(int)
 
     instance = NotQObject()
 
