@@ -39,7 +39,7 @@ async def test_get_integer_gets_value(request, qtbot):
             task_status.started()
 
         qtbot.keyClicks(dialog.edit_widget, str(test_value))
-        qtbot.mouseClick(dialog.ok_button, QtCore.Qt.LeftButton)
+        qtbot.mouseClick(dialog.accept_button, QtCore.Qt.LeftButton)
 
     test_value = 928
 
@@ -60,7 +60,7 @@ async def test_get_integer_raises_cancel_when_canceled(request, qtbot):
             task_status.started()
 
         qtbot.keyClicks(dialog.edit_widget, "abc")
-        qtbot.mouseClick(dialog.cancel_button, QtCore.Qt.LeftButton)
+        qtbot.mouseClick(dialog.reject_button, QtCore.Qt.LeftButton)
 
     async with trio.open_nursery() as nursery:
         await nursery.start(user)
@@ -78,7 +78,7 @@ async def test_get_integer_raises_for_invalid_input(request, qtbot):
             task_status.started()
 
         qtbot.keyClicks(dialog.edit_widget, "abc")
-        qtbot.mouseClick(dialog.ok_button, QtCore.Qt.LeftButton)
+        qtbot.mouseClick(dialog.accept_button, QtCore.Qt.LeftButton)
 
     async with trio.open_nursery() as nursery:
         await nursery.start(user)
