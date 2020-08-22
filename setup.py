@@ -41,6 +41,8 @@ setup(
         "pytest",
         "qtpy",
         "trio>=0.16",
+        # python_version < '3.8' for `Protocol`
+        "typing-extensions; python_version < '3.8'",
     ],
     extras_require={
         "checks": ["black", "flake8", "mypy", towncrier],
