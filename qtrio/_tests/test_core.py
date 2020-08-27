@@ -62,10 +62,7 @@ def test_run_returns_value(testdir):
 
         result = qtrio.run(main)
 
-        assert result == qtrio.Outcomes(
-            qt=outcome.Value(0),
-            trio=outcome.Value(29),
-        )
+        assert result == 29
     """
     testdir.makepyfile(test_file)
 
@@ -128,9 +125,9 @@ def test_qt_last_window_closed_does_not_quit_qt_or_cancel_trio(testdir):
                 elif counter > 1:
                     return counter
 
-        outcomes = qtrio.run(async_fn=main)
+        result = qtrio.run(async_fn=main)
 
-        assert outcomes.trio.value == 2
+        assert result == 2
     """
     testdir.makepyfile(test_file)
 
@@ -187,10 +184,8 @@ def test_run_passes_internal_too_slow_error(testdir):
             with trio.fail_after(0):
                 await trio.sleep(math.inf)
 
-        outcomes = qtrio.run(main)
-
         with pytest.raises(trio.TooSlowError):
-            outcomes.unwrap()
+            qtrio.run(main)
     """
     testdir.makepyfile(test_file)
 
@@ -211,9 +206,9 @@ def test_run_runs_in_main_thread(testdir):
         async def main():
             return threading.get_ident()
 
-        outcomes = qtrio.run(main)
+        result = qtrio.run(main)
 
-        assert outcomes.trio.value == threading.get_ident()
+        assert result == threading.get_ident()
     """
     testdir.makepyfile(test_file)
 

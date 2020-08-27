@@ -41,7 +41,7 @@ python -m pip --version
 
 python setup.py sdist --formats=zip
 INSTALL_ARTIFACT=$(ls dist/*.zip)
-try-harder python -m pip install ${INSTALL_ARTIFACT}${INSTALL_EXTRAS}
+try-harder python -m pip install ${INSTALL_ARTIFACT}${INSTALL_EXTRAS} https://github.com/altendky/pytest-trio/archive/configurable_trio_run.zip https://github.com/altendky/trio/archive/configurable_trio_run.zip
 
 python -m pip list
 python -m pip freeze

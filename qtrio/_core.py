@@ -440,6 +440,7 @@ def run(
     *args: object,
     done_callback: typing.Optional[typing.Callable[[Outcomes], None]] = None,
     clock: trio.abc.Clock = None,
+    instruments: typing.List[trio.abc.Instrument] = (),
 ) -> Outcomes:
     """Run a Trio-flavored async function in guest mode on a Qt host application, and
     return the outcomes.
@@ -453,10 +454,10 @@ def run(
     Returns:
         The :class:`qtrio.Outcomes` with both the Trio and Qt outcomes.
     """
-    runner = Runner(done_callback=done_callback, clock=clock)
+    runner = Runner(done_callback=done_callback, clock=clock, instruments=instruments)
     runner.run(async_fn, *args)
 
-    return runner.outcomes
+    return runner.outcomes.unwrap()
 
 
 def outcome_from_application_return_code(return_code: int) -> outcome.Outcome:
@@ -476,8 +477,13 @@ def outcome_from_application_return_code(return_code: int) -> outcome.Outcome:
     return outcome.Error(qtrio.ReturnCodeError(return_code))
 
 
-def build_application() -> QtGui.QGuiApplication:
-    application = QtWidgets.QApplication(sys.argv[1:])
+def maybe_build_application() -> QtGui.QGuiApplication:
+    maybe_application = QtWidgets.QApplication.instance()
+    if maybe_application is None:
+        application = QtWidgets.QApplication(sys.argv[1:])
+    else:
+        application = maybe_application
+
     application.setQuitOnLastWindowClosed(False)
 
     return application
@@ -487,7 +493,7 @@ def build_application() -> QtGui.QGuiApplication:
 class Runner:
     """This class helps run Trio in guest mode on a Qt host application."""
 
-    application: QtGui.QGuiApplication = attr.ib(factory=build_application)
+    application: QtGui.QGuiApplication = attr.ib(factory=maybe_build_application)
     """The Qt application object to run as the host.  If not set before calling
     :meth:`run` the application will be created as
     ``QtWidgets.QApplication(sys.argv[1:])`` and ``.setQuitOnLastWindowClosed(False)``
@@ -507,6 +513,7 @@ class Runner:
     include timeouts.  The value will be passed on to
     :func:`trio.lowlevel.start_guest_run`.
     """
+    instruments: typing.List[trio.abc.Instrument] = ()
 
     reenter: Reenter = attr.ib(factory=Reenter)
     """The :class:`QtCore.QObject` instance which will receive the events requesting
@@ -560,6 +567,7 @@ class Runner:
             run_sync_soon_threadsafe=self.run_sync_soon_threadsafe,
             done_callback=self.trio_done,
             clock=self.clock,
+            instruments=self.instruments,
         )
 
         if execute_application:
