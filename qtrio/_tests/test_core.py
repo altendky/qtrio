@@ -13,7 +13,10 @@ import trio.testing
 
 @pytest.fixture(
     name="emissions_channel",
-    params=[qtrio._core.open_emissions_channel, qtrio.enter_emissions_channel,],
+    params=[
+        qtrio._core.open_emissions_channel,
+        qtrio.enter_emissions_channel,
+    ],
     ids=["qtrio._core.open_emissions_channel", "qtrio.enter_emissions_channel"],
 )
 def emissions_channel_fixture(request):
@@ -523,7 +526,8 @@ def test_outcomes_unwrap_raises_trio_error_over_qt_value():
         pass
 
     this_outcome = qtrio.Outcomes(
-        qt=outcome.Value(9), trio=outcome.Error(LocalUniqueException()),
+        qt=outcome.Value(9),
+        trio=outcome.Error(LocalUniqueException()),
     )
 
     with pytest.raises(LocalUniqueException):
@@ -574,7 +578,8 @@ def test_outcomes_unwrap_raises_qt_error_over_trio_value():
         pass
 
     this_outcome = qtrio.Outcomes(
-        qt=outcome.Error(LocalUniqueException()), trio=outcome.Value(8),
+        qt=outcome.Error(LocalUniqueException()),
+        trio=outcome.Value(8),
     )
 
     with pytest.raises(LocalUniqueException):
@@ -767,7 +772,8 @@ async def test_emissions_channel_iterates_in_order(request, emissions_channel):
     results = []
 
     async with emissions_channel(
-        signals=[instance.signal], max_buffer_size=len(values),
+        signals=[instance.signal],
+        max_buffer_size=len(values),
     ) as emissions:
         for i, v in enumerate(values):
             if i % 2 == 0:
@@ -798,7 +804,8 @@ async def test_emissions_channel_limited_buffer(request, emissions_channel):
     results = []
 
     async with emissions_channel(
-        signals=[instance.signal], max_buffer_size=max_buffer_size,
+        signals=[instance.signal],
+        max_buffer_size=max_buffer_size,
     ) as emissions:
         for v in values:
             instance.signal.emit(v)
@@ -826,7 +833,8 @@ async def test_open_emissions_channel_does_not_close_read_channel(request):
     max_buffer_size = 10
 
     async with qtrio._core.open_emissions_channel(
-        signals=[instance.signal], max_buffer_size=max_buffer_size,
+        signals=[instance.signal],
+        max_buffer_size=max_buffer_size,
     ) as emissions:
         pass
 
@@ -848,7 +856,8 @@ async def test_enter_emissions_channel_closes_both_channels(request):
     max_buffer_size = 10
 
     async with qtrio.enter_emissions_channel(
-        signals=[instance.signal], max_buffer_size=max_buffer_size,
+        signals=[instance.signal],
+        max_buffer_size=max_buffer_size,
     ) as emissions:
         pass
 

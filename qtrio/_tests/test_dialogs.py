@@ -97,7 +97,8 @@ async def test_file_save(request, qtbot, tmp_path):
     path_to_select = trio.Path(tmp_path) / "something.new"
 
     dialog = qtrio.dialogs.create_file_save_dialog(
-        default_directory=path_to_select.parent, default_file=path_to_select,
+        default_directory=path_to_select.parent,
+        default_file=path_to_select,
     )
 
     async def user(task_status):
@@ -178,7 +179,9 @@ async def test_information_message_box(request, qtbot):
     queried_text = None
 
     dialog = qtrio.dialogs.create_message_box(
-        title="Information", text=text, icon=QtWidgets.QMessageBox.Information,
+        title="Information",
+        text=text,
+        icon=QtWidgets.QMessageBox.Information,
     )
 
     async def user(task_status):

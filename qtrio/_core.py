@@ -301,7 +301,8 @@ class EmissionsNursery:
     """The exit stack that will manage the connections so they get disconnected."""
     wrapper: typing.Optional[
         typing.Callable[
-            [typing.Callable[..., typing.Awaitable[object]]], typing.Awaitable[object],
+            [typing.Callable[..., typing.Awaitable[object]]],
+            typing.Awaitable[object],
         ]
     ] = None
     """The wrapper for handling the slots.  This could, for example, handle exceptions
@@ -362,7 +363,9 @@ async def open_emissions_nursery(
     async with trio.open_nursery() as nursery:
         with contextlib.ExitStack() as exit_stack:
             emissions_nursery = EmissionsNursery(
-                nursery=nursery, exit_stack=exit_stack, wrapper=wrapper,
+                nursery=nursery,
+                exit_stack=exit_stack,
+                wrapper=wrapper,
             )
 
             if until is not None:
@@ -574,7 +577,8 @@ class Runner:
             return_code = self.application.exec_()
 
             self.outcomes = attr.evolve(
-                self.outcomes, qt=outcome_from_application_return_code(return_code),
+                self.outcomes,
+                qt=outcome_from_application_return_code(return_code),
             )
 
         return self.outcomes
