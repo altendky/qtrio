@@ -1,0 +1,1 @@
+Integrate with pytest-trio for testing.  See :ref:`testing`.
