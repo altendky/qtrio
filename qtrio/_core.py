@@ -443,8 +443,8 @@ def run(
     *args: object,
     done_callback: typing.Optional[typing.Callable[[Outcomes], None]] = None,
     clock: trio.abc.Clock = None,
-    instruments: typing.List[trio.abc.Instrument] = (),
-) -> Outcomes:
+    instruments: typing.Sequence[trio.abc.Instrument] = (),
+) -> object:
     """Run a Trio-flavored async function in guest mode on a Qt host application, and
     return the outcomes.
 
@@ -453,11 +453,14 @@ def run(
         args: Positional arguments to pass to `async_fn`.
         done_callback: See :class:`qtrio.Runner.done_callback`.
         clock: See :class:`qtrio.Runner.clock`.
+        instruments: See :class:`qtrio.Runner.instruments`.
 
     Returns:
         The :class:`qtrio.Outcomes` with both the Trio and Qt outcomes.
     """
-    runner = Runner(done_callback=done_callback, clock=clock, instruments=instruments)
+    runner = Runner(
+        done_callback=done_callback, clock=clock, instruments=list(instruments)
+    )
     runner.run(async_fn, *args)
 
     return runner.outcomes.unwrap()
@@ -516,7 +519,10 @@ class Runner:
     include timeouts.  The value will be passed on to
     :func:`trio.lowlevel.start_guest_run`.
     """
-    instruments: typing.List[trio.abc.Instrument] = ()
+    instruments: typing.Sequence[trio.abc.Instrument] = ()
+    """The instruments to use for this run.  The value will be passed on to
+    :func:`trio.lowlevel.start_guest_run`.
+    """
 
     reenter: Reenter = attr.ib(factory=Reenter)
     """The :class:`QtCore.QObject` instance which will receive the events requesting
