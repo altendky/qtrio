@@ -13,7 +13,7 @@ LONG_DESC = (here / "README.rst").read_text(encoding="utf-8")
 pytest = "pytest >= 6"
 
 # > 0.6.0 for trio_run configuration support
-pytest_trio = "pytest-trio > 0.6.0"
+pytest_trio = "pytest-trio"
 
 # >= 19.9.0rc1 for https://github.com/twisted/towncrier/issues/144
 towncrier = "towncrier >= 19.9.0rc1"
