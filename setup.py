@@ -9,6 +9,9 @@ exec((here / "qtrio" / "_version.py").read_text(encoding="utf-8"))
 
 LONG_DESC = (here / "README.rst").read_text(encoding="utf-8")
 
+# >= 6 for type hints
+pytest = "pytest >= 6"
+# >= 19.9.0rc1 for https://github.com/twisted/towncrier/issues/144
 towncrier = "towncrier >= 19.9.0rc1"
 
 setup(
@@ -38,7 +41,7 @@ setup(
         "attrs",
         "decorator",
         "outcome",
-        "pytest",
+        pytest,
         "qtpy",
         "trio>=0.16",
         # python_version < '3.8' for `Protocol`
@@ -62,7 +65,7 @@ setup(
         "tests": [
             "click",
             "coverage",
-            "pytest",
+            pytest,
             "pytest-cov",
             "pytest-faulthandler",
             "pytest-qt",
