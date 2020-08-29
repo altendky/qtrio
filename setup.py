@@ -10,7 +10,7 @@ exec((here / "qtrio" / "_version.py").read_text(encoding="utf-8"))
 LONG_DESC = (here / "README.rst").read_text(encoding="utf-8")
 
 # >= 6 for type hints
-pytest = "pytest >= 6",
+pytest = "pytest >= 6"
 # >= 19.9.0rc1 for https://github.com/twisted/towncrier/issues/144
 towncrier = "towncrier >= 19.9.0rc1"
 
