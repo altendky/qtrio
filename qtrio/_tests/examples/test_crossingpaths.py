@@ -34,7 +34,10 @@ async def test_main(request, qtbot):
             nursery.start_soon(user)
 
             await qtrio.examples.crossingpaths.main(
-                label=label, message="test world", change_delay=0.01, close_delay=0.01,
+                label=label,
+                message="test world",
+                change_delay=0.01,
+                close_delay=0.01,
             )
 
     assert results == [
