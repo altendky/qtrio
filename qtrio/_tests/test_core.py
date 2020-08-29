@@ -431,8 +431,7 @@ def test_registering_requested_event_type_when_already_registered(testdir):
     result.assert_outcomes(passed=1)
 
 
-@qtrio.host
-async def test_wait_signal_waits(request):
+async def test_wait_signal_waits():
     """wait_signal() waits for the signal."""
 
     timer = QtCore.QTimer()
@@ -449,8 +448,7 @@ async def test_wait_signal_waits(request):
     assert end - start > 0.090
 
 
-@qtrio.host
-async def test_wait_signal_returns_the_value(request):
+async def test_wait_signal_returns_the_value():
     """wait_signal() waits for the signal."""
 
     class MyQObject(QtCore.QObject):
@@ -468,8 +466,7 @@ async def test_wait_signal_returns_the_value(request):
     assert result == (17,)
 
 
-@qtrio.host
-async def test_wait_signal_context_waits(request):
+async def test_wait_signal_context_waits():
     """wait_signal_context() waits for the signal."""
 
     timer = QtCore.QTimer()
@@ -612,15 +609,18 @@ def test_failed_hosted_trio_prints_exception(testdir):
         pass
 
 
-    @qtrio.host
-    async def test(request):
-        raise UniqueLocalException()
+    async def test():
+        raise UniqueLocalException("with a message")
     """
     testdir.makepyfile(test_file)
 
     result = testdir.runpytest()
     result.assert_outcomes(failed=1)
-    result.stdout.re_match_lines(lines2=["--- Error(UniqueLocalException())"])
+    result.stdout.fnmatch_lines(
+        lines2=[
+            "*test_failed_hosted_trio_prints_exception.UniqueLocalException: with a message*"
+        ]
+    )
 
 
 def test_emissions_equal():
@@ -696,8 +696,7 @@ def test_emissions_unequal_by_args():
     ) != qtrio._core.Emission(signal=instance.signal, args=(14,))
 
 
-@qtrio.host
-async def test_emissions_channel_iterates_one(request, emissions_channel):
+async def test_emissions_channel_iterates_one(emissions_channel):
     """Emissions channel yields one emission as expected."""
 
     class MyQObject(QtCore.QObject):
@@ -716,8 +715,7 @@ async def test_emissions_channel_iterates_one(request, emissions_channel):
     assert emissions == [qtrio._core.Emission(signal=instance.signal, args=(93,))]
 
 
-@qtrio.host
-async def test_emissions_channel_iterates_three(request, emissions_channel):
+async def test_emissions_channel_iterates_three(emissions_channel):
     """Emissions channel yields three emissions as expected."""
 
     class MyQObject(QtCore.QObject):
@@ -739,8 +737,7 @@ async def test_emissions_channel_iterates_three(request, emissions_channel):
     ]
 
 
-@qtrio.host
-async def test_emissions_channel_with_three_receives_first(request, emissions_channel):
+async def test_emissions_channel_with_three_receives_first(emissions_channel):
     """Emissions channel yields receives first item when requested."""
 
     class MyQObject(QtCore.QObject):
@@ -760,8 +757,7 @@ async def test_emissions_channel_with_three_receives_first(request, emissions_ch
     assert emission == qtrio._core.Emission(signal=instance.signal, args=(93,))
 
 
-@qtrio.host
-async def test_emissions_channel_iterates_in_order(request, emissions_channel):
+async def test_emissions_channel_iterates_in_order(emissions_channel):
     """Emissions channel yields signal emissions in order (pretty probably...)."""
 
     class MyQObject(QtCore.QObject):
@@ -791,8 +787,7 @@ async def test_emissions_channel_iterates_in_order(request, emissions_channel):
     assert results == values
 
 
-@qtrio.host
-async def test_emissions_channel_limited_buffer(request, emissions_channel):
+async def test_emissions_channel_limited_buffer(emissions_channel):
     """Emissions channel throws away beyond buffer limit."""
 
     class MyQObject(QtCore.QObject):
@@ -820,8 +815,7 @@ async def test_emissions_channel_limited_buffer(request, emissions_channel):
     assert results == values[:max_buffer_size]
 
 
-@qtrio.host
-async def test_open_emissions_channel_does_not_close_read_channel(request):
+async def test_open_emissions_channel_does_not_close_read_channel():
     """Exiting open_emissions_channel() closes send channel and does not close
     read channel on exit.
     """
@@ -845,8 +839,7 @@ async def test_open_emissions_channel_does_not_close_read_channel(request):
         emissions.send_channel.send_nowait(None)
 
 
-@qtrio.host
-async def test_enter_emissions_channel_closes_both_channels(request):
+async def test_enter_emissions_channel_closes_both_channels():
     """Exiting enter_emissions_channel() closes send and receive channels on exit."""
 
     class MyQObject(QtCore.QObject):
@@ -889,8 +882,7 @@ def is_async_fixture(request):
     yield request.param
 
 
-@qtrio.host
-async def test_emissions_nursery_runs_callbacks(request, is_async):
+async def test_emissions_nursery_runs_callbacks(is_async):
     """Callbacks connected to an emissions nursery get run."""
 
     class SignalHost(QtCore.QObject):
@@ -922,8 +914,7 @@ async def test_emissions_nursery_runs_callbacks(request, is_async):
     assert results == {0, 1, 2, 3, 4}
 
 
-@qtrio.host
-async def test_emissions_nursery_disconnects(request, is_async):
+async def test_emissions_nursery_disconnects(is_async):
     """Callbacks are disconnected when exiting the context and aren't run for emissions
     after leaving.
     """
@@ -954,8 +945,7 @@ async def test_emissions_nursery_disconnects(request, is_async):
     assert results == set()
 
 
-@qtrio.host
-async def test_emissions_nursery_cancellation_cancels_callbacks(request):
+async def test_emissions_nursery_cancellation_cancels_callbacks():
     """Callbacks are cancelled when the nursery is cancelled."""
 
     class SignalHost(QtCore.QObject):
@@ -992,8 +982,7 @@ async def test_emissions_nursery_cancellation_cancels_callbacks(request):
     assert results == {0, 1, 2, 3, 4}
 
 
-@qtrio.host
-async def test_emissions_nursery_receives_exceptions(request, is_async):
+async def test_emissions_nursery_receives_exceptions(is_async):
     """Callbacks that raise exceptions will feed them out to the nursery."""
 
     class SignalHost(QtCore.QObject):
@@ -1019,8 +1008,7 @@ async def test_emissions_nursery_receives_exceptions(request, is_async):
             signal_host.signal.emit()
 
 
-@qtrio.host
-async def test_emissions_nursery_waits_for_until_signal(request):
+async def test_emissions_nursery_waits_for_until_signal():
     """Emissions nursery waits to exit until `until` signal is emitted."""
 
     class SignalHost(QtCore.QObject):
@@ -1046,8 +1034,7 @@ async def test_emissions_nursery_waits_for_until_signal(request):
     assert results == [0, 1, 2, 3]
 
 
-@qtrio.host
-async def test_emissions_nursery_wraps(request, is_async):
+async def test_emissions_nursery_wraps(is_async):
     """Emissions nursery wraps callbacks as requested."""
 
     class SignalHost(QtCore.QObject):
@@ -1096,7 +1083,7 @@ def test_run_without_executing_application(testdir):
     import qtrio
 
 
-    def test(request):
+    def test():
         ran = False
 
         async def async_fn():
@@ -1122,7 +1109,7 @@ def test_execute_manually(testdir):
     import qtrio
 
 
-    def test(request):
+    def test():
         ran = False
 
         async def async_fn():
@@ -1153,7 +1140,7 @@ def test_not_quitting_application_does_not(testdir):
     import qtrio
 
 
-    def test(request, qapp):
+    def test(qapp):
         results = []
 
         async def async_fn():

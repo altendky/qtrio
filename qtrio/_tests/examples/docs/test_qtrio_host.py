@@ -1,16 +1,10 @@
-import qtrio
-
-
-@qtrio.host
-async def test_no_parentheses(request):
+async def test_no_parentheses():
     assert True
 
 
-@qtrio.host()
-async def test_just_parentheses(request):
+async def test_just_parentheses():
     assert True
 
 
-@qtrio.host(timeout=20)
-async def test_a_keyword_argument(request):
+async def test_a_keyword_argument():
     assert True

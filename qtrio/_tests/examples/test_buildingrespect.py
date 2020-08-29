@@ -28,8 +28,7 @@ def test_main(testdir):
                 self.shown.emit()
 
 
-    @qtrio.host
-    async def test_example(request, qtbot):
+    async def test_example(qtbot):
         button = SignaledButton()
         qtbot.addWidget(button)
 
