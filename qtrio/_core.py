@@ -515,10 +515,6 @@ class Runner:
     """When true, the :meth:`done_callback` method will quit the application when the
     async function passed to :meth:`qtrio.Runner.run` has completed.
     """
-    timeout: typing.Optional[float] = None
-    """If not :obj:`None`, use :func:`trio.move_on_after()` to cancel after ``timeout``
-    seconds and raise.
-    """
     clock: trio.abc.Clock = None
     """The clock to use for this run.  This is primarily used to speed up tests that
     include timeouts.  The value will be passed on to
@@ -624,32 +620,18 @@ class Runner:
             The result returned by `async_fn`.
         """
         result: object = None
-        timeout_cancel_scope = None
 
-        try:
-            with trio.CancelScope() as self.cancel_scope:
-                with contextlib.ExitStack() as exit_stack:
-                    if self.application.quitOnLastWindowClosed():
-                        exit_stack.enter_context(
-                            qtrio._qt.connection(
-                                signal=self.application.lastWindowClosed,
-                                slot=self.cancel_scope.cancel,
-                            )
+        with trio.CancelScope() as self.cancel_scope:
+            with contextlib.ExitStack() as exit_stack:
+                if self.application.quitOnLastWindowClosed():
+                    exit_stack.enter_context(
+                        qtrio._qt.connection(
+                            signal=self.application.lastWindowClosed,
+                            slot=self.cancel_scope.cancel,
                         )
-                    if self.timeout is not None:
-                        timeout_cancel_scope = exit_stack.enter_context(
-                            trio.fail_after(self.timeout)
-                        )
+                    )
 
-                    result = await async_fn(*args)
-        except trio.TooSlowError as e:
-            if (
-                timeout_cancel_scope is not None
-                and timeout_cancel_scope.cancelled_caught
-            ):
-                raise qtrio.RunnerTimedOutError() from e
-
-            raise
+                result = await async_fn(*args)
 
         return result
 
