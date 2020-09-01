@@ -53,6 +53,7 @@ setup(
     extras_require={
         "p_checks": ["black", "flake8", "mypy", pytest, towncrier],
         "p_docs": [
+            pytest,
             # >= 3.2: https://github.com/sphinx-doc/sphinx/issues/8008
             # >= 3.2.1: https://github.com/sphinx-doc/sphinx/issues/8124
             "sphinx >= 3.2.1",
