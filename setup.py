@@ -9,6 +9,8 @@ exec((here / "qtrio" / "_version.py").read_text(encoding="utf-8"))
 
 LONG_DESC = (here / "README.rst").read_text(encoding="utf-8")
 
+# >= 6 for type hints
+pytest = "pytest >= 6"
 # >= 19.9.0rc1 for https://github.com/twisted/towncrier/issues/144
 towncrier = "towncrier >= 19.9.0rc1"
 
@@ -49,7 +51,7 @@ setup(
         "typing-extensions; python_version < '3.8'",
     ],
     extras_require={
-        "p_checks": ["black", "flake8", "mypy", towncrier],
+        "p_checks": ["black", "flake8", "mypy", pytest, towncrier],
         "p_docs": [
             # >= 3.2: https://github.com/sphinx-doc/sphinx/issues/8008
             # >= 3.2.1: https://github.com/sphinx-doc/sphinx/issues/8124
@@ -65,8 +67,7 @@ setup(
             *extras_examples,
             "click",
             "coverage",
-            # >= 6 for type hints
-            "pytest >= 6",
+            pytest,
             "pytest-cov",
             "pytest-faulthandler",
             "pytest-qt",
