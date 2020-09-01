@@ -9,6 +9,8 @@ I know, I know...  we are supposed to do one thing well.  But QTrio presently ta
 three distinct development tools.  In time perhaps pieces will be spun off but for now
 they provide increasing layers you can use or not as they interest you.
 
+.. _installation:
+
 Installation
 ------------
 
