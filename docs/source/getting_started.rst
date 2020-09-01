@@ -1,5 +1,5 @@
-Tutorial
-========
+Getting Started
+===============
 
 This tutorial introduces usage of QTrio to enable integration of Qt into a Trio async
 application.  For help with relevant async concepts and usage of Trio itself see
@@ -8,6 +8,35 @@ application.  For help with relevant async concepts and usage of Trio itself see
 I know, I know...  we are supposed to do one thing well.  But QTrio presently targets
 three distinct development tools.  In time perhaps pieces will be spun off but for now
 they provide increasing layers you can use or not as they interest you.
+
+.. _installation:
+
+Installation
+------------
+
+While the general aspects of installation using pip belong elsewhere, it is recommended
+to work in a virtual environment such as you can create with the
+:mod:`venv module <python:venv>` (see also
+`Python Virtual Environments in Five Minutes <https://chriswarrick.com/blog/2018/09/04/python-virtual-environments/>`_
+).
+
+Somewhat more specific to QTrio, several
+`extras <https://setuptools.readthedocs.io/en/stable/setuptools.html#declaring-extras-optional-features-with-their-own-dependencies>`_
+are available for installing optional dependencies or applying version constraints.
+
+- ``cli`` - For CLI usage, presently just examples.
+- ``examples`` - For running examples.
+- ``pyqt5`` - For running with PyQt5, primarily to apply any version constraints.
+- ``pyside2`` - For running with PySide2, primarily to apply any version constraints.
+
+A normal installation might look like:
+
+.. code-block:: bash
+
+    $ myenv/bin/pip install qtrio[pyside2]
+
+Overview
+--------
 
 The first layer allows you to run Trio tasks in the same thread as the Qt event loop.
 This is valuable as it let's the tasks safely interact directly with the Qt GUI objects.

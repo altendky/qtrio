@@ -9,7 +9,7 @@
 .. toctree::
    :maxdepth: 2
 
-   tutorial.rst
+   getting_started.rst
    core.rst
    testing.rst
    dialogs.rst
