@@ -605,7 +605,7 @@ def test_outcome_from_application_return_code_error():
     assert result == outcome.Error(qtrio.ReturnCodeError(-1))
 
 
-def test_failed_hosted_trio_prints_exception(testdir):
+def test_failed_hosted_trio_exception_on_stdout(testdir):
     """Except is printed when main Trio function raises."""
 
     test_file = r"""
@@ -625,7 +625,9 @@ def test_failed_hosted_trio_prints_exception(testdir):
 
     result = testdir.runpytest()
     result.assert_outcomes(failed=1)
-    result.stdout.re_match_lines(lines2=["--- Error(UniqueLocalException())"])
+    result.stdout.fnmatch_lines(
+        lines2=["E*test_failed_hosted_trio_exception_on_stdout.UniqueLocalException*"],
+    )
 
 
 def test_emissions_equal():
