@@ -49,13 +49,16 @@ python -m pip freeze
 if [ "$CHECK_DOCS" = "1" ]; then
     git fetch --deepen=100
     git fetch --depth=100 origin master
-    towncrier check
     # https://github.com/twisted/towncrier/pull/271
     towncrier build --yes --name QTrio  # catch errors in newsfragments
     cd docs
     # -n (nit-picky): warn on missing references
     # -W: turn warnings into errors
     sphinx-build -nW  -b html source build
+elif [ "$CHECK_NEWS" = "1" ]; then
+    git fetch --deepen=100
+    git fetch --depth=100 origin master
+    towncrier check
 elif [ "$CHECK_FORMATTING" = "1" ]; then
     source check.sh
 elif [ "$CHECK_TYPE_HINTS" = "1" ]; then

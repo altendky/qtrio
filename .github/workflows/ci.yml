@@ -49,6 +49,37 @@ jobs:
           name: dist
           path: dist/
 
+  News:
+    name: '${{ matrix.name }}'
+    timeout-minutes: 10
+    runs-on: 'ubuntu-latest'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - python: '3.8'
+            check_news: '1'
+            name: 'Check news'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup python
+        uses: actions/setup-python@v1
+        with:
+          python-version: '${{ matrix.python }}'
+      - name: Run tests
+        run: ./ci.sh
+        env:
+          CHECK_NEWS: '${{ matrix.check_news }}'
+          CHECK_DOCS: '${{ matrix.check_docs }}'
+          CHECK_FORMATTING: '${{ matrix.check_formatting }}'
+          CHECK_TYPE_HINTS: '${{ matrix.check_type_hints }}'
+          # Should match 'name:' up above
+          JOB_NAME: '${{ matrix.name }}'
+          # TODO: needs some Qt library but I'm not clear the implications of
+          #       choosing one over the other
+          INSTALL_EXTRAS: '[pyside2,p_checks,p_docs]'
+
   Checks:
     name: '${{ matrix.name }}'
     timeout-minutes: 10
@@ -76,6 +107,7 @@ jobs:
       - name: Run tests
         run: ./ci.sh
         env:
+          CHECK_NEWS: '${{ matrix.check_news }}'
           CHECK_DOCS: '${{ matrix.check_docs }}'
           CHECK_FORMATTING: '${{ matrix.check_formatting }}'
           CHECK_TYPE_HINTS: '${{ matrix.check_type_hints }}'
