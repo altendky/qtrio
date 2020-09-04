@@ -55,10 +55,6 @@ if [ "$CHECK_DOCS" = "1" ]; then
     # -n (nit-picky): warn on missing references
     # -W: turn warnings into errors
     sphinx-build -nW  -b html source build
-elif [ "$CHECK_NEWS" = "1" ]; then
-    git fetch --deepen=100
-    git fetch --depth=100 origin master
-    towncrier check
 elif [ "$CHECK_FORMATTING" = "1" ]; then
     source check.sh
 elif [ "$CHECK_TYPE_HINTS" = "1" ]; then
