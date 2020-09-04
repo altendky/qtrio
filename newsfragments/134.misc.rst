@@ -1,1 +1,0 @@
-More git history is fetched to support newsfragment checks.

@@ -1,1 +1,0 @@
-Setup for ``:fixture:`` Sphinx cross reference type.
