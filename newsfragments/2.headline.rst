@@ -1,1 +1,1 @@
-Introduce QTrio specific wrappers for some builtin :ref:`dialogs`.
+Introduce QTrio specific wrappers for some builtin :ref:`dialogs <dialogs>`.
