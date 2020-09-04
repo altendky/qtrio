@@ -1,2 +1,0 @@
-Try harder to pip due to
-`pypa/warehouse#8330 <https://github.com/pypa/warehouse/issues/8330>`_.
