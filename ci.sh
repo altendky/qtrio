@@ -36,11 +36,11 @@ function curl-harder() {
 
 python -c "import sys, struct, ssl; print('#' * 70); print('executable:', sys.executable); print('python:', sys.version); print('version_info:', sys.version_info); print('bits:', struct.calcsize('P') * 8); print('openssl:', ssl.OPENSSL_VERSION, ssl.OPENSSL_VERSION_INFO); print('#' * 70)"
 
-python -m pip install -U pip setuptools wheel
+python -m pip install -U pip setuptools wheel pep517
 python -m pip --version
 
-python setup.py sdist --formats=zip
-INSTALL_ARTIFACT=$(ls dist/*.zip)
+python -m pep517.build --source --out-dir dist/ .
+INSTALL_ARTIFACT=$(ls dist/*.tar.gz)
 try-harder python -m pip install ${INSTALL_ARTIFACT}${INSTALL_EXTRAS}
 
 python -m pip list
