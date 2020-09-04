@@ -1,1 +1,1 @@
-Integrate with pytest-trio for testing.  See :ref:`testing`.
+Integrate with pytest-trio for :ref:`testing <testing>`.
