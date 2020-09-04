@@ -649,12 +649,6 @@ class Runner:
         """
         self.outcomes = attr.evolve(self.outcomes, trio=run_outcome)
 
-        # TODO: should stuff be reported here?  configurable by caller?
-        print("---", repr(run_outcome))
-        if isinstance(run_outcome, outcome.Error):
-            exc = run_outcome.error
-            traceback.print_exception(type(exc), exc, exc.__traceback__)
-
         if self.done_callback is not None:
             self.done_callback(self.outcomes)
 

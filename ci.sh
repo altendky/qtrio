@@ -36,11 +36,11 @@ function curl-harder() {
 
 python -c "import sys, struct, ssl; print('#' * 70); print('executable:', sys.executable); print('python:', sys.version); print('version_info:', sys.version_info); print('bits:', struct.calcsize('P') * 8); print('openssl:', ssl.OPENSSL_VERSION, ssl.OPENSSL_VERSION_INFO); print('#' * 70)"
 
-python -m pip install -U pip setuptools wheel
+python -m pip install -U pip setuptools wheel pep517
 python -m pip --version
 
-python setup.py sdist --formats=zip
-INSTALL_ARTIFACT=$(ls dist/*.zip)
+python -m pep517.build --source --out-dir dist/ .
+INSTALL_ARTIFACT=$(ls dist/*.tar.gz)
 try-harder python -m pip install ${INSTALL_ARTIFACT}${INSTALL_EXTRAS} https://github.com/altendky/pytest-trio/archive/configurable_trio_run.zip#egg=pytest-trio
 
 python -m pip list
@@ -49,7 +49,6 @@ python -m pip freeze
 if [ "$CHECK_DOCS" = "1" ]; then
     git fetch --deepen=100
     git fetch --depth=100 origin master
-    towncrier check
     # https://github.com/twisted/towncrier/pull/271
     towncrier build --yes --name QTrio  # catch errors in newsfragments
     cd docs
