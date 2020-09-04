@@ -1,0 +1,1 @@
+Removed ``qtrio.host()`` in favor of :ref:`pytest-trio integration <testing>`.
