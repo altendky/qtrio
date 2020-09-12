@@ -9,6 +9,14 @@ exec((here / "qtrio" / "_version.py").read_text(encoding="utf-8"))
 
 LONG_DESC = (here / "README.rst").read_text(encoding="utf-8")
 
+# >= 6 for type hints
+pytest = "pytest >= 6"
+# >= 19.9.0rc1 for https://github.com/twisted/towncrier/issues/144
+towncrier = "towncrier >= 19.9.0rc1"
+
+extras_cli = ["click"]
+extras_examples = [*extras_cli]
+
 setup(
     name="qtrio",
     version=__version__,
@@ -34,32 +42,44 @@ setup(
     install_requires=[
         "async_generator",
         "attrs",
+        "decorator",
         "outcome",
-        "pytest",
         "qtpy",
-        "trio>=0.16",
+        # trio >= 0.16 for guest mode
+        "trio >= 0.16",
+        # python_version < '3.8' for `Protocol`
+        "typing-extensions; python_version < '3.8'",
     ],
     extras_require={
-        "checks": ["black", "flake8", "mypy", "towncrier>=19.9.0rc1"],
-        "docs": [
-            "sphinx >= 1.7.0",
+        "p_checks": ["black", "flake8", "mypy", pytest, towncrier],
+        "p_docs": [
+            pytest,
+            # >= 3.2: https://github.com/sphinx-doc/sphinx/issues/8008
+            # >= 3.2.1: https://github.com/sphinx-doc/sphinx/issues/8124
+            "sphinx >= 3.2.1",
             "sphinx-autodoc-typehints",
             "sphinx-qt-documentation>=0.3",
             "sphinx_rtd_theme",
             "sphinxcontrib-trio",
+            towncrier,
         ],
-        "examples": ["click"],
-        "pyqt5": ["pyqt5", "pyqt5-stubs"],
-        "pyside2": ["pyside2"],
-        "tests": [
+        "p_tests": [
+            *extras_cli,
+            *extras_examples,
             "click",
             "coverage",
-            "pytest",
+            pytest,
             "pytest-cov",
             "pytest-faulthandler",
             "pytest-qt",
+            # > 0.6.0 for trio_run configuration support
+            "pytest-trio",
             'pytest-xvfb; sys_platform == "linux"',
         ],
+        "cli": extras_cli,
+        "examples": extras_examples,
+        "pyqt5": ["pyqt5", "pyqt5-stubs"],
+        "pyside2": ["pyside2"],
     },
     entry_points={"console_scripts": ["qtrio = qtrio._cli:cli"]},
     keywords=["async", "io", "Trio", "GUI", "Qt", "PyQt5", "PySide2"],

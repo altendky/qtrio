@@ -1,1 +1,1 @@
-List all resource urls in PyPI project urls.
+List all resource URLs in PyPI project URLs.
