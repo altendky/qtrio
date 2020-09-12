@@ -173,7 +173,7 @@ class Emission:
             Whether the passed signal was the source of this emission.
         """
 
-        return bool(self.signal == signal)
+        return self.signal == signal
 
     def __eq__(self, other: object) -> bool:
         if type(other) != type(self):
