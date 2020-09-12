@@ -173,7 +173,7 @@ class Emission:
         """
 
         # bool() to accomodate SignalInstance being typed Any right now...
-        return self.signal == signal
+        return bool(self.signal == signal)
 
     def __eq__(self, other: object) -> bool:
         if type(other) != type(self):
