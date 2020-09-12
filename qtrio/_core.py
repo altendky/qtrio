@@ -173,6 +173,7 @@ class Emission:
             Whether the passed signal was the source of this emission.
         """
 
+        # bool() to accomodate SignalInstance being typed Any right now...
         return bool(self.signal == signal)
 
     def __eq__(self, other: object) -> bool:
