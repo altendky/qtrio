@@ -6,7 +6,6 @@ import typing
 from qtpy import QtCore
 
 import qtrio._python
-import qtrio._util
 
 
 class Signal:
@@ -30,7 +29,7 @@ class Signal:
 
         self.object_cls = _SignalQObject
 
-    def __get__(self, instance: object, owner: object) -> qtrio._util.SignalInstance:
+    def __get__(self, instance: object, owner: object) -> QtCore.SignalInstance:
         if instance is None:
             return self
 
@@ -70,7 +69,7 @@ Signal._attribute_name = qtrio._python.identifier_path(Signal)
 
 @contextlib.contextmanager
 def connection(
-    signal: qtrio._util.SignalInstance, slot: typing.Callable[..., object]
+    signal: QtCore.SignalInstance, slot: typing.Callable[..., object]
 ) -> typing.Generator[
     typing.Union[QtCore.QMetaObject.Connection, typing.Callable[..., object]],
     None,

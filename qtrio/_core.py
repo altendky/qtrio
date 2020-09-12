@@ -22,7 +22,6 @@ import trio.abc
 
 import qtrio
 import qtrio._qt
-import qtrio._util
 
 _reenter_event_type: typing.Optional[QtCore.QEvent.Type] = None
 
@@ -250,7 +249,7 @@ async def open_emissions_channel(
             for signal in signals:
 
                 def slot(
-                    *args: object, internal_signal: qtrio._util.SignalInstance = signal
+                    *args: object, internal_signal: QtCore.SignalInstance = signal
                 ) -> None:
                     try:
                         send_channel.send_nowait(
@@ -311,7 +310,7 @@ class EmissionsNursery:
 
     def connect(
         self,
-        signal: qtrio._util.SignalInstance,
+        signal: QtCore.SignalInstance,
         slot: typing.Callable[..., typing.Awaitable[object]],
     ) -> None:
         """Connect to an async slot to this emissions nursery so when called the slot
@@ -330,7 +329,7 @@ class EmissionsNursery:
         self.exit_stack.enter_context(qtrio._qt.connection(signal, starter))
 
     def connect_sync(
-        self, signal: qtrio._util.SignalInstance, slot: typing.Callable[..., object]
+        self, signal: QtCore.SignalInstance, slot: typing.Callable[..., object]
     ) -> None:
         """Connect to a sync slot to this emissions nursery so when called the slot will
         be run in the nursery.
@@ -344,7 +343,7 @@ class EmissionsNursery:
 
 @async_generator.asynccontextmanager
 async def open_emissions_nursery(
-    until: typing.Optional[qtrio._util.SignalInstance] = None,
+    until: typing.Optional[QtCore.SignalInstance] = None,
     wrapper: typing.Optional[typing.Callable[..., typing.Awaitable[object]]] = None,
 ) -> typing.AsyncGenerator[EmissionsNursery, None]:
     """Open a nursery for handling callbacks triggered by signal emissions.  This allows
