@@ -17,11 +17,6 @@ else:
     from typing_extensions import Protocol
 
 
-Buttons = typing.Union[
-    int, QtWidgets.QMessageBox.StandardButton, QtWidgets.QMessageBox.StandardButtons
-]
-
-
 class DialogProtocol(Protocol):
     """The common interface used for working with QTrio dialogs.  To check that a class
     implements this protocol see :func:`qtrio.dialogs.check_dialog_protocol`.
@@ -442,7 +437,7 @@ class MessageBox:
     """The message text shown inside the dialog."""
     icon: QtWidgets.QMessageBox.Icon
     """The icon shown inside the dialog."""
-    buttons: Buttons
+    buttons: QtWidgets.QMessageBox.StandardButtons
     """The buttons to be shown in the dialog."""
     parent: typing.Optional[QtWidgets.QWidget] = None
     """The parent widget for the dialog."""
@@ -469,7 +464,7 @@ class MessageBox:
             self.icon,
             self.title,
             self.text,
-            QtWidgets.QMessageBox.StandardButtons(self.buttons),  # type: ignore
+            self.buttons,  # type: ignore
             self.parent,
         )
 
@@ -512,7 +507,7 @@ def create_message_box(
     title: str,
     text: str,
     icon: QtWidgets.QMessageBox.Icon = QtWidgets.QMessageBox.Information,
-    buttons: Buttons = QtWidgets.QMessageBox.Ok,
+    buttons: QtWidgets.QMessageBox.StandardButtons = QtWidgets.QMessageBox.Ok,  # type: ignore
     parent: typing.Optional[QtWidgets.QWidget] = None,
 ) -> MessageBox:
     """Create a message box.
