@@ -15,7 +15,7 @@ async def test_main(request, qtbot):
 
         def setText(self, *args, **kwargs):
             super().setText(*args, **kwargs)
-            self.text_changed.emit(self.text())
+            self.text_changed.emit(self.text())  # type: ignore
 
     label = SignaledLabel()
     qtbot.addWidget(label)

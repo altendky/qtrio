@@ -17,6 +17,11 @@ else:
     from typing_extensions import Protocol
 
 
+Buttons = typing.Union[
+    int, QtWidgets.QMessageBox.StandardButton, QtWidgets.QMessageBox.StandardButtons
+]
+
+
 class DialogProtocol(Protocol):
     """The common interface used for working with QTrio dialogs.  To check that a class
     implements this protocol see :func:`qtrio.dialogs.check_dialog_protocol`.
@@ -87,7 +92,7 @@ def _dialog_button_box_buttons_by_role(
 ) -> typing.Mapping[QtWidgets.QDialogButtonBox.ButtonRole, QtWidgets.QAbstractButton]:
     """Create a mapping from button roles to their corresponding buttons."""
 
-    hits = dialog.findChildren(QtWidgets.QDialogButtonBox)
+    hits = list(dialog.findChildren(QtWidgets.QDialogButtonBox))
 
     if len(hits) == 0:
         return {}
@@ -109,9 +114,9 @@ class IntegerDialog:
     """The actual dialog widget instance."""
     edit_widget: typing.Optional[QtWidgets.QLineEdit] = None
     """The line edit that the user will enter the input into."""
-    accept_button: typing.Optional[QtWidgets.QPushButton] = None
+    accept_button: typing.Optional[QtWidgets.QAbstractButton] = None
     """The entry confirmation button."""
-    reject_button: typing.Optional[QtWidgets.QPushButton] = None
+    reject_button: typing.Optional[QtWidgets.QAbstractButton] = None
     """The input cancellation button."""
 
     result: typing.Optional[int] = None
@@ -132,7 +137,7 @@ class IntegerDialog:
         # TODO: adjust so we can use a context manager?
         self.dialog.finished.connect(self.finished)
 
-        self.dialog.show()
+        self.dialog.show()  # type: ignore
 
         buttons = _dialog_button_box_buttons_by_role(dialog=self.dialog)
         self.accept_button = buttons.get(QtWidgets.QDialogButtonBox.AcceptRole)
@@ -203,9 +208,9 @@ class TextInputDialog:
 
     dialog: typing.Optional[QtWidgets.QInputDialog] = None
     """The actual dialog widget instance."""
-    accept_button: typing.Optional[QtWidgets.QPushButton] = None
+    accept_button: typing.Optional[QtWidgets.QAbstractButton] = None
     """The entry confirmation button."""
-    reject_button: typing.Optional[QtWidgets.QPushButton] = None
+    reject_button: typing.Optional[QtWidgets.QAbstractButton] = None
     """The input cancellation button."""
     line_edit: typing.Optional[QtWidgets.QLineEdit] = None
     """The line edit that the user will enter the input into."""
@@ -231,7 +236,7 @@ class TextInputDialog:
 
         # TODO: adjust so we can use a context manager?
         self.dialog.finished.connect(self.finished)
-        self.dialog.show()
+        self.dialog.show()  # type: ignore
 
         buttons = _dialog_button_box_buttons_by_role(dialog=self.dialog)
         self.accept_button = buttons[QtWidgets.QDialogButtonBox.AcceptRole]
@@ -317,9 +322,9 @@ class FileDialog:
 
     dialog: typing.Optional[QtWidgets.QFileDialog] = None
     """The actual dialog widget instance."""
-    accept_button: typing.Optional[QtWidgets.QPushButton] = None
+    accept_button: typing.Optional[QtWidgets.QAbstractButton] = None
     """The confirmation button."""
-    reject_button: typing.Optional[QtWidgets.QPushButton] = None
+    reject_button: typing.Optional[QtWidgets.QAbstractButton] = None
     """The cancellation button."""
 
     result: typing.Optional[trio.Path] = None
@@ -345,8 +350,13 @@ class FileDialog:
             # https://github.com/altendky/qtrio/issues/28
             options |= QtWidgets.QFileDialog.DontUseNativeDialog
 
-        self.dialog = QtWidgets.QFileDialog(
-            parent=self.parent, options=options, **extras
+        # TODO: huh, so ``options`` is entirely undocumented...  and hints an ``Any``
+        #       return.
+        self.dialog = typing.cast(
+            QtWidgets.QFileDialog,
+            QtWidgets.QFileDialog(  # type: ignore
+                parent=self.parent, options=options, **extras
+            ),
         )
 
         if self.default_file is not None:
@@ -358,7 +368,7 @@ class FileDialog:
         # TODO: adjust so we can use a context manager?
         self.dialog.finished.connect(self.finished)
 
-        self.dialog.show()
+        self.dialog.show()  # type: ignore
 
         buttons = _dialog_button_box_buttons_by_role(dialog=self.dialog)
         self.accept_button = buttons.get(QtWidgets.QDialogButtonBox.AcceptRole)
@@ -432,14 +442,14 @@ class MessageBox:
     """The message text shown inside the dialog."""
     icon: QtWidgets.QMessageBox.Icon
     """The icon shown inside the dialog."""
-    buttons: QtWidgets.QMessageBox.StandardButtons
+    buttons: Buttons
     """The buttons to be shown in the dialog."""
     parent: typing.Optional[QtWidgets.QWidget] = None
     """The parent widget for the dialog."""
 
     dialog: typing.Optional[QtWidgets.QMessageBox] = None
     """The actual dialog widget instance."""
-    accept_button: typing.Optional[QtWidgets.QPushButton] = None
+    accept_button: typing.Optional[QtWidgets.QAbstractButton] = None
     """The button to accept the dialog."""
 
     result: typing.Optional[trio.Path] = None
@@ -456,13 +466,17 @@ class MessageBox:
         self.result = None
 
         self.dialog = QtWidgets.QMessageBox(
-            self.icon, self.title, self.text, self.buttons, self.parent
+            self.icon,
+            self.title,
+            self.text,
+            QtWidgets.QMessageBox.StandardButtons(self.buttons),  # type: ignore
+            self.parent,
         )
 
         # TODO: adjust so we can use a context manager?
         self.dialog.finished.connect(self.finished)
 
-        self.dialog.show()
+        self.dialog.show()  # type: ignore
 
         buttons = _dialog_button_box_buttons_by_role(dialog=self.dialog)
         self.accept_button = buttons[QtWidgets.QDialogButtonBox.AcceptRole]
@@ -498,7 +512,7 @@ def create_message_box(
     title: str,
     text: str,
     icon: QtWidgets.QMessageBox.Icon = QtWidgets.QMessageBox.Information,
-    buttons: QtWidgets.QMessageBox.StandardButtons = QtWidgets.QMessageBox.Ok,
+    buttons: Buttons = QtWidgets.QMessageBox.Ok,
     parent: typing.Optional[QtWidgets.QWidget] = None,
 ) -> MessageBox:
     """Create a message box.

@@ -55,7 +55,7 @@ def register_event_type() -> None:
         raise qtrio.EventTypeRegistrationFailedError()
 
     # assign to the global
-    _reenter_event_type = QtCore.QEvent.Type(event_hint)
+    _reenter_event_type = QtCore.QEvent.Type(event_hint)  # type: ignore
 
 
 def register_requested_event_type(
@@ -79,7 +79,7 @@ def register_requested_event_type(
     if _reenter_event_type is not None:
         raise qtrio.EventTypeAlreadyRegisteredError()
 
-    event_hint = QtCore.QEvent.registerEventType(requested_value)
+    event_hint = QtCore.QEvent.registerEventType(requested_value)  # type: ignore
 
     if event_hint == -1:
         raise qtrio.EventTypeRegistrationFailedError()
@@ -89,13 +89,16 @@ def register_requested_event_type(
         )
 
     # assign to the global
-    _reenter_event_type = QtCore.QEvent.Type(event_hint)
+    _reenter_event_type = QtCore.QEvent.Type(event_hint)  # type: ignore
 
 
 class ReenterEvent(QtCore.QEvent):
     """A proper ``ReenterEvent`` for reentering into the Qt host loop."""
 
     def __init__(self, fn: typing.Callable[[], object]):
+        if _reenter_event_type is None:
+            raise Exception()
+
         super().__init__(_reenter_event_type)
         self.fn = fn
 
@@ -642,6 +645,6 @@ class Runner:
             self.done_callback(self.outcomes)
 
         if self.quit_application:
-            self.application.quit()
+            self.application.quit()  # type: ignore
 
         self._done = True

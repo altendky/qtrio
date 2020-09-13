@@ -8,6 +8,10 @@ from qtpy import QtCore
 import qtrio._python
 
 
+class SignalQObjectBase(QtCore.QObject):
+    signal: typing.ClassVar[QtCore.Signal]
+
+
 class Signal:
     """This is a (nearly) drop-in replacement for :class:`QtCore.Signal`.  The useful
     difference is that it does not require inheriting from :class:`QtCore.QObject`.  The
@@ -23,13 +27,24 @@ class Signal:
 
     _attribute_name: typing.ClassVar[str] = ""
 
-    def __init__(self, *args: object, **kwargs: object) -> None:
-        class _SignalQObject(QtCore.QObject):
-            signal = QtCore.Signal(*args, **kwargs)
+    def __init__(self, *types: type, name: typing.Optional[str] = None) -> None:
+        class _SignalQObject(SignalQObjectBase):
+            if name is None:
+                signal = QtCore.Signal(*types)
+            else:
+                signal = QtCore.Signal(*types, name=name)
 
-        self.object_cls = _SignalQObject
+        self.object_cls: typing.Type[SignalQObjectBase] = _SignalQObject
 
+    @typing.overload
+    def __get__(self, instance: None, owner: object) -> "Signal":
+        ...
+
+    @typing.overload
     def __get__(self, instance: object, owner: object) -> QtCore.SignalInstance:
+        ...
+
+    def __get__(self, instance, owner):  # type: ignore
         if instance is None:
             return self
 
@@ -50,13 +65,15 @@ class Signal:
         Returns:
             The signal-hosting :class:`QtCore.QObject`.
         """
-        d = getattr(instance, self._attribute_name, None)
+        d: typing.Optional[
+            typing.Dict[typing.Type[SignalQObjectBase], QtCore.QObject]
+        ] = getattr(instance, self._attribute_name, None)
 
         if d is None:
             d = {}
             setattr(instance, self._attribute_name, d)
 
-        o = d.get(self.object_cls)
+        o: typing.Optional[QtCore.QObject] = d.get(self.object_cls)
         if o is None:
             o = self.object_cls()
             d[self.object_cls] = o
@@ -69,7 +86,8 @@ Signal._attribute_name = qtrio._python.identifier_path(Signal)
 
 @contextlib.contextmanager
 def connection(
-    signal: QtCore.SignalInstance, slot: typing.Callable[..., object]
+    signal: QtCore.SignalInstance,
+    slot: typing.Union[typing.Callable[..., object], QtCore.SignalInstance],
 ) -> typing.Generator[
     typing.Union[QtCore.QMetaObject.Connection, typing.Callable[..., object]],
     None,

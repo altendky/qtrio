@@ -11,5 +11,5 @@ def qtrio_preshow_workaround_fixture(qapp):
         QtWidgets.QMessageBox.Ok,
     )
 
-    dialog.show()
-    dialog.hide()
+    dialog.show()  # type: ignore
+    dialog.hide()  # type: ignore

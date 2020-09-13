@@ -11,7 +11,7 @@ async def main(button: typing.Optional[QtWidgets.QPushButton] = None) -> None:
     button.setText("Exit")
 
     async with qtrio.enter_emissions_channel(signals=[button.clicked]) as emissions:
-        button.show()
+        button.show()  # type: ignore
 
         await emissions.channel.receive()
 

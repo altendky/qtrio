@@ -23,7 +23,7 @@ class QSignaledWidget(QtWidgets.QWidget):
 
         super().closeEvent(event)
         if event.isAccepted():
-            self.closed.emit()
+            self.closed.emit()  # type: ignore
         else:  # pragma: no cover
             pass
 
@@ -32,7 +32,7 @@ class QSignaledWidget(QtWidgets.QWidget):
 
         super().showEvent(event)
         if event.isAccepted():
-            self.shown.emit()
+            self.shown.emit()  # type: ignore
         else:  # pragma: no cover
             pass
 
@@ -95,7 +95,7 @@ class Window:
     def show(self) -> None:
         """Show the primary widget for this window."""
 
-        self.widget.show()
+        self.widget.show()  # type: ignore
 
 
 async def main(window: typing.Optional[Window] = None) -> None:
