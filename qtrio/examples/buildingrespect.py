@@ -12,7 +12,7 @@ class Widget:
     button: QtWidgets.QPushButton = attr.ib(factory=QtWidgets.QPushButton)
     label: QtWidgets.QWidget = attr.ib(factory=QtWidgets.QLabel)
 
-    def setup(self, message):
+    def setup(self, message: str) -> None:
         self.button.setText("More")
 
         # start big enough to fit the whole message
@@ -22,7 +22,7 @@ class Widget:
         self.layout.addWidget(self.label)
         self.widget.setLayout(self.layout)
 
-    def show(self):
+    def show(self) -> None:
         self.widget.show()
         self.label.setText("")
 
