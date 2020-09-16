@@ -1,0 +1,1 @@
+Update :ref:`getting_started_layer_2` to use ``async for _ in emissions.channel:``.
