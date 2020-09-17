@@ -12,16 +12,14 @@ env | sort
 
 EXIT_STATUS=0
 
-BLACK_FILES="setup.py docs ${PACKAGE_NAME}"
-
 # Autoformatter *first*, to avoid double-reporting errors
 # (we'd like to run further autoformatters but *after* merging;
 # see https://forum.bors.tech/t/pre-test-and-pre-merge-hooks/322)
 # autoflake --recursive --in-place .
 # pyupgrade --py3-plus $(find . -name "*.py")
-if ! black --check ${BLACK_FILES}; then
+if ! black --check .; then
     EXIT_STATUS=1
-    black --diff ${BLACK_FILES}
+    black --diff .
 fi
 
 # Run flake8 without pycodestyle and import-related errors
@@ -37,7 +35,7 @@ Problems were found by static analysis (listed above).
 To fix formatting and see remaining errors, run
 
     pip install .[pyside2,checks]
-    black ${BLACK_FILES}
+    black .
     ./check.sh
 
 in your local checkout.
