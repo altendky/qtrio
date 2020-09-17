@@ -42,7 +42,7 @@ async def main(
         i = 1
         widget.show()
 
-        async for _ in emissions.channel:
+        async for _ in emissions.channel:  # pragma: no branch
             widget.label.setText(message[:i])
             i += 1
 
