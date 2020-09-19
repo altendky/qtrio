@@ -1,1 +1,0 @@
-Accept a ``clock`` parameter.  Supported by :func:`qtrio.run` and :class:`qtrio.Runner`.

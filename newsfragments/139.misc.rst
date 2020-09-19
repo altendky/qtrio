@@ -1,1 +1,0 @@
-Shift to a single ``qtrio._tests`` package rather than distributing with one ``_tests`` per code package.
