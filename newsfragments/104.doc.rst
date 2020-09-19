@@ -1,1 +1,0 @@
-Classifiers for 3.6, 3.7, and 3.8 are included.
