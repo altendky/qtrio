@@ -32,7 +32,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Setup python
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v2
         with:
           python-version: '${{ matrix.python }}'
       - name: Build
@@ -70,7 +70,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Setup python
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v2
         with:
           python-version: '${{ matrix.python }}'
       - name: Run tests
@@ -92,16 +92,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.6', '3.7', '3.8']
+        python: ['3.6', '3.7', '3.8', '3.9']
         arch: ['x86', 'x64']
         qt_library: ['PyQt5', 'PySide2']
     steps:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Setup python
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v2
         with:
-          python-version: '${{ matrix.python }}'
+          python-version: '${{ matrix.python }}.0-alpha - ${{ matrix.python }}.X'
           architecture: '${{ matrix.arch }}'
       - name: Run tests
         run: ./ci.sh
@@ -121,7 +121,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.6', '3.7', '3.8']
+        python: ['3.6', '3.7', '3.8', '3.9-rc']
         qt_library: ['PyQt5', 'PySide2']
     steps:
       - name: Checkout
@@ -148,15 +148,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.6', '3.7', '3.8']
+        python: ['3.6', '3.7', '3.8', '3.9']
         qt_library: ['PyQt5', 'PySide2']
     steps:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Setup python
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v2
         with:
-          python-version: '${{ matrix.python }}'
+          python-version: '${{ matrix.python }}.0-alpha - ${{ matrix.python }}.X'
       - name: Run tests
         run: ./ci.sh
         env:
