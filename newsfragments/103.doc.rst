@@ -1,1 +1,0 @@
-Badges now in new resources section of readme and main doc page.

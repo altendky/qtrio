@@ -34,7 +34,7 @@ Automatic code reformatting is handled by ``black``.
    python -m venv testvenv
    testvenv/bin/pip install --upgrade pip setuptools wheel
    testvenv/bin/pip install black
-   testvenv/bin/black setup.py docs/ qtrio/
+   testvenv/bin/black .
 
 Linting is handled by ``flake8``.
 

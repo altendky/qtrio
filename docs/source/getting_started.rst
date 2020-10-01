@@ -66,6 +66,8 @@ be exited.
 
 .. literalinclude:: ../../qtrio/examples/crossingpaths.py
 
+.. _getting_started_layer_2:
+
 Layer 2 - Building Respect
 --------------------------
 

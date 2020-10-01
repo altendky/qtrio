@@ -1,1 +1,0 @@
-Run and test timeouts report a :class:`trio.MultiError` to make context of the active tasks at the time of cancellation available.
