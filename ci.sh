@@ -44,7 +44,7 @@ INSTALL_ARTIFACT=$(ls dist/*.tar.gz)
 try-harder python -m pip install ${INSTALL_ARTIFACT}${INSTALL_EXTRAS}
 
 python -m pip install --upgrade https://github.com/altendky/qtpy/archive/mypy.zip
-python -m pip install --upgrade https://github.com/altendky/PyQt5-stubs/archive/combined.zip
+python -m pip install --upgrade https://github.com/stlehmann/PyQt5-stubs/archive/master.zip
 
 python -m pip list
 python -m pip freeze
