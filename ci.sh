@@ -78,7 +78,7 @@ else
     # 'coverage xml' to generate the report that it uses, and that will only
     # apply the ignore patterns in the current directory's .coveragerc.
     cp ../.coveragerc .
-    if pytest -W error -ra --junitxml=../test-results.xml ${INSTALLDIR} --cov="$INSTALLDIR" --verbose; then
+    if pytest -W error -ra --junitxml=../test-results.xml --cov="$INSTALLDIR" --verbose --pyargs ${PACKAGE_NAME}; then
         PASSED=true
     else
         PASSED=false
