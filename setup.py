@@ -1,11 +1,10 @@
 import pathlib
 
 from setuptools import setup, find_packages
+import versioneer
 
 
 here = pathlib.Path(__file__).parent
-
-exec((here / "qtrio" / "_version.py").read_text(encoding="utf-8"))
 
 LONG_DESC = (here / "README.rst").read_text(encoding="utf-8")
 
@@ -19,7 +18,8 @@ extras_examples = [*extras_cli]
 
 setup(
     name="qtrio",
-    version=__version__,
+    version=versioneer.get_version(),
+    cmdclass=versioneer.get_cmdclass(),
     description=(
         "a library bringing Qt GUIs together with ``async`` and ``await`` via Trio"
     ),
