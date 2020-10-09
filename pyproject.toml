@@ -6,7 +6,11 @@ include = '''
     | (qtrio|docs)/.*\.pyi?
 )$
 '''
-exclude = ''
+exclude = '''
+^/(
+    qtrio/_version.py
+)$
+'''
 
 [build-system]
 requires = [
