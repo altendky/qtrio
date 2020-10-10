@@ -15,41 +15,15 @@ Things to do for releasing:
 
    + remove affected code
 
-* do the actual release changeset
+* tag the existing release changeset on master
 
-   + bump version number
+   + Pick new version vX.Y.Z
 
       - increment as per `Semantic Versioning <https://semver.org/>`_ rules
 
-      - remove ``+dev`` tag from version number
+   + ``git tag vX.Y.Z``
 
-   + run ``towncrier``
-
-..
-   https://github.com/twisted/towncrier/pull/271
-
-      - ``towncrier build --yes --name QTrio``
-
-      - review history change
-
-      - ``git rm`` changes
-
-   + fixup `docs/source/history.rst`
-
-      - correct QTrio capitalization
-
-      - remove empty misc changelog entries from the history
-
-   + commit
-
-* push to your personal repository
-
-* create pull request to `altendky/qtrio <https://github.com/altendky/qtrio/pulls>`_'s
-  "master" branch
-
-* verify that all checks succeeded
-
-* tag with vX.Y.Z, push tag
+   + ``git push --tags``
 
 * download wheel and sdist from build artifacts and unpack
 
@@ -57,8 +31,20 @@ Things to do for releasing:
 
     twine upload dist/*
 
-* update version number in the same pull request
+* create a post-release cleanup branch
 
-   + add ``+dev`` tag to the end
+   + ``git checkout -b cleanup_vX.Y.Z``
 
-* merge the release pull request
+..
+   https://github.com/twisted/towncrier/pull/271
+
+   + ``towncrier build --yes --name QTrio``
+
+   + ``git commit -m 'Cleanup for release vX.Y.Z'``
+
+* push to your personal repository
+
+* create pull request to `altendky/qtrio <https://github.com/altendky/qtrio/pulls>`_'s
+  ``master`` branch
+
+* merge the cleanup pull request
