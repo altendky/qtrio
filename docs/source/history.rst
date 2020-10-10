@@ -5,7 +5,7 @@ Release history
 
 .. towncrier release notes start
 
-Qtrio 0.2.0 (2020-09-19)
+QTrio 0.2.0 (2020-09-19)
 ------------------------
 
 Headline features
