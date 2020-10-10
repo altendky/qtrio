@@ -56,7 +56,9 @@ if [ "$CHECK_DOCS" = "1" ]; then
     # -W: turn warnings into errors
     sphinx-build -nW  -b html source build
     # check for the version in the changelog in the docs...  but only for
-    grep --quiet $(python -c 'import qtrio; print(qtrio.__version__)') build/history.html
+    git tag
+    grep --before 1 '\---------' source/history.rst
+    grep --quiet $(python -c 'import qtrio; print(qtrio.__version__)') source/history.rst
 elif [ "$CHECK_FORMATTING" = "1" ]; then
     source check.sh
 elif [ "$CHECK_TYPE_HINTS" = "1" ]; then
