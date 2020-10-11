@@ -17,7 +17,7 @@ Things to do for releasing:
 
 * tag the existing release changeset on master
 
-   + Pick new version vX.Y.Z
+   + pick new version vX.Y.Z
 
       - increment as per `Semantic Versioning <https://semver.org/>`_ rules
 
