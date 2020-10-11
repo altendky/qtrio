@@ -1,1 +1,0 @@
-Use ``stable`` for :mod:`outcome` intersphinx links.

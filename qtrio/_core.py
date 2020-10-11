@@ -13,7 +13,6 @@ import typing
 import async_generator
 import attr
 import outcome
-import qtpy
 from qtpy import QtCore
 from qtpy import QtGui
 from qtpy import QtWidgets
@@ -174,16 +173,8 @@ class Emission:
             Whether the passed signal was the source of this emission.
         """
 
-        # TODO: `repr()` here seems really bad.
-        if qtpy.PYQT5:
-            return self.signal.signal == signal.signal and repr(self.signal) == repr(
-                signal
-            )
-        elif qtpy.PYSIDE2:
-            # TODO: get this to work properly.
-            return bool(self.signal == signal)
-
-        raise qtrio.QTrioException()  # pragma: no cover
+        # bool() to accomodate SignalInstance being typed Any right now...
+        return bool(self.signal == signal)
 
     def __eq__(self, other: object) -> bool:
         if type(other) != type(self):

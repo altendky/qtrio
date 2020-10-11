@@ -80,7 +80,11 @@ setup(
         ],
         "cli": extras_cli,
         "examples": extras_examples,
-        "pyqt5": ["pyqt5", "pyqt5-stubs"],
+        "pyqt5": [
+            # >= 5.15.1 for https://www.riverbankcomputing.com/pipermail/pyqt/2020-July/043064.html
+            "pyqt5 >= 5.15.1",
+            "pyqt5-stubs",
+        ],
         "pyside2": ["pyside2"],
     },
     entry_points={"console_scripts": ["qtrio = qtrio._cli:cli"]},

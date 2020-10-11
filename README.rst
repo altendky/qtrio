@@ -76,49 +76,49 @@ concisely describe the sequenced activity, we also get to use ``with`` to manage
 context of the open file to be sure it gets closed.
 
 .. _chat: https://gitter.im/python-trio/general
-.. |chat badge| image:: https://img.shields.io/badge/chat-join%20now-blue.svg?color=RoyalBlue&logo=Gitter&logoColor=WhiteSmoke
+.. |chat badge| image:: https://img.shields.io/badge/chat-join%20now-blue.svg?color=royalblue&logo=Gitter&logoColor=whitesmoke
    :target: `chat`_
    :alt: Support chatroom
 
 .. _forum: https://trio.discourse.group
-.. |forum badge| image:: https://img.shields.io/badge/forum-join%20now-blue.svg?color=RoyalBlue&logo=Discourse&logoColor=WhiteSmoke
+.. |forum badge| image:: https://img.shields.io/badge/forum-join%20now-blue.svg?color=royalblue&logo=Discourse&logoColor=whitesmoke
    :target: `forum`_
    :alt: Support forum
 
 .. _documentation: https://qtrio.readthedocs.io
-.. |documentation badge| image:: https://img.shields.io/badge/docs-read%20now-blue.svg?color=RoyalBlue&logo=Read-the-Docs&logoColor=WhiteSmoke
+.. |documentation badge| image:: https://img.shields.io/badge/docs-read%20now-blue.svg?color=royalblue&logo=Read-the-Docs&logoColor=whitesmoke
    :target: `documentation`_
    :alt: Documentation
 
 .. _distribution: https://pypi.org/project/qtrio
-.. |version badge| image:: https://img.shields.io/pypi/v/qtrio.svg?color=IndianRed&logo=PyPI&logoColor=WhiteSmoke
+.. |version badge| image:: https://img.shields.io/pypi/v/qtrio.svg?color=indianred&logo=PyPI&logoColor=whitesmoke
    :target: `distribution`_
    :alt: Latest distribution version
 
-.. |python versions badge| image:: https://img.shields.io/pypi/pyversions/qtrio.svg?color=IndianRed&logo=PyPI&logoColor=WhiteSmoke
+.. |python versions badge| image:: https://img.shields.io/pypi/pyversions/qtrio.svg?color=indianred&logo=PyPI&logoColor=whitesmoke
    :alt: Supported Python versions
    :target: `distribution`_
 
-.. |python interpreters badge| image:: https://img.shields.io/pypi/implementation/qtrio.svg?color=IndianRed&logo=PyPI&logoColor=WhiteSmoke
+.. |python interpreters badge| image:: https://img.shields.io/pypi/implementation/qtrio.svg?color=indianred&logo=PyPI&logoColor=whitesmoke
    :alt: Supported Python interpreters
    :target: `distribution`_
 
 .. _issues: https://github.com/altendky/qtrio/issues
-.. |issues badge| image:: https://img.shields.io/github/issues/altendky/qtrio?color=RoyalBlue&logo=GitHub&logoColor=WhiteSmoke
+.. |issues badge| image:: https://img.shields.io/github/issues/altendky/qtrio?color=royalblue&logo=GitHub&logoColor=whitesmoke
    :target: `issues`_
    :alt: Issues
 
 .. _repository: https://github.com/altendky/qtrio
-.. |repository badge| image:: https://img.shields.io/github/last-commit/altendky/qtrio.svg?color=SeaGreen&logo=GitHub&logoColor=WhiteSmoke
+.. |repository badge| image:: https://img.shields.io/github/last-commit/altendky/qtrio.svg?color=seagreen&logo=GitHub&logoColor=whitesmoke
    :target: `repository`_
    :alt: Repository
 
 .. _tests: https://github.com/altendky/qtrio/actions?query=branch%3Amaster
-.. |tests badge| image:: https://img.shields.io/github/workflow/status/altendky/qtrio/CI/master?color=SeaGreen&logo=GitHub-Actions&logoColor=WhiteSmoke
+.. |tests badge| image:: https://img.shields.io/github/workflow/status/altendky/qtrio/CI/master?color=seagreen&logo=GitHub-Actions&logoColor=whitesmoke
    :target: `tests`_
    :alt: Tests
 
 .. _coverage: https://codecov.io/gh/altendky/qtrio
-.. |coverage badge| image:: https://img.shields.io/codecov/c/github/altendky/qtrio/master?color=SeaGreen&logo=Codecov&logoColor=WhiteSmoke
+.. |coverage badge| image:: https://img.shields.io/codecov/c/github/altendky/qtrio/master?color=seagreen&logo=Codecov&logoColor=whitesmoke
    :target: `coverage`_
    :alt: Test coverage

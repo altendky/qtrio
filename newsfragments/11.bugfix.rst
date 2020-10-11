@@ -1,1 +1,0 @@
-Remove noisy output from :meth:`qtrio.Runner.trio_done`.
