@@ -1,6 +1,6 @@
 """Top-level package for QTrio."""
 
-from ._version import get_versions
+from qtrio._version import get_versions
 
 __version__: str = get_versions()["version"]  # type: ignore[no-untyped-call]
 del get_versions

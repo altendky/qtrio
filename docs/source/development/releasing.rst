@@ -29,7 +29,7 @@ Things to do for releasing:
 
 * push to PyPI::
 
-    twine upload dist/*
+    ``twine upload dist/*``
 
 * create a post-release cleanup branch
 
