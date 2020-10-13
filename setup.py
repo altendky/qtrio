@@ -86,6 +86,7 @@ setup(
             "pyqt5-stubs",
         ],
         "pyside2": ["pyside2"],
+        "testing": [pytest_trio],
     },
     entry_points={"console_scripts": ["qtrio = qtrio._cli:cli"]},
     keywords=["async", "io", "Trio", "GUI", "Qt", "PyQt5", "PySide2"],
