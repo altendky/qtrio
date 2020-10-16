@@ -16,7 +16,8 @@ pytest = "pytest >= 6"
 pytest_trio = "pytest-trio"
 
 # >= 19.9.0rc1 for https://github.com/twisted/towncrier/issues/144
-towncrier = "towncrier >= 19.9.0rc1"
+# #126 for handling multiple fragments for the same ticket
+towncrier = "towncrier@git+https://github.com/altendky/towncrier@126-strip_leading_zeros_on_issues"
 
 extras_cli = ["click"]
 extras_examples = [*extras_cli]
