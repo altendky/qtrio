@@ -75,7 +75,7 @@ intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
     "PyQt5": ("https://www.riverbankcomputing.com/static/Docs/PyQt5", None),
     "pytest": ("https://docs.pytest.org/en/stable", None),
-    "pytest-trio": ("https://pytest-trio.readthedocs.io/en/latest", None),
+    "pytest-trio": ("https://pytest-trio.readthedocs.io/en/stable", None),
     "trio": ("https://trio.readthedocs.io/en/stable", None),
 }
 

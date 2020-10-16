@@ -41,7 +41,7 @@ python -m pip --version
 
 python -m pep517.build --source --out-dir dist/ .
 INSTALL_ARTIFACT=$(ls dist/*.tar.gz)
-try-harder python -m pip install ${INSTALL_ARTIFACT}${INSTALL_EXTRAS} https://github.com/python-trio/pytest-trio/archive/master.zip#egg=pytest-trio
+try-harder python -m pip install ${INSTALL_ARTIFACT}${INSTALL_EXTRAS}
 
 python -m pip list
 python -m pip freeze
