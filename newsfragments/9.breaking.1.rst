@@ -1,1 +1,1 @@
-:func:``qtrio.run`` returns the passed async function's result instead of a combined Trio and Qt outcome.
+:function:``qtrio.run`` returns the passed async function's result instead of a combined Trio and Qt outcome.
