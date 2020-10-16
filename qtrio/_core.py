@@ -447,7 +447,7 @@ def run(
         instruments: See :class:`qtrio.Runner.instruments`.
 
     Returns:
-        The object returned by `async_fn`.
+        The object returned by ``async_fn``.
     """
     runner = Runner(
         done_callback=done_callback, clock=clock, instruments=list(instruments)
