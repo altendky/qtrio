@@ -39,10 +39,11 @@ jobs:
         run: |-
           python -m venv venv
           venv/bin/python -m pip install --quiet --upgrade pip setuptools wheel
-          venv/bin/python -m pip install --quiet --upgrade pep517
+          venv/bin/python -m pip install --quiet --upgrade pep517 twine
           venv/bin/python -m pip list
           venv/bin/python -m pip freeze
           venv/bin/python -m pep517.build ${{ matrix.pep517_option }} --out-dir dist/ .
+          venv/bin/python -m twine check dist/*
       - name: Publish
         uses: actions/upload-artifact@v2
         with:
