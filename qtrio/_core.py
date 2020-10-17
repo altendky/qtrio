@@ -475,7 +475,7 @@ def outcome_from_application_return_code(return_code: int) -> outcome.Outcome:
 
 
 def maybe_build_application() -> QtGui.QGuiApplication:
-    """Create a new Qt application object of one does not already exist.
+    """Create a new Qt application object if one does not already exist.
 
     Returns:
         The Qt application object.

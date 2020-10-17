@@ -13,11 +13,11 @@ LONG_DESC = (here / "README.rst").read_text(encoding="utf-8")
 pytest = "pytest >= 6"
 
 # >= 0.7.0 for trio_run configuration support
-pytest_trio = "pytest-trio"
+pytest_trio = "pytest-trio >= 0.7.0"
 
 # >= 19.9.0rc1 for https://github.com/twisted/towncrier/issues/144
 # #126 for handling multiple fragments for the same ticket
-towncrier = "towncrier@git+https://github.com/altendky/towncrier@126-strip_leading_zeros_on_issues"
+towncrier = "towncrier@git+https://github.com/altendky/towncrier@3b42c98361a0dfb612e12d2d45d619485e20c277"
 
 extras_cli = ["click"]
 extras_examples = [*extras_cli]
