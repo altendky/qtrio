@@ -44,6 +44,7 @@ jobs:
           venv/bin/python -m pip freeze
           venv/bin/python -m pep517.build ${{ matrix.pep517_option }} --out-dir dist/ .
           venv/bin/python -m twine check dist/*
+          venv/bin/python -m twine upload --repository testpypi dist/*
       - name: Publish
         uses: actions/upload-artifact@v2
         with:
