@@ -5,6 +5,23 @@ Release history
 
 .. towncrier release notes start
 
+Qtrio 0.3.0 (2020-10-16)
+------------------------
+
+Headline features
+~~~~~~~~~~~~~~~~~
+
+- Integrate with pytest-trio for :ref:`testing <testing>`. (`#9 <https://github.com/altendky/qtrio/issues/9>`__)
+- Python 3.9 supported. (`#113 <https://github.com/altendky/qtrio/issues/113>`__)
+
+
+Breaking changes
+~~~~~~~~~~~~~~~~
+
+- Removed ``qtrio.host()`` in favor of pytest-trio for :ref:`testing <testing>`. (`#9 <https://github.com/altendky/qtrio/issues/9>`__)
+- :func:`qtrio.run` returns the passed async function's result instead of a combined Trio and Qt outcome. (`#9 <https://github.com/altendky/qtrio/issues/9>`__)
+
+
 QTrio 0.2.0 (2020-09-19)
 ------------------------
 

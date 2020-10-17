@@ -1,1 +1,0 @@
-Removed ``qtrio.host()`` in favor of pytest-trio for :ref:`testing <testing>`.
