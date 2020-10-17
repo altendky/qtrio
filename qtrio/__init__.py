@@ -32,4 +32,3 @@ from ._core import (
 )
 
 from ._qt import Signal
-from ._pytest import host
