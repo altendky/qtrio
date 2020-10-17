@@ -17,9 +17,13 @@ Things to do for releasing:
 
 * do the actual release changeset
 
-   + bump version number
+   + select new version number
 
       - increment as per `Semantic Versioning <https://semver.org/>`_ rules
+
+   + checkout a new branch ``release-vX.Y.Z``
+
+   + bump version number in ``qtrio/_version.py``
 
       - remove ``+dev`` tag from version number
 
@@ -40,7 +44,7 @@ Things to do for releasing:
 
       - remove empty misc changelog entries from the history
 
-   + commit
+   + commit such as ``Bump version and run towncrier for vX.Y.Z release``
 
 * push to your personal repository
 
@@ -49,7 +53,9 @@ Things to do for releasing:
 
 * verify that all checks succeeded
 
-* tag with vX.Y.Z, push tag
+* get a review
+
+* tag with ``vX.Y.Z``, push tag
 
 * download wheel and sdist from build artifacts and unpack
 
@@ -57,8 +63,6 @@ Things to do for releasing:
 
     twine upload dist/*
 
-* update version number in the same pull request
-
-   + add ``+dev`` tag to the end
+* replace the ``+dev`` version tag in the same pull request as ``vX.Y.Z+dev``
 
 * merge the release pull request
