@@ -434,23 +434,27 @@ def run(
     *args: object,
     done_callback: typing.Optional[typing.Callable[[Outcomes], None]] = None,
     clock: trio.abc.Clock = None,
-) -> Outcomes:
+    instruments: typing.Sequence[trio.abc.Instrument] = (),
+) -> object:
     """Run a Trio-flavored async function in guest mode on a Qt host application, and
-    return the outcomes.
+    return the result.
 
     Args:
         async_fn: The async function to run.
         args: Positional arguments to pass to `async_fn`.
         done_callback: See :class:`qtrio.Runner.done_callback`.
         clock: See :class:`qtrio.Runner.clock`.
+        instruments: See :class:`qtrio.Runner.instruments`.
 
     Returns:
-        The :class:`qtrio.Outcomes` with both the Trio and Qt outcomes.
+        The object returned by ``async_fn``.
     """
-    runner = Runner(done_callback=done_callback, clock=clock)
+    runner = Runner(
+        done_callback=done_callback, clock=clock, instruments=list(instruments)
+    )
     runner.run(async_fn, *args)
 
-    return runner.outcomes
+    return runner.outcomes.unwrap()
 
 
 def outcome_from_application_return_code(return_code: int) -> outcome.Outcome:
@@ -470,8 +474,18 @@ def outcome_from_application_return_code(return_code: int) -> outcome.Outcome:
     return outcome.Error(qtrio.ReturnCodeError(return_code))
 
 
-def build_application() -> QtGui.QGuiApplication:
-    application = QtWidgets.QApplication(sys.argv[1:])
+def maybe_build_application() -> QtGui.QGuiApplication:
+    """Create a new Qt application object if one does not already exist.
+
+    Returns:
+        The Qt application object.
+    """
+    maybe_application = QtWidgets.QApplication.instance()
+    if maybe_application is None:
+        application = QtWidgets.QApplication(sys.argv[1:])
+    else:
+        application = maybe_application
+
     application.setQuitOnLastWindowClosed(False)
 
     return application
@@ -481,7 +495,7 @@ def build_application() -> QtGui.QGuiApplication:
 class Runner:
     """This class helps run Trio in guest mode on a Qt host application."""
 
-    application: QtGui.QGuiApplication = attr.ib(factory=build_application)
+    application: QtGui.QGuiApplication = attr.ib(factory=maybe_build_application)
     """The Qt application object to run as the host.  If not set before calling
     :meth:`run` the application will be created as
     ``QtWidgets.QApplication(sys.argv[1:])`` and ``.setQuitOnLastWindowClosed(False)``
@@ -492,13 +506,13 @@ class Runner:
     """When true, the :meth:`done_callback` method will quit the application when the
     async function passed to :meth:`qtrio.Runner.run` has completed.
     """
-    timeout: typing.Optional[float] = None
-    """If not :obj:`None`, use :func:`trio.move_on_after()` to cancel after ``timeout``
-    seconds and raise.
-    """
     clock: trio.abc.Clock = None
     """The clock to use for this run.  This is primarily used to speed up tests that
     include timeouts.  The value will be passed on to
+    :func:`trio.lowlevel.start_guest_run`.
+    """
+    instruments: typing.Sequence[trio.abc.Instrument] = ()
+    """The instruments to use for this run.  The value will be passed on to
     :func:`trio.lowlevel.start_guest_run`.
     """
 
@@ -554,6 +568,7 @@ class Runner:
             run_sync_soon_threadsafe=self.run_sync_soon_threadsafe,
             done_callback=self.trio_done,
             clock=self.clock,
+            instruments=self.instruments,
         )
 
         if execute_application:
@@ -596,32 +611,18 @@ class Runner:
             The result returned by `async_fn`.
         """
         result: object = None
-        timeout_cancel_scope = None
 
-        try:
-            with trio.CancelScope() as self.cancel_scope:
-                with contextlib.ExitStack() as exit_stack:
-                    if self.application.quitOnLastWindowClosed():
-                        exit_stack.enter_context(
-                            qtrio._qt.connection(
-                                signal=self.application.lastWindowClosed,
-                                slot=self.cancel_scope.cancel,
-                            )
+        with trio.CancelScope() as self.cancel_scope:
+            with contextlib.ExitStack() as exit_stack:
+                if self.application.quitOnLastWindowClosed():
+                    exit_stack.enter_context(
+                        qtrio._qt.connection(
+                            signal=self.application.lastWindowClosed,
+                            slot=self.cancel_scope.cancel,
                         )
-                    if self.timeout is not None:
-                        timeout_cancel_scope = exit_stack.enter_context(
-                            trio.fail_after(self.timeout)
-                        )
+                    )
 
-                    result = await async_fn(*args)
-        except trio.TooSlowError as e:
-            if (
-                timeout_cancel_scope is not None
-                and timeout_cancel_scope.cancelled_caught
-            ):
-                raise qtrio.RunnerTimedOutError() from e
-
-            raise
+                result = await async_fn(*args)
 
         return result
 

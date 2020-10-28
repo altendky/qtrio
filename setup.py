@@ -10,6 +10,10 @@ LONG_DESC = (here / "README.rst").read_text(encoding="utf-8")
 
 # >= 6 for type hints
 pytest = "pytest >= 6"
+
+# >= 0.7.0 for trio_run configuration support
+pytest_trio = "pytest-trio >= 0.7.0"
+
 # >= 19.9.0rc1 for https://github.com/twisted/towncrier/issues/144
 towncrier = "towncrier >= 19.9.0rc1"
 
@@ -53,7 +57,6 @@ setup(
     extras_require={
         "p_checks": ["black", "flake8", "mypy", pytest, towncrier],
         "p_docs": [
-            pytest,
             # >= 3.2: https://github.com/sphinx-doc/sphinx/issues/8008
             # >= 3.2.1: https://github.com/sphinx-doc/sphinx/issues/8124
             "sphinx >= 3.2.1",
@@ -72,8 +75,7 @@ setup(
             "pytest-cov",
             "pytest-faulthandler",
             "pytest-qt",
-            # > 0.6.0 for trio_run configuration support
-            "pytest-trio",
+            pytest_trio,
             'pytest-xvfb; sys_platform == "linux"',
         ],
         "cli": extras_cli,
@@ -84,6 +86,7 @@ setup(
             "pyqt5-stubs",
         ],
         "pyside2": ["pyside2"],
+        "testing": [pytest_trio],
     },
     entry_points={"console_scripts": ["qtrio = qtrio._cli:cli"]},
     keywords=["async", "io", "Trio", "GUI", "Qt", "PyQt5", "PySide2"],

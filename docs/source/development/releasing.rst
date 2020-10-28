@@ -17,7 +17,7 @@ Things to do for releasing:
 
 * tag the existing release changeset on master
 
-   + pick new version vX.Y.Z
+   + select new version number
 
       - increment as per `Semantic Versioning <https://semver.org/>`_ rules
 
@@ -46,5 +46,7 @@ Things to do for releasing:
 
 * create pull request to `altendky/qtrio <https://github.com/altendky/qtrio/pulls>`_'s
   ``master`` branch
+
+* get a review
 
 * merge the cleanup pull request

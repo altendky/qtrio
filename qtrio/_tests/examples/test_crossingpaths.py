@@ -8,8 +8,7 @@ import trio
 import qtrio.examples.crossingpaths
 
 
-@qtrio.host
-async def test_main(request, qtbot):
+async def test_main(qtbot):
     class SignaledLabel(QtWidgets.QLabel):
         text_changed = QtCore.Signal(str)
 
