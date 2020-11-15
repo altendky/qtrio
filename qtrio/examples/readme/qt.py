@@ -27,19 +27,16 @@ class Main:
         input_dialog: typing.Optional[QtWidgets.QInputDialog] = None,
         output_dialog: typing.Optional[QtWidgets.QMessageBox] = None,
     ):
-        if input_dialog is None:
+        if input_dialog is None:  # pragma: nocover
             input_dialog = create_input()
 
-        if output_dialog is None:
+        if output_dialog is None:  # pragma: nocover
             output_dialog = create_output()
 
         self.input_dialog = input_dialog
         self.output_dialog = output_dialog
 
     def setup(self) -> None:
-        if self.input_dialog is None:
-            self.input_dialog = create_input()
-
         self.input_dialog.accepted.connect(self.input_accepted)
         self.input_dialog.rejected.connect(self.input_rejected)
 
@@ -47,9 +44,6 @@ class Main:
 
     def input_accepted(self) -> None:
         name = self.input_dialog.textValue()
-
-        if self.output_dialog is None:
-            self.output_dialog = create_output()
 
         self.output_dialog.setText(f"Hi {name}, welcome to the team!")
 
@@ -63,7 +57,7 @@ class Main:
         QtCore.QCoreApplication.instance().quit()
 
 
-def main() -> None:
+def main() -> None:  # pragma: nocover
     application = QtWidgets.QApplication([])
     application.setQuitOnLastWindowClosed(False)
     main_object = Main()
