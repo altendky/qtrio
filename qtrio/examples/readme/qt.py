@@ -27,10 +27,10 @@ class Main:
         input_dialog: typing.Optional[QtWidgets.QInputDialog] = None,
         output_dialog: typing.Optional[QtWidgets.QMessageBox] = None,
     ):
-        if input_dialog is None:  # pragma: nocover
+        if input_dialog is None:  # pragma: no cover
             input_dialog = create_input()
 
-        if output_dialog is None:  # pragma: nocover
+        if output_dialog is None:  # pragma: no cover
             output_dialog = create_output()
 
         self.input_dialog = input_dialog
@@ -57,7 +57,7 @@ class Main:
         QtCore.QCoreApplication.instance().quit()
 
 
-def main() -> None:  # pragma: nocover
+def main() -> None:  # pragma: no cover
     application = QtWidgets.QApplication([])
     application.setQuitOnLastWindowClosed(False)
     main_object = Main()

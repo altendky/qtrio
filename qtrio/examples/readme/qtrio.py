@@ -27,10 +27,10 @@ async def main(
     input_dialog: typing.Optional[qtrio.dialogs.TextInputDialog] = None,
     output_dialog: typing.Optional[qtrio.dialogs.MessageBox] = None,
 ) -> None:
-    if input_dialog is None:  # pragma: nocover
+    if input_dialog is None:  # pragma: no cover
         input_dialog = create_input()
 
-    if output_dialog is None:  # pragma: nocover
+    if output_dialog is None:  # pragma: no cover
         output_dialog = create_output()
 
     with contextlib.suppress(qtrio.UserCancelledError):
