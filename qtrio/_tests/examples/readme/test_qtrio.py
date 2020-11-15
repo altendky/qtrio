@@ -47,7 +47,7 @@ async def test_main_cancelled():
 
     def output_was_shown():
         nonlocal output_shown
-        output_shown = True  # pragma: nocover
+        output_shown = True  # pragma: no cover
 
     output_dialog.shown.connect(output_was_shown)
 
