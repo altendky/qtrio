@@ -27,6 +27,12 @@ class Main:
         input_dialog: typing.Optional[QtWidgets.QInputDialog] = None,
         output_dialog: typing.Optional[QtWidgets.QMessageBox] = None,
     ):
+        if input_dialog is None:
+            input_dialog = create_input()
+
+        if output_dialog is None:
+            output_dialog = create_output()
+
         self.input_dialog = input_dialog
         self.output_dialog = output_dialog
 
