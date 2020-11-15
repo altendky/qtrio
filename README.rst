@@ -45,35 +45,62 @@ of Qt concurrency.
 
 .. code-block:: python
 
-    class TwoStep:
-        def __init__(self, a_signal, some_path):
-            self.signal = a_signal
-            self.file = None
-            self.some_path = some_path
+    class Main:
+        def __init__(
+            self,
+            input_dialog: typing.Optional[QtWidgets.QInputDialog] = None,
+            output_dialog: typing.Optional[QtWidgets.QMessageBox] = None,
+        ):
+            self.input_dialog = input_dialog
+            self.output_dialog = output_dialog
 
-        def before(self):
-            self.file = open(some_path, 'w')
-            self.signal.connect(self.after)
-            self.file.write('before')
+        def setup(self):
+            if self.input_dialog is None:
+                self.input_dialog = create_input()
 
-        def after(self, value):
-            self.signal.disconnect(self.after)
-            self.file.write(f'after {value!r}')
-            self.file.close()
+            self.input_dialog.accepted.connect(self.input_accepted)
+            self.input_dialog.rejected.connect(self.input_rejected)
+
+            self.input_dialog.show()
+
+        def input_accepted(self):
+            name = self.input_dialog.textValue()
+
+            if self.output_dialog is None:
+                self.output_dialog = create_output()
+
+            self.output_dialog.setText(f"Hi {name}, welcome to the team!")
+
+            self.output_dialog.finished.connect(self.output_finished)
+            self.output_dialog.show()
+
+        def input_rejected(self):
+            QtCore.QCoreApplication.instance().quit()
+
+        def output_finished(self):
+            QtCore.QCoreApplication.instance().quit()
 
 .. code-block:: python
 
-    async def together(a_signal):
-        with open(self.some_path, 'w') as file:
-            async with qtrio.enter_emissions_channel(signals=[a_signal]) as emissions:
-                file.write('before')
-                emission = await emissions.channel.receive()
-                [value] = emission.args
-                file.write(f'after {value!r}')
+    async def main(
+        input_dialog: typing.Optional[qtrio.dialogs.TextInputDialog] = None,
+        output_dialog: typing.Optional[qtrio.dialogs.MessageBox] = None,
+    ):
+        if input_dialog is None:
+            input_dialog = create_input()
 
-Note how by using ``async`` and ``await`` we are not only able to more clearly and
-concisely describe the sequenced activity, we also get to use ``with`` to manage the
-context of the open file to be sure it gets closed.
+        if output_dialog is None:
+            output_dialog = create_output()
+
+        with contextlib.suppress(qtrio.UserCancelledError):
+            name = await input_dialog.wait()
+
+            output_dialog.text = f"Hi {name}, welcome to the team!"
+
+            await output_dialog.wait()
+
+Note how by using ``async`` and ``await`` we are able to more clearly and concisely
+describe the sequenced activity.
 
 .. _chat: https://gitter.im/python-trio/general
 .. |chat badge| image:: https://img.shields.io/badge/chat-join%20now-blue.svg?color=royalblue&logo=Gitter&logoColor=whitesmoke
