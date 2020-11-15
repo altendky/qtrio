@@ -45,62 +45,62 @@ of Qt concurrency.  See the ``README`` examples in the docs for the full code.
 
 .. code-block:: python
 
-class Main:
-    def __init__(
-        self,
-        input_dialog: typing.Optional[QtWidgets.QInputDialog] = None,
-        output_dialog: typing.Optional[QtWidgets.QMessageBox] = None,
-    ):
-        if input_dialog is None:  # pragma: nocover
-            input_dialog = create_input()
+    class Main:
+        def __init__(
+            self,
+            input_dialog: typing.Optional[QtWidgets.QInputDialog] = None,
+            output_dialog: typing.Optional[QtWidgets.QMessageBox] = None,
+        ):
+            if input_dialog is None:  # pragma: nocover
+                input_dialog = create_input()
 
-        if output_dialog is None:  # pragma: nocover
-            output_dialog = create_output()
+            if output_dialog is None:  # pragma: nocover
+                output_dialog = create_output()
 
-        self.input_dialog = input_dialog
-        self.output_dialog = output_dialog
+            self.input_dialog = input_dialog
+            self.output_dialog = output_dialog
 
-    def setup(self) -> None:
-        self.input_dialog.accepted.connect(self.input_accepted)
-        self.input_dialog.rejected.connect(self.input_rejected)
+        def setup(self) -> None:
+            self.input_dialog.accepted.connect(self.input_accepted)
+            self.input_dialog.rejected.connect(self.input_rejected)
 
-        self.input_dialog.show()
+            self.input_dialog.show()
 
-    def input_accepted(self) -> None:
-        name = self.input_dialog.textValue()
+        def input_accepted(self) -> None:
+            name = self.input_dialog.textValue()
 
-        self.output_dialog.setText(f"Hi {name}, welcome to the team!")
+            self.output_dialog.setText(f"Hi {name}, welcome to the team!")
 
-        self.output_dialog.finished.connect(self.output_finished)
-        self.output_dialog.show()
+            self.output_dialog.finished.connect(self.output_finished)
+            self.output_dialog.show()
 
-    def input_rejected(self) -> None:
-        QtCore.QCoreApplication.instance().quit()
+        def input_rejected(self) -> None:
+            QtCore.QCoreApplication.instance().quit()
 
-    def output_finished(self) -> None:
-        QtCore.QCoreApplication.instance().quit()
+        def output_finished(self) -> None:
+            QtCore.QCoreApplication.instance().quit()
 
 Note how by using ``async`` and ``await`` we are able to more clearly and concisely
 describe the sequenced activity.
 
 .. code-block:: python
 
-async def main(
-    input_dialog: typing.Optional[qtrio.dialogs.TextInputDialog] = None,
-    output_dialog: typing.Optional[qtrio.dialogs.MessageBox] = None,
-) -> None:
-    if input_dialog is None:  # pragma: nocover
-        input_dialog = create_input()
+    async def main(
+        input_dialog: typing.Optional[qtrio.dialogs.TextInputDialog] = None,
+        output_dialog: typing.Optional[qtrio.dialogs.MessageBox] = None,
+    ) -> None:
+        if input_dialog is None:  # pragma: nocover
+            input_dialog = create_input()
 
-    if output_dialog is None:  # pragma: nocover
-        output_dialog = create_output()
+        if output_dialog is None:  # pragma: nocover
+            output_dialog = create_output()
 
-    with contextlib.suppress(qtrio.UserCancelledError):
-        name = await input_dialog.wait()
+        with contextlib.suppress(qtrio.UserCancelledError):
+            name = await input_dialog.wait()
 
-        output_dialog.text = f"Hi {name}, welcome to the team!"
+            output_dialog.text = f"Hi {name}, welcome to the team!"
 
-        await output_dialog.wait()
+            await output_dialog.wait()
 
 .. _chat: https://gitter.im/python-trio/general
 .. |chat badge| image:: https://img.shields.io/badge/chat-join%20now-blue.svg?color=royalblue&logo=Gitter&logoColor=whitesmoke
