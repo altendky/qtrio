@@ -59,10 +59,9 @@ async def test_main_cancelled():
     async with trio.open_nursery() as nursery:
         await nursery.start(user)
 
-        with pytest.raises(qtrio.UserCancelledError):
-            await qtrio.examples.readme.qtrio.main(
-                input_dialog=input_dialog,
-                output_dialog=output_dialog,
-            )
+        await qtrio.examples.readme.qtrio.main(
+            input_dialog=input_dialog,
+            output_dialog=output_dialog,
+        )
 
     assert not output_shown
