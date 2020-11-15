@@ -7,14 +7,14 @@ import qtrio
 import qtrio.dialogs
 
 
-def create_input():
+def create_input() -> qtrio.dialogs.TextInputDialog:
     return qtrio.dialogs.create_text_input_dialog(
         title="Hello",
         label="Enter your name:",
     )
 
 
-def create_output():
+def create_output() -> qtrio.dialogs.MessageBox:
     return qtrio.dialogs.create_message_box(
         title="Hello",
         text="",
@@ -26,7 +26,7 @@ def create_output():
 async def main(
     input_dialog: typing.Optional[qtrio.dialogs.TextInputDialog] = None,
     output_dialog: typing.Optional[qtrio.dialogs.MessageBox] = None,
-):
+) -> None:
     if input_dialog is None:
         input_dialog = create_input()
 

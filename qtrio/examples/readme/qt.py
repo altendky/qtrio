@@ -4,7 +4,7 @@ from qtpy import QtCore
 from qtpy import QtWidgets
 
 
-def create_input():
+def create_input() -> QtWidgets.QInputDialog:
     dialog = QtWidgets.QInputDialog()
     dialog.setWindowTitle("Hello")
     dialog.setLabelText("Enter your name:")
@@ -12,7 +12,7 @@ def create_input():
     return dialog
 
 
-def create_output():
+def create_output() -> QtWidgets.QMessageBox:
     return QtWidgets.QMessageBox(
         QtWidgets.QMessageBox.Icon.Question,
         "Hello",
@@ -30,7 +30,7 @@ class Main:
         self.input_dialog = input_dialog
         self.output_dialog = output_dialog
 
-    def setup(self):
+    def setup(self) -> None:
         if self.input_dialog is None:
             self.input_dialog = create_input()
 
@@ -39,7 +39,7 @@ class Main:
 
         self.input_dialog.show()
 
-    def input_accepted(self):
+    def input_accepted(self) -> None:
         name = self.input_dialog.textValue()
 
         if self.output_dialog is None:
@@ -50,14 +50,14 @@ class Main:
         self.output_dialog.finished.connect(self.output_finished)
         self.output_dialog.show()
 
-    def input_rejected(self):
+    def input_rejected(self) -> None:
         QtCore.QCoreApplication.instance().quit()
 
-    def output_finished(self):
+    def output_finished(self) -> None:
         QtCore.QCoreApplication.instance().quit()
 
 
-def main():
+def main() -> None:
     application = QtWidgets.QApplication([])
     application.setQuitOnLastWindowClosed(False)
     main_object = Main()
