@@ -41,7 +41,7 @@ and PyQt5 are supported.
 
 By enabling use of ``async`` and ``await`` it is possible in some cases to write related
 code more concisely and clearly than you would get with the signal and slot mechanisms
-of Qt concurrency.
+of Qt concurrency.  See the ``README`` examples in the docs for the full code.
 
 .. code-block:: python
 
@@ -80,6 +80,9 @@ of Qt concurrency.
         def output_finished(self):
             QtCore.QCoreApplication.instance().quit()
 
+Note how by using ``async`` and ``await`` we are able to more clearly and concisely
+describe the sequenced activity.
+
 .. code-block:: python
 
     async def main(
@@ -98,9 +101,6 @@ of Qt concurrency.
             output_dialog.text = f"Hi {name}, welcome to the team!"
 
             await output_dialog.wait()
-
-Note how by using ``async`` and ``await`` we are able to more clearly and concisely
-describe the sequenced activity.
 
 .. _chat: https://gitter.im/python-trio/general
 .. |chat badge| image:: https://img.shields.io/badge/chat-join%20now-blue.svg?color=royalblue&logo=Gitter&logoColor=whitesmoke
