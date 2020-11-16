@@ -41,7 +41,8 @@ and PyQt5 are supported.
 
 By enabling use of ``async`` and ``await`` it is possible in some cases to write related
 code more concisely and clearly than you would get with the signal and slot mechanisms
-of Qt concurrency.  See the ``README`` examples in the docs for the full code.
+of Qt concurrency.  See the ``README`` examples in the docs for the full code.  The
+first example here shows classic pure Qt code.
 
 .. code-block:: python
 
@@ -80,8 +81,8 @@ of Qt concurrency.  See the ``README`` examples in the docs for the full code.
         def output_finished(self) -> None:
             QtCore.QCoreApplication.instance().quit()
 
-Note how by using ``async`` and ``await`` we are able to more clearly and concisely
-describe the sequenced activity.
+The second example, below, shows how using ``async`` and ``await`` allows for more
+concise and clearly description of the sequenced activity.
 
 .. code-block:: python
 
