@@ -85,7 +85,8 @@ setup(
             "pyqt5 >= 5.15.1",
             "pyqt5-stubs",
         ],
-        "pyside2": ["pyside2"],
+        # != 5.15.2 for https://bugreports.qt.io/browse/PYSIDE-1431
+        "pyside2": ["pyside2 != 5.15.2"],
         "testing": [pytest_trio],
     },
     entry_points={"console_scripts": ["qtrio = qtrio._cli:cli"]},
