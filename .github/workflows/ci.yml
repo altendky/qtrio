@@ -136,7 +136,6 @@ jobs:
           apt-get install --yes libgl1-mesa-dev xvfb x11-utils libdbus-1-3 libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xfixes0
       - name: Work around 5.15.2 libxcb-util issue
         # https://bugreports.qt.io/browse/QTBUG-88688
-        shell: python
         run: |
           python symlink_libxcb_util.py
       - name: Run tests
