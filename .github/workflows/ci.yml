@@ -86,7 +86,7 @@ jobs:
           INSTALL_EXTRAS: '[pyside2,p_checks,p_docs]'
 
   Windows:
-    name: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_library }})'
+    name: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_library.name }}, ${{ matrix.qt_library.version)'
     timeout-minutes: 20
     runs-on: 'windows-latest'
     strategy:
@@ -94,7 +94,17 @@ jobs:
       matrix:
         python: ['3.6', '3.7', '3.8', '3.9']
         arch: ['x86', 'x64']
-        qt_library: ['PyQt5', 'PySide2']
+        qt_library:
+          - name: PyQt5
+            version: latest
+            extras: pyqt5
+          - name: PyQt5
+            version: 5.15.0
+            extras: pyqt5
+            pip_specifier: pyqt5==5.15.0
+          - name: PySide2
+            version: latest
+            extras: pyside2
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -103,13 +113,16 @@ jobs:
         with:
           python-version: '${{ matrix.python }}.0-alpha - ${{ matrix.python }}.X'
           architecture: '${{ matrix.arch }}'
+      - name: Setup specific Qt wrapper version
+        if: matrix.qt_library.pip_specifier
+        run: python -m pip install ${{ matrix.qt_library.pip_specifier }}
       - name: Run tests
         run: ./ci.sh
         shell: bash
         env:
           # Should match 'name:' up above
-          JOB_NAME: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_library }})'
-          INSTALL_EXTRAS: '[${{ matrix.qt_library }},p_tests]'
+          JOB_NAME: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_library.name }}, ${{ matrix.qt_library.version)'
+          INSTALL_EXTRAS: '[${{ matrix.qt_library.extras }},p_tests]'
           # TODO: https://github.com/pytest-dev/pytest/issues/7623
           PYTHONIOENCODING: 'utf-8'
 
