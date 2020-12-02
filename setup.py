@@ -80,11 +80,7 @@ setup(
         ],
         "cli": extras_cli,
         "examples": extras_examples,
-        "pyqt5": [
-            # >= 5.15.1 for https://www.riverbankcomputing.com/pipermail/pyqt/2020-July/043064.html
-            "pyqt5 >= 5.15.1",
-            "pyqt5-stubs",
-        ],
+        "pyqt5": ["pyqt5", "pyqt5-stubs"],
         # != 5.15.2 for https://bugreports.qt.io/browse/PYSIDE-1431
         "pyside2": ["pyside2 != 5.15.2"],
         "testing": [pytest_trio],
