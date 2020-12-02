@@ -122,8 +122,8 @@ jobs:
           # TODO: https://github.com/pytest-dev/pytest/issues/7623
           PYTHONIOENCODING: 'utf-8'
 
-  Ubuntu:
-    name: 'Ubuntu (${{ matrix.python }}, ${{ matrix.qt_library.name }}, ${{ matrix.qt_library.version_name }})'
+  Linux:
+    name: 'Linux (${{ matrix.python }}, ${{ matrix.qt_library.name }}, ${{ matrix.qt_library.version_name }})'
     timeout-minutes: 10
     runs-on: 'ubuntu-latest'
     container: 'docker://python:${{ matrix.python }}-buster'
@@ -157,7 +157,7 @@ jobs:
         run: ./ci.sh
         env:
           # Should match 'name:' up above
-          JOB_NAME: 'Ubuntu (${{ matrix.python }}, ${{ matrix.qt_library.name }}, ${{ matrix.qt_library.version_name }})'
+          JOB_NAME: 'Linux (${{ matrix.python }}, ${{ matrix.qt_library.name }}, ${{ matrix.qt_library.version_name }})'
           INSTALL_EXTRAS: '[${{ matrix.qt_library.extras }},p_tests]'
 
   macOS:
@@ -200,7 +200,7 @@ jobs:
       - Builds
       - Checks
       - Windows
-      - Ubuntu
+      - Linux
       - macOS
     steps:
       - name: This
