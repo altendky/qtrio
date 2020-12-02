@@ -86,7 +86,7 @@ jobs:
           INSTALL_EXTRAS: '[pyside2,p_checks,p_docs]'
 
   Windows:
-    name: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_library.name }}, ${{ matrix.qt_library.version_name)'
+    name: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_library.name }}, ${{ matrix.qt_library.version_name }})'
     timeout-minutes: 20
     runs-on: 'windows-latest'
     strategy:
@@ -121,7 +121,7 @@ jobs:
         shell: bash
         env:
           # Should match 'name:' up above
-          JOB_NAME: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_library.name }}, ${{ matrix.qt_library.version_name)'
+          JOB_NAME: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_library.name }}, ${{ matrix.qt_library.version_name }})'
           INSTALL_EXTRAS: '[${{ matrix.qt_library.extras }},p_tests]'
           # TODO: https://github.com/pytest-dev/pytest/issues/7623
           PYTHONIOENCODING: 'utf-8'
