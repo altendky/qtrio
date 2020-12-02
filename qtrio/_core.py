@@ -180,7 +180,7 @@ class Emission:
                 signal
             )
         elif qtpy.PYSIDE2:
-            # TODO: get this to work properly.
+            # bool() to accomodate SignalInstance being typed Any right now...
             return bool(self.signal == signal)
 
         raise qtrio.QTrioException()  # pragma: no cover
