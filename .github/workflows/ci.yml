@@ -86,7 +86,7 @@ jobs:
           INSTALL_EXTRAS: '[pyside2,p_checks,p_docs]'
 
   Windows:
-    name: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_library.name }}, ${{ matrix.qt_library.version)'
+    name: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_library.name }}, ${{ matrix.qt_library.version_name)'
     timeout-minutes: 20
     runs-on: 'windows-latest'
     strategy:
@@ -96,14 +96,14 @@ jobs:
         arch: ['x86', 'x64']
         qt_library:
           - name: PyQt5
-            version: latest
+            version_name: latest
             extras: pyqt5
           - name: PyQt5
-            version: 5.15.0
+            version_name: 5.15.0
             extras: pyqt5
             pip_specifier: pyqt5==5.15.0
           - name: PySide2
-            version: latest
+            version_name: latest
             extras: pyside2
     steps:
       - name: Checkout
@@ -121,7 +121,7 @@ jobs:
         shell: bash
         env:
           # Should match 'name:' up above
-          JOB_NAME: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_library.name }}, ${{ matrix.qt_library.version)'
+          JOB_NAME: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_library.name }}, ${{ matrix.qt_library.version_name)'
           INSTALL_EXTRAS: '[${{ matrix.qt_library.extras }},p_tests]'
           # TODO: https://github.com/pytest-dev/pytest/issues/7623
           PYTHONIOENCODING: 'utf-8'
