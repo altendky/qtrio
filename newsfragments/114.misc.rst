@@ -1,1 +1,0 @@
-Refactor :func:`qtrio.host` to be much simpler.

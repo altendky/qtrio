@@ -1,1 +1,0 @@
-Workaround for `sphinx-doc/sphinx#8015 <https://github.com/sphinx-doc/sphinx/issues/8015>`_ removed.

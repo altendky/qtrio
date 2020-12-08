@@ -8,8 +8,7 @@ import trio
 import qtrio.examples.crossingpaths
 
 
-@qtrio.host
-async def test_main(request, qtbot):
+async def test_main(qtbot):
     class SignaledLabel(QtWidgets.QLabel):
         text_changed = QtCore.Signal(str)
 
@@ -34,7 +33,10 @@ async def test_main(request, qtbot):
             nursery.start_soon(user)
 
             await qtrio.examples.crossingpaths.main(
-                label=label, message="test world", change_delay=0.01, close_delay=0.01,
+                label=label,
+                message="test world",
+                change_delay=0.01,
+                close_delay=0.01,
             )
 
     assert results == [

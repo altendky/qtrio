@@ -15,4 +15,4 @@ python:
       path: .
       extra_requirements:
         - pyside2
-        - docs
+        - p_docs

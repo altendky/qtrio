@@ -1,53 +1,60 @@
-timeout = 40
+import typing
+
+import qtrio
+from qtpy import QtCore
+from qtpy import QtWidgets
+import trio
+
+import qtrio.examples.buildingrespect
 
 
-def test_main(testdir):
-    conftest_file = r"""
-    import qtrio._tests.helpers
+async def test_main(request, qtbot):
+    class SignaledLabel(QtWidgets.QLabel):
+        text_changed = QtCore.Signal(str)
 
-    qtrio_preshow_workaround_fixture = qtrio._tests.helpers.qtrio_preshow_workaround_fixture
-    """
-    testdir.makeconftest(conftest_file)
+        def setText(self, *args, **kwargs):
+            super().setText(*args, **kwargs)
+            self.text_changed.emit(self.text())
 
-    test_file = r"""
-    import qtrio
-    from qtpy import QtCore
-    from qtpy import QtWidgets
-    import trio
-    import trio.testing
+    widget = qtrio.examples.buildingrespect.Widget(label=SignaledLabel())
+    qtbot.addWidget(widget.widget)
 
-    import qtrio.examples.buildingrespect
+    message = "test world"
+    results: typing.List[str] = []
 
+    async def user():
+        for _ in message:
+            widget.button.click()
 
-    class SignaledButton(QtWidgets.QPushButton):
-        shown = QtCore.Signal()
+        with trio.move_on_after(1):
+            async for emission in emissions.channel:
+                [text] = emission.args
+                results.append(text)
 
-        def showEvent(self, event):
-            super().showEvent(event)
-            if event.isAccepted():
-                self.shown.emit()
+        widget.button.click()
 
-
-    @qtrio.host
-    async def test_example(request, qtbot):
-        button = SignaledButton()
-        qtbot.addWidget(button)
-
-        async def user():
-            await emissions.channel.receive()
-
-            button.click()
-
-
+    async with qtrio.enter_emissions_channel(
+        signals=[widget.label.text_changed],
+    ) as emissions:
         async with trio.open_nursery() as nursery:
-            async with qtrio.enter_emissions_channel(
-                signals=[button.shown],
-            ) as emissions:
-                nursery.start_soon(user)
+            nursery.start_soon(user)
 
-                await qtrio.examples.buildingrespect.main(button=button)
-    """
-    testdir.makepyfile(test_file)
+            await qtrio.examples.buildingrespect.main(
+                widget=widget,
+                message=message,
+            )
 
-    result = testdir.runpytest_subprocess("--capture=no", timeout=timeout)
-    result.assert_outcomes(passed=1)
+    assert results == [
+        "test world",
+        "",
+        "t",
+        "te",
+        "tes",
+        "test",
+        "test ",
+        "test w",
+        "test wo",
+        "test wor",
+        "test worl",
+        "test world",
+    ]

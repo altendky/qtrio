@@ -1,1 +1,0 @@
-Process newsfragments in Read the Docs for non-release builds.
