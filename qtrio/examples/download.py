@@ -33,7 +33,8 @@ async def main(
     try:
         if url is None:
             text_input_dialog = qtrio.dialogs.create_text_input_dialog(
-                title=create_title("Enter URL"), label="URL to download:",
+                title=create_title("Enter URL"),
+                label="URL to download:",
             )
             url_text = await text_input_dialog.wait()
 
@@ -51,7 +52,9 @@ async def main(
         return
 
     await qtrio.examples.download.get_dialog(
-        url=converted_url, destination=converted_destination, fps=fps,
+        url=converted_url,
+        destination=converted_destination,
+        fps=fps,
     )
 
     return
