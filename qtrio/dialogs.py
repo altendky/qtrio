@@ -511,6 +511,3 @@ def create_message_box(
         parent: See :attr:`qtrio.dialogs.MessageBox.parent`.
     """
     return MessageBox(icon=icon, title=title, text=text, buttons=buttons, parent=parent)
-
-
-#
