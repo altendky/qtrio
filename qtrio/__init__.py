@@ -29,6 +29,10 @@ from ._core import (
     register_event_type,
     register_requested_event_type,
     Reenter,
+    wait_signal,
 )
 
-from ._qt import Signal
+from ._qt import (
+    connection,
+    Signal,
+)

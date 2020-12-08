@@ -38,7 +38,7 @@ def emissions() -> None:  # pragma: no cover
     help="Frames per second for progress updates.",
     type=click.IntRange(min=1),
 )
-def download(url, destination, fps):  # pragma: no cover
+def download(url: str, destination: str, fps: int) -> None:  # pragma: no cover
     import qtrio
     import qtrio.examples.download
 

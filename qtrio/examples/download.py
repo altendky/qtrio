@@ -5,6 +5,7 @@ import os
 import time
 import typing
 
+import attr
 import async_generator
 import httpcore._async.http11
 import httpx
@@ -45,7 +46,9 @@ async def main(
             converted_url = url
 
         if destination is None:
-            destination = await get_save_file_path(default_filename=url.path[-1])
+            destination = await get_save_file_path(
+                default_filename=converted_url.path[-1]
+            )
 
         converted_destination = trio.Path(destination)
     except qtrio.UserCancelledError:
@@ -60,7 +63,7 @@ async def main(
     return
 
 
-async def get_dialog(url: hyperlink.URL, destination: trio.Path, fps: int):
+async def get_dialog(url: hyperlink.URL, destination: trio.Path, fps: int) -> None:
     async with manage_progress_dialog(
         title=create_title("Fetching"), label=f"Fetching {url}..."
     ) as progress_dialog:
@@ -71,22 +74,22 @@ async def get_dialog(url: hyperlink.URL, destination: trio.Path, fps: int):
             with qtrio.connection(signal=progress_dialog.canceled, slot=cscope.cancel):
                 start = time.monotonic()
 
-                async for downloaded, total in get(
+                async for progress in get(
                     url=url, destination=destination, update_period=1 / fps
                 ):
-                    progress_dialog.setMaximum(total)
-                    progress_dialog.setValue(downloaded)
+                    progress_dialog.setMaximum(progress.total)
+                    progress_dialog.setValue(progress.downloaded)
 
                 end = time.monotonic()
 
         duration = end - start
-        bytes_per_second = downloaded / duration
+        bytes_per_second = progress.downloaded / duration
 
         summary = "\n\n".join(
             [
                 url.asText(),
                 os.fspath(destination),
-                f"Downloaded {downloaded} bytes in {duration:.2f} seconds",
+                f"Downloaded {progress.downloaded} bytes in {duration:.2f} seconds",
                 f"{bytes_per_second:.2f} bytes/second",
             ]
         )
@@ -96,22 +99,34 @@ async def get_dialog(url: hyperlink.URL, destination: trio.Path, fps: int):
     )
 
 
-async def get(url: hyperlink.URL, destination: trio.Path, update_period: float):
+@attr.s(auto_attribs=True, frozen=True)
+class Progress:
+    downloaded: int
+    total: int
+
+
+async def get(
+    url: hyperlink.URL, destination: trio.Path, update_period: float
+) -> typing.AsyncIterable[Progress]:
     async with httpx.AsyncClient() as client:
         async with client.stream("GET", url.asText()) as response:
-            downloaded = 0
-            total = int(response.headers["content-length"])
+            progress = Progress(
+                downloaded=0,
+                total=int(response.headers["content-length"]),
+            )
 
-            yield downloaded, total
+            yield progress
             last_update = time.monotonic()
 
             async with (await destination.open("wb")) as file:
                 async for chunk in response.aiter_raw():
-                    downloaded += len(chunk)
+                    progress = attr.evolve(
+                        progress, downloaded=progress.downloaded + len(chunk)
+                    )
                     await file.write(chunk)
 
                     if time.monotonic() - last_update > update_period:
-                        yield downloaded, total
+                        yield progress
                         last_update = time.monotonic()
 
 
@@ -119,7 +134,9 @@ def create_title(specific: str) -> str:
     return f"QTrio Download Example - {specific}"
 
 
-async def get_save_file_path(default_filename, parent=None):
+async def get_save_file_path(
+    default_filename: str, parent: typing.Optional[QtWidgets.QWidget] = None
+) -> trio.Path:
     dialog = QtWidgets.QFileDialog(parent)
     dialog.setFileMode(QtWidgets.QFileDialog.AnyFile)
     dialog.setAcceptMode(QtWidgets.QFileDialog.AcceptSave)
@@ -138,7 +155,9 @@ async def get_save_file_path(default_filename, parent=None):
     return trio.Path(path)
 
 
-async def show_information_message_box(title, message, parent=None):
+async def show_information_message_box(
+    title: str, message: str, parent: typing.Optional[QtWidgets.QWidget] = None
+) -> None:
     box = QtWidgets.QMessageBox(
         QtWidgets.QMessageBox.Information, title, message, QtWidgets.QMessageBox.Ok
     )
@@ -155,7 +174,7 @@ async def manage_progress_dialog(
     maximum: int = 0,
     cancel_button_text: str = "Cancel",
     parent: QtCore.QObject = None,
-):
+) -> typing.AsyncIterable[QtWidgets.QProgressDialog]:
     dialog = QtWidgets.QProgressDialog(
         label, cancel_button_text, minimum, maximum, parent
     )
