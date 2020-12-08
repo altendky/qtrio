@@ -81,8 +81,8 @@ first example here shows classic pure Qt code.
         def output_finished(self) -> None:
             QtCore.QCoreApplication.instance().quit()
 
-The second example, below, shows how using ``async`` and ``await`` allows for more
-concise and clearly description of the sequenced activity.
+The second example, below, shows how using ``async`` and ``await`` allows for a
+more concise and clear description of the sequenced activity.
 
 .. code-block:: python
 
