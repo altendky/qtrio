@@ -55,7 +55,7 @@ setup(
         "typing-extensions; python_version < '3.8'",
     ],
     extras_require={
-        "p_checks": ["black", "flake8", "mypy", pytest, towncrier],
+        "p_checks": ["black", "flake8", "mypy", pytest, towncrier, *extras_examples],
         "p_docs": [
             # >= 3.2: https://github.com/sphinx-doc/sphinx/issues/8008
             # >= 3.2.1: https://github.com/sphinx-doc/sphinx/issues/8124
