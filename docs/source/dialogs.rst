@@ -13,6 +13,7 @@ Creation Functions
 .. autofunction:: qtrio.dialogs.create_text_input_dialog
 .. autofunction:: qtrio.dialogs.create_file_save_dialog
 .. autofunction:: qtrio.dialogs.create_message_box
+.. autofunction:: qtrio.dialogs.create_progress_dialog
 
 
 Classes
@@ -30,9 +31,17 @@ Classes
 .. autoclass:: qtrio.dialogs.MessageBox
    :members:
 
+.. autoclass:: qtrio.dialogs.ProgressDialog
+   :members:
+
 
 Protocol
 --------
+
+.. autoclass:: qtrio.dialogs.BasicDialogProtocol
+   :members:
+
+.. autofunction:: qtrio.dialogs.check_basic_dialog_protocol
 
 .. autoclass:: qtrio.dialogs.DialogProtocol
    :members:
