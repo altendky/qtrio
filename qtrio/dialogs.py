@@ -18,13 +18,7 @@ else:
     from typing_extensions import Protocol
 
 
-class DialogProtocol(Protocol):
-    """The common interface used for working with QTrio dialogs.  To check that a class
-    implements this protocol see :func:`qtrio.dialogs.check_dialog_protocol`.
-    """
-
-    shown: qtrio.Signal
-    """The signal to be emitted when the dialog is shown."""
+class BasicDialogProtocol(Protocol):
     finished: qtrio.Signal
     """The signal to be emitted when the dialog is finished."""
 
@@ -35,6 +29,31 @@ class DialogProtocol(Protocol):
 
     def teardown(self) -> None:
         """Hide and teardown the dialog."""
+
+
+BasicDialogProtocolT = typing.TypeVar("BasicDialogProtocolT", bound=BasicDialogProtocol)
+
+
+def check_basic_dialog_protocol(
+    cls: typing.Type[BasicDialogProtocolT],
+) -> typing.Type[BasicDialogProtocolT]:
+    """Decorate a class with this to verify it implements the
+    :class:`qtrio.dialogs.BasicDialogProtocol` when a type hint checker such as mypy is
+    run against the code.  At runtime the passed class is cleanly returned.
+
+    Arguments:
+        cls: The class to verify.
+    """
+    return cls
+
+
+class DialogProtocol(BasicDialogProtocol, Protocol):
+    """The common interface used for working with QTrio dialogs.  To check that a class
+    implements this protocol see :func:`qtrio.dialogs.check_dialog_protocol`.
+    """
+
+    shown: qtrio.Signal
+    """The signal to be emitted when the dialog is shown."""
 
     async def wait(self) -> object:
         """Show the dialog, wait for the user interaction, and return the result.
@@ -62,7 +81,7 @@ def check_dialog_protocol(
 
 
 @contextlib.contextmanager
-def _manage(dialog: DialogProtocol) -> typing.Generator[trio.Event, None, None]:
+def _manage(dialog: BasicDialogProtocol) -> typing.Generator[trio.Event, None, None]:
     """Manage the setup and teardown of a dialog including yielding a
     :class:`trio.Event` that is set when the dialog is finished.
 
@@ -514,7 +533,7 @@ def create_message_box(
     return MessageBox(icon=icon, title=title, text=text, buttons=buttons, parent=parent)
 
 
-@check_dialog_protocol
+@check_basic_dialog_protocol
 @attr.s(auto_attribs=True)
 class ProgressDialog:
     """Manage a progress dialog for updating the user.  Generally instances should be
@@ -588,22 +607,6 @@ class ProgressDialog:
             self.dialog.finished.disconnect(self.finished)
         self.dialog = None
         self.reject_button = None
-
-    # async def wait(self) -> None:
-    #     """See :meth:`qtrio.dialogs.DialogProtocol.wait`."""
-    #
-    #     with _manage(dialog=self) as finished_event:
-    #         if self.dialog is None:  # pragma: no cover
-    #             raise qtrio.InternalError(
-    #                 "Dialog not assigned while it is being managed."
-    #             )
-    #
-    #         await finished_event.wait()
-    #
-    #         result = self.dialog.result()
-    #
-    #         if result == QtWidgets.QDialog.Rejected:
-    #             raise qtrio.UserCancelledError()
 
     @async_generator.asynccontextmanager
     async def manage(self) -> typing.AsyncIterable[None]:
