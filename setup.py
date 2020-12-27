@@ -74,6 +74,7 @@ setup(
             pytest,
             "pytest-cov",
             "pytest-faulthandler",
+            "pytest_httpx",
             "pytest-qt",
             pytest_trio,
             'pytest-xvfb; sys_platform == "linux"',
