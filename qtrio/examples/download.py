@@ -86,6 +86,9 @@ async def get_dialog(
     progress_dialog.text = f"Fetching {url}..."
 
     async with progress_dialog.manage():
+        if progress_dialog.dialog is None:  # pragma: no cover
+            raise qtrio.InternalError("Dialog not assigned while it is being managed.")
+
         # Always show the dialog
         progress_dialog.dialog.setMinimumDuration(0)
 

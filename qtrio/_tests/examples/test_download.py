@@ -9,7 +9,9 @@ import qtrio.dialogs
 import qtrio.examples.download
 
 
-async def test_get_dialog(httpx_mock: pytest_httpx.HTTPXMock, tmp_path: pathlib.Path):
+async def test_get_dialog(
+    httpx_mock: pytest_httpx.HTTPXMock, tmp_path: pathlib.Path
+) -> None:
     temporary_directory = trio.Path(tmp_path)
 
     random_generator = random.Random(0)
@@ -31,6 +33,7 @@ async def test_get_dialog(httpx_mock: pytest_httpx.HTTPXMock, tmp_path: pathlib.
         emission = await emissions.channel.receive()
         assert emission.is_from(signal=message_box.shown)
 
+        assert message_box.accept_button is not None
         message_box.accept_button.click()
 
     async with trio.open_nursery() as nursery:
@@ -53,7 +56,7 @@ async def test_get_dialog(httpx_mock: pytest_httpx.HTTPXMock, tmp_path: pathlib.
     assert written == data
 
 
-async def test_get(httpx_mock: pytest_httpx.HTTPXMock, tmp_path: pathlib.Path):
+async def test_get(httpx_mock: pytest_httpx.HTTPXMock, tmp_path: pathlib.Path) -> None:
     temporary_directory = trio.Path(tmp_path)
 
     random_generator = random.Random(0)

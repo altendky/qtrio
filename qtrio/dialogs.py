@@ -525,13 +525,12 @@ class ProgressDialog:
     """The message box title."""
     text: str
     """The message text shown as the progress bar label."""
-    cancel_button_text: str
+    cancel_button_text: typing.Optional[str]
     """The cancel button text."""
     minimum: int
     """The progress value corresponding to no progress."""
     maximum: int
     """The progress value corresponding to completion."""
-    final_value: int = None
 
     parent: typing.Optional[QtWidgets.QWidget] = None
     """The parent widget for the dialog."""
