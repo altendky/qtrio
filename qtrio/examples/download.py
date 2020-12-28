@@ -79,7 +79,7 @@ async def get_dialog(
     message_box: typing.Optional[qtrio.dialogs.MessageBox] = None,
     clock: typing.Callable[[], float] = time.monotonic,
 ) -> None:
-    if progress_dialog is None:
+    if progress_dialog is None:  # pragma: no cover
         progress_dialog = qtrio.dialogs.create_progress_dialog()
 
     progress_dialog.title = create_title("Fetching")
@@ -121,7 +121,7 @@ async def get_dialog(
             ]
         )
 
-    if message_box is None:
+    if message_box is None:  # pragma: no cover
         message_box = qtrio.dialogs.create_message_box()
 
     message_box.title = create_title("Download Summary")
