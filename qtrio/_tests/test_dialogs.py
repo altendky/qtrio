@@ -282,6 +282,7 @@ async def test_progress_dialog_cancel(qtbot):
     with qtrio._qt.connection(signal=dialog.shown, slot=qtbot.addWidget):
         with pytest.raises(qtrio.UserCancelledError):
             async with dialog.manage():
+                assert dialog.dialog is not None
                 dialog.dialog.cancel()
 
 
