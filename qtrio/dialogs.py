@@ -560,7 +560,7 @@ class ProgressDialog:
     dialog: typing.Optional[QtWidgets.QProgressDialog] = None
     """The actual dialog widget instance."""
     reject_button: typing.Optional[QtWidgets.QPushButton] = None
-    """The input cancellation button."""
+    """The cancellation button."""
 
     shown = qtrio.Signal(QtWidgets.QMessageBox)
     """See :attr:`qtrio.dialogs.DialogProtocol.shown`."""
