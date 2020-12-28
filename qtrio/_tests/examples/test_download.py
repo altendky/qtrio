@@ -1,10 +1,11 @@
 import pathlib
 import random
-import trio
+import typing
 
 import hyperlink
 import pytest
 import pytest_httpx
+import trio
 
 import qtrio.dialogs
 import qtrio.examples.download
@@ -57,14 +58,20 @@ async def test_get_dialog(
     assert written == data
 
 
-async def asynchronize(sequence):
+T = typing.TypeVar("T")
+
+
+async def asynchronize(sequence: typing.Iterable[T]) -> typing.AsyncIterable[T]:
     for element in sequence:
         yield element
 
 
 def randomly_chunked_bytes(
-    random_generator, chunk_size_minimum, chunk_size_maximum, chunk_count
-):
+    random_generator: random.Random,
+    chunk_size_minimum: int,
+    chunk_size_maximum: int,
+    chunk_count: int,
+) -> typing.List[bytes]:
     return [
         bytes(
             random_generator.randrange(256)
@@ -104,7 +111,7 @@ random_generator = random.Random(0)
     ids=["Unknown content length", "Known content length"],
 )
 async def test_get_chunked(
-    chunked_data,
+    chunked_data: typing.List[bytes],
     content_length_specified: bool,
     httpx_mock: pytest_httpx.HTTPXMock,
     tmp_path: pathlib.Path,
@@ -115,7 +122,8 @@ async def test_get_chunked(
     data = b"".join(chunked_data)
     destination = temporary_directory.joinpath("file")
 
-    headers = {}
+    content_length: typing.Optional[int]
+    headers: typing.Dict[str, str] = {}
 
     if content_length_specified:
         content_length = len(data)
