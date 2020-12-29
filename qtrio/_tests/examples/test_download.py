@@ -155,6 +155,7 @@ async def test_get_dialog_canceled(
     async def user():
         await emissions.channel.receive()
 
+        assert progress_dialog.dialog is not None
         assert progress_dialog.dialog.isVisible()
         assert message_box.dialog is None
 
