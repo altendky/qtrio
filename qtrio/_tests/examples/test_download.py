@@ -29,8 +29,8 @@ except ImportError:
     # import so instead we'll delve into the innards of pytest for now.
     import _pytest.outcomes
 
-    minimum_python_version_string = '.'.join(str(v) for v in minimum_python_version)
-    python_version_string = '.'.join(str(v) for v in sys.version_info)
+    minimum_python_version_string = ".".join(str(v) for v in minimum_python_version)
+    python_version_string = ".".join(str(v) for v in sys.version_info)
 
     raise _pytest.outcomes.Skipped(
         msg=(
