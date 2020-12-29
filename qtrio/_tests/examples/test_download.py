@@ -154,7 +154,7 @@ def optional_file_dialog_fixture(request):
     return None
 
 
-async def test_get_main(
+async def test_main(
     chunked_data: typing.List[bytes],
     http_application: quart_trio.QuartTrio,
     optional_text_input_dialog: typing.Optional[qtrio.dialogs.TextInputDialog],
