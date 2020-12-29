@@ -24,21 +24,17 @@ except ImportError:
         # quart-trio _should_ be available so fail out normally
         raise
 
-    # https://docs.pytest.org/en/stable/reference.html#pytest-importorskip would be
-    # used here except that mypy doesn't understand that `importorskip()` is doing the
-    # import so instead we'll delve into the innards of pytest for now.
-    import _pytest.outcomes
-
     minimum_python_version_string = ".".join(str(v) for v in minimum_python_version)
     python_version_string = ".".join(str(v) for v in sys.version_info)
 
-    raise _pytest.outcomes.Skipped(
-        msg=(
-            f"quart-trio is not available for Python <{minimum_python_version_string}."
-            f"  Running in Python {python_version_string}."
-        ),
-        allow_module_level=True,
+    reason = (
+        f"quart-trio is not available for Python <{minimum_python_version_string}."
+        f"  Running in Python {python_version_string}."
     )
+
+    # There's a race relative to the import above, but usually this will fail just as
+    # above and skip.
+    pytest.importorskip(modname="quart_trio", reason=reason)
 
 
 T = typing.TypeVar("T")
