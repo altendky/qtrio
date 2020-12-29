@@ -12,7 +12,6 @@ import httpcore._async.http11
 import httpx
 import hyperlink
 import qtrio
-import quart_trio
 import trio
 
 import qtrio.dialogs
@@ -81,7 +80,7 @@ async def get_dialog(
     progress_dialog: typing.Optional[qtrio.dialogs.ProgressDialog] = None,
     message_box: typing.Optional[qtrio.dialogs.MessageBox] = None,
     clock: typing.Callable[[], float] = time.monotonic,
-    http_application: typing.Optional[quart_trio.QuartTrio] = None,
+    http_application: typing.Optional[typing.Callable[..., typing.Any]] = None,
 ) -> None:
     if progress_dialog is None:  # pragma: no cover
         progress_dialog = qtrio.dialogs.create_progress_dialog()
@@ -158,7 +157,7 @@ async def get(
     destination: trio.Path,
     update_period: float,
     clock: typing.Callable[[], float] = time.monotonic,
-    http_application: typing.Optional[quart_trio.QuartTrio] = None,
+    http_application: typing.Optional[typing.Callable[..., typing.Any]] = None,
 ) -> typing.AsyncIterable[Progress]:
     # ignoring arg-type for https://github.com/encode/httpx/issues/1439
     async with httpx.AsyncClient(app=http_application) as client:  # type: ignore[arg-type]
