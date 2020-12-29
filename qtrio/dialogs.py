@@ -348,6 +348,19 @@ class FileDialog:
     finished = qtrio.Signal(int)  # QtWidgets.QDialog.DialogCode
     """See :attr:`qtrio.dialogs.BasicDialogProtocol.finished`."""
 
+    def select_path(self, path: trio.Path):
+        directory = os.fspath(path.parent)
+        file = os.fspath(path.name)
+
+        self.dialog.setDirectory(directory)
+        self.dialog.selectFile(file)
+
+        [selected_path] = self.dialog.selectedFiles()
+
+        if selected_path != os.fspath(path):
+            # TODO: make a properly descriptive custom exception
+            raise Exception(' - '.join([selected_path, path]))
+
     def setup(self) -> None:
         """See :meth:`qtrio.dialogs.BasicDialogProtocol.setup`."""
 

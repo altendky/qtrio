@@ -186,7 +186,7 @@ async def test_main(
             assert emission.is_from(optional_file_dialog.shown)
 
             assert optional_file_dialog.dialog is not None
-            optional_file_dialog.dialog.selectFile(os.fspath(destination))
+            optional_file_dialog.select_path(path=destination)
 
             assert optional_file_dialog.accept_button is not None
             optional_file_dialog.accept_button.click()
