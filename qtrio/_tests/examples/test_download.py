@@ -5,7 +5,10 @@ import typing
 
 import hyperlink
 import pytest
-import quart_trio
+try:
+    import quart_trio
+except ImportError:
+    quart_trio = None
 import trio
 
 import qtrio.dialogs
@@ -13,7 +16,7 @@ import qtrio.examples.download
 
 
 pytestmark = pytest.mark.skipif(
-    sys.version_info < (3, 7), reason="quart-trio requires Python 3.7+"
+    quart_trio is None, reason="quart-trio is not available"
 )
 
 
