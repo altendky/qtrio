@@ -1,5 +1,6 @@
 import pathlib
 import random
+import sys
 import typing
 
 import hyperlink
@@ -9,6 +10,11 @@ import trio
 
 import qtrio.dialogs
 import qtrio.examples.download
+
+
+pytestmark = pytest.mark.skipif(
+    sys.version_info < (3, 7), reason="quart-trio requires Python 3.7+"
+)
 
 
 T = typing.TypeVar("T")

@@ -15,7 +15,7 @@ pytest = "pytest >= 6"
 # >= 0.7.0 for trio_run configuration support
 pytest_trio = "pytest-trio >= 0.7.0"
 
-quart_trio = "quart-trio"
+quart_trio = "quart-trio; python_version >= '3.7'"
 
 # >= 19.9.0rc1 for https://github.com/twisted/towncrier/issues/144
 towncrier = "towncrier >= 19.9.0rc1"

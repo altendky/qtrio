@@ -2,6 +2,7 @@
 integration with Qt.
 """
 import contextlib
+import math
 import os
 import time
 import typing
@@ -125,7 +126,14 @@ async def get_dialog(
             return
 
         duration = end - start
-        bytes_per_second = progress.downloaded / duration
+        if duration == 0:
+            # define this seems to happen when testing on Windows with an x86 Python
+            if progress.downloaded > 0:
+                bytes_per_second = math.inf
+            else:  # pragma: no cover
+                bytes_per_second = 0
+        else:
+            bytes_per_second = progress.downloaded / duration
 
         summary = "\n\n".join(
             [
