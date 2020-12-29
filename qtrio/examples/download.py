@@ -36,18 +36,25 @@ async def main(
     url: typing.Optional[typing.Union[str, hyperlink.URL]],
     destination: typing.Optional[typing.Union[str, os.PathLike]],
     fps: int = 60,
+    text_input_dialog: typing.Optional[qtrio.dialogs.TextInputDialog] = None,
     file_dialog: typing.Optional[qtrio.dialogs.FileDialog] = None,
+    progress_dialog: typing.Optional[qtrio.dialogs.ProgressDialog] = None,
+    message_box: typing.Optional[qtrio.dialogs.MessageBox] = None,
     clock: typing.Callable[[], float] = time.monotonic,
+    http_application: typing.Optional[typing.Callable[..., typing.Any]] = None,
 ) -> None:
+    print("file dialog right inside", id(file_dialog), file_dialog, flush=True)
     converted_url: hyperlink.URL
     converted_destination: trio.Path
 
     with contextlib.suppress(qtrio.UserCancelledError):
         if url is None:
-            text_input_dialog = qtrio.dialogs.create_text_input_dialog(
-                title=create_title("Enter URL"),
-                label="URL to download:",
-            )
+            if text_input_dialog is None:  # pragma: no cover
+                text_input_dialog = qtrio.dialogs.create_text_input_dialog()
+
+            text_input_dialog.title = create_title("Enter URL")
+            text_input_dialog.label = "URL to download:"
+
             url = await text_input_dialog.wait()
 
         if isinstance(url, str):
@@ -56,7 +63,7 @@ async def main(
             converted_url = url
 
         if destination is None:
-            if file_dialog is None:
+            if file_dialog is None:  # pragma: no cover
                 file_dialog = qtrio.dialogs.create_file_save_dialog()
 
             file_dialog.default_file = trio.Path(converted_url.path[-1])
@@ -69,7 +76,10 @@ async def main(
             url=converted_url,
             destination=converted_destination,
             fps=fps,
+            progress_dialog=progress_dialog,
+            message_box=message_box,
             clock=clock,
+            http_application=http_application,
         )
 
 
