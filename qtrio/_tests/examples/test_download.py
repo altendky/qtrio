@@ -1,5 +1,6 @@
 import pathlib
 import random
+import sys
 import typing
 
 import hyperlink
@@ -10,21 +11,11 @@ import qtrio.dialogs
 import qtrio.examples.download
 
 
-try:
-    import quart_trio
-except ImportError:
-    # quart-trio has tighter Python version restrictions than we do so we will forego
-    # testing this file if quart-trio _should_ be unavailable.
-
-    import sys
-
-    minimum_python_version = (3, 7)
-
-    if sys.version_info >= minimum_python_version:  # pragma: no cover
-        # quart-trio _should_ be available so fail out normally
-        raise
-
-    minimum_python_version_string = ".".join(str(v) for v in minimum_python_version)
+minimum_python_version_for_quart_trio = (3, 7)
+if sys.version_info < minimum_python_version_for_quart_trio:
+    minimum_python_version_string = ".".join(
+        str(v) for v in minimum_python_version_for_quart_trio
+    )
     python_version_string = ".".join(str(v) for v in sys.version_info)
 
     reason = (
@@ -32,9 +23,14 @@ except ImportError:
         f"  Running in Python {python_version_string}."
     )
 
-    # There's a race relative to the import above, but usually this will fail just as
-    # above and skip.
+    # quart-trio is expected to not be available but this is the public interface that
+    # pytest provides for skipping and also terminating the import of the test module.
     pytest.importorskip(modname="quart_trio", reason=reason)
+    raise Exception("this should never run")  # pragma: no cover
+
+
+# By the time we get here, we know that quart-trio is supposed to be available.
+import quart_trio
 
 
 T = typing.TypeVar("T")
