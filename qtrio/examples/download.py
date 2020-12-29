@@ -11,6 +11,7 @@ import httpcore._async.http11
 import httpx
 import hyperlink
 import qtrio
+import quart_trio
 import trio
 
 import qtrio.dialogs
@@ -79,6 +80,7 @@ async def get_dialog(
     progress_dialog: typing.Optional[qtrio.dialogs.ProgressDialog] = None,
     message_box: typing.Optional[qtrio.dialogs.MessageBox] = None,
     clock: typing.Callable[[], float] = time.monotonic,
+    http_application: typing.Optional[quart_trio.QuartTrio] = None,
 ) -> None:
     if progress_dialog is None:  # pragma: no cover
         progress_dialog = qtrio.dialogs.create_progress_dialog()
@@ -100,7 +102,10 @@ async def get_dialog(
                 start = clock()
 
                 async for progress in get(
-                    url=url, destination=destination, update_period=1 / fps
+                    url=url,
+                    destination=destination,
+                    update_period=1 / fps,
+                    http_application=http_application,
                 ):
                     if progress.first:
                         if progress.total is None:
@@ -145,8 +150,10 @@ async def get(
     destination: trio.Path,
     update_period: float,
     clock: typing.Callable[[], float] = time.monotonic,
+    http_application: typing.Optional[quart_trio.QuartTrio] = None,
 ) -> typing.AsyncIterable[Progress]:
-    async with httpx.AsyncClient() as client:
+    # ignoring arg-type for https://github.com/encode/httpx/issues/1439
+    async with httpx.AsyncClient(app=http_application) as client:  # type: ignore[arg-type]
         async with client.stream("GET", url.asText()) as response:
             raw_content_length = response.headers.get("content-length")
             if raw_content_length is None:

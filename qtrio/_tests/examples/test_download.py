@@ -4,7 +4,7 @@ import typing
 
 import hyperlink
 import pytest
-import pytest_httpx
+import quart_trio
 import trio
 
 import qtrio.dialogs
@@ -36,6 +36,8 @@ def randomly_chunked_bytes(
     ]
 
 
+# Just using a seeded random.Random as an easy way to get consistent data without
+# storing it all in the repository.
 random_generator = random.Random(0)
 one_chunk: typing.List[bytes] = [
     bytes(random_generator.randrange(256) for _ in range(1_000))
@@ -72,29 +74,50 @@ def content_length_specified_fixture(request):
     return request.param
 
 
+@pytest.fixture(name="content_length")
+def content_length_fixture(content_length_specified, chunked_data):
+    content_length: typing.Optional[int]
+
+    if content_length_specified:
+        content_length = sum(len(chunk) for chunk in chunked_data)
+    else:
+        content_length = None
+
+    return content_length
+
+
+@pytest.fixture(name="url")
+def url_fixture():
+    return hyperlink.URL.from_text("http://test/")
+
+
+@pytest.fixture(name="http_application")
+def http_application_fixture(chunked_data, content_length_specified, content_length):
+    application = quart_trio.QuartTrio(__name__)
+
+    @application.route("/")
+    async def root():
+        headers = {}
+
+        if content_length_specified:
+            headers["content-length"] = content_length
+
+        return asynchronize(chunked_data), 200, headers
+
+    return application
+
+
 async def test_get_dialog(
     chunked_data: typing.List[bytes],
-    content_length_specified: bool,
-    httpx_mock: pytest_httpx.HTTPXMock,
+    http_application: quart_trio.QuartTrio,
+    url: hyperlink.URL,
     tmp_path: pathlib.Path,
 ) -> None:
     temporary_directory = trio.Path(tmp_path)
 
-    url = hyperlink.URL.from_text("http://test/file")
+    url = hyperlink.URL.from_text("http://test/")
     data = b"".join(chunked_data)
     destination = temporary_directory.joinpath("file")
-
-    headers: typing.Dict[str, str] = {}
-
-    if content_length_specified:
-        headers["content-length"] = str(len(data))
-
-    httpx_mock.add_response(
-        url=url.asText(),
-        method="GET",
-        data=asynchronize(chunked_data),
-        headers=headers,
-    )
 
     progress_dialog = qtrio.dialogs.create_progress_dialog()
     message_box = qtrio.dialogs.create_message_box()
@@ -117,6 +140,7 @@ async def test_get_dialog(
                 fps=0.1,
                 progress_dialog=progress_dialog,
                 message_box=message_box,
+                http_application=http_application,
             )
 
     async with await destination.open("rb") as written_file:
@@ -127,27 +151,13 @@ async def test_get_dialog(
 
 async def test_get_dialog_canceled(
     chunked_data: typing.List[bytes],
-    content_length_specified: bool,
-    httpx_mock: pytest_httpx.HTTPXMock,
+    http_application: quart_trio.QuartTrio,
+    url: hyperlink.URL,
     tmp_path: pathlib.Path,
 ) -> None:
     temporary_directory = trio.Path(tmp_path)
 
-    url = hyperlink.URL.from_text("http://test/file")
-    data = b"".join(chunked_data)
     destination = temporary_directory.joinpath("file")
-
-    headers: typing.Dict[str, str] = {}
-
-    if content_length_specified:
-        headers["content-length"] = str(len(data))
-
-    httpx_mock.add_response(
-        url=url.asText(),
-        method="GET",
-        data=asynchronize(chunked_data),
-        headers=headers,
-    )
 
     progress_dialog = qtrio.dialogs.create_progress_dialog()
     message_box = qtrio.dialogs.create_message_box()
@@ -178,57 +188,35 @@ async def test_get_dialog_canceled(
                     fps=0.1,
                     progress_dialog=progress_dialog,
                     message_box=message_box,
+                    http_application=http_application,
                 )
 
 
 async def test_get(
     chunked_data: typing.List[bytes],
-    content_length_specified: bool,
-    httpx_mock: pytest_httpx.HTTPXMock,
+    content_length: typing.Optional[int],
+    http_application: quart_trio.QuartTrio,
+    url: hyperlink.URL,
     tmp_path: pathlib.Path,
 ) -> None:
     temporary_directory = trio.Path(tmp_path)
 
-    url = hyperlink.URL.from_text("http://test/file")
     data = b"".join(chunked_data)
     destination = temporary_directory.joinpath("file")
-
-    content_length: typing.Optional[int]
-    headers: typing.Dict[str, str] = {}
-
-    if content_length_specified:
-        content_length = len(data)
-        headers["content-length"] = str(len(data))
-    else:
-        content_length = None
-
-    httpx_mock.add_response(
-        url=url.asText(),
-        method="GET",
-        data=asynchronize(chunked_data),
-        headers=headers,
-    )
 
     progresses = []
 
     async for progress in qtrio.examples.download.get(
-        url=url, destination=destination, update_period=0
+        url=url,
+        destination=destination,
+        update_period=0,
+        http_application=http_application,
     ):
         progresses.append(progress)
 
     async with await destination.open("rb") as written_file:
         written = await written_file.read()
 
-    expected_downloaded_progress = [0]
-    for chunk in chunked_data:
-        expected_downloaded_progress.append(
-            expected_downloaded_progress[-1] + len(chunk)
-        )
-
     assert written == data
-    assert [progress.total for progress in progresses] == [content_length] * (
-        len(chunked_data) + 1
-    )
-    assert [
-        progress.downloaded for progress in progresses
-    ] == expected_downloaded_progress
+    assert all(progress.total == content_length for progress in progresses)
+    assert [progresses[0].downloaded, progresses[-1].downloaded] == [0, len(data)]
