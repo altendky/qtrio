@@ -159,8 +159,7 @@ async def get(
     clock: typing.Callable[[], float] = time.monotonic,
     http_application: typing.Optional[typing.Callable[..., typing.Any]] = None,
 ) -> typing.AsyncIterable[Progress]:
-    # ignoring arg-type for https://github.com/encode/httpx/issues/1439
-    async with httpx.AsyncClient(app=http_application) as client:  # type: ignore[arg-type]
+    async with httpx.AsyncClient(app=http_application) as client:
         async with client.stream("GET", url.asText()) as response:
             raw_content_length = response.headers.get("content-length")
             if raw_content_length is None:
