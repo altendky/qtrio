@@ -28,6 +28,7 @@ def create_title(specific: str) -> str:
 class Progress:
     downloaded: int
     total: typing.Optional[int]
+    first: bool
 
 
 async def main(
@@ -101,8 +102,17 @@ async def get_dialog(
                 async for progress in get(
                     url=url, destination=destination, update_period=1 / fps
                 ):
-                    progress_dialog.dialog.setMaximum(progress.total)
-                    progress_dialog.dialog.setValue(progress.downloaded)
+                    if progress.first:
+                        if progress.total is None:
+                            maximum = 0
+                        else:
+                            maximum = progress.total
+
+                        progress_dialog.dialog.setMaximum(maximum)
+                        progress_dialog.dialog.setValue(0)
+
+                    if progress.total is not None:
+                        progress_dialog.dialog.setValue(progress.downloaded)
 
                 end = clock()
 
@@ -147,10 +157,13 @@ async def get(
             progress = Progress(
                 downloaded=0,
                 total=content_length,
+                first=True,
             )
 
             yield progress
             last_update = clock()
+
+            progress = attr.evolve(progress, first=False)
 
             downloaded = 0
 
