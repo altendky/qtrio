@@ -1,23 +1,44 @@
 import pathlib
 import random
-import sys
 import typing
 
 import hyperlink
 import pytest
-try:
-    import quart_trio
-except ImportError:
-    quart_trio = None
 import trio
 
 import qtrio.dialogs
 import qtrio.examples.download
 
 
-pytestmark = pytest.mark.skipif(
-    quart_trio is None, reason="quart-trio is not available"
-)
+try:
+    import quart_trio
+except ImportError:
+    # quart-trio has tighter Python version restrictions than we do so we will forego
+    # testing this file if quart-trio _should_ be unavailable.
+
+    import sys
+
+    minimum_python_version = (3, 7)
+
+    if sys.version_info >= minimum_python_version:  # pragma: nocover
+        # quart-trio _should_ be available so fail out normally
+        raise
+
+    # https://docs.pytest.org/en/stable/reference.html#pytest-importorskip would be
+    # used here except that mypy doesn't understand that `importorskip()` is doing the
+    # import so instead we'll delve into the innards of pytest for now.
+    import _pytest.outcomes
+
+    minimum_python_version_string = '.'.join(str(v) for v in minimum_python_version)
+    python_version_string = '.'.join(str(v) for v in sys.version_info)
+
+    raise _pytest.outcomes.Skipped(
+        msg=(
+            f"quart-trio is not available for Python <{minimum_python_version_string}."
+            f"  Running in Python {python_version_string}."
+        ),
+        allow_module_level=True,
+    )
 
 
 T = typing.TypeVar("T")
