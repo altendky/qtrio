@@ -1,23 +1,15 @@
 import pathlib
 import random
-import sys
 import typing
 
 import hyperlink
 import pytest
-try:
-    import quart_trio
-except ImportError:
-    quart_trio = None
 import trio
 
 import qtrio.dialogs
 import qtrio.examples.download
 
-
-pytestmark = pytest.mark.skipif(
-    quart_trio is None, reason="quart-trio is not available"
-)
+quart_trio = pytest.importorskip("quart_trio")
 
 
 T = typing.TypeVar("T")
