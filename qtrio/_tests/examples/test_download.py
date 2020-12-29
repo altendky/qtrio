@@ -20,7 +20,7 @@ except ImportError:
 
     minimum_python_version = (3, 7)
 
-    if sys.version_info >= minimum_python_version:  # pragma: nocover
+    if sys.version_info >= minimum_python_version:  # pragma: no cover
         # quart-trio _should_ be available so fail out normally
         raise
 
