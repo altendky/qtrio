@@ -37,5 +37,6 @@ class ProtocolChecker(typing.Generic[T]):
            def a_method(self):
                return 42092
     """
+
     def __call__(self, cls: typing.Type[T]) -> typing.Type[T]:
         return cls
