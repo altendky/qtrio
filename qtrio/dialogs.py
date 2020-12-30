@@ -349,7 +349,7 @@ class FileDialog:
     finished = qtrio.Signal(int)  # QtWidgets.QDialog.DialogCode
     """See :attr:`qtrio.dialogs.BasicDialogProtocol.finished`."""
 
-    def select_path(self, path: trio.Path) -> None:
+    async def select_path(self, path: trio.Path) -> None:
         """abc
 
         Arguments:
@@ -367,19 +367,18 @@ class FileDialog:
         self.dialog.setDirectory(directory)
         self.dialog.selectFile(file_name)
 
-        selected_paths = self.dialog.selectedFiles()
-        [selected_path] = selected_paths
-
-        if selected_path != file_path:
-            raise qtrio.FileSelectionFailedError(
-                textwrap.dedent(
-                    f"""\
-                    Failed to select the requested file.
-                        Requested: {file_path!r}
-                        Selected: {selected_paths}
-                """
-                )
-            )
+        # selected_paths = self.dialog.selectedFiles()
+        #
+        # if len(selected_paths) != 1 or not await path.samefile(selected_paths[0]):
+        #     message = textwrap.dedent(
+        #         f"""\
+        #             Failed to select the requested file.
+        #                 Requested: {file_path!r}
+        #                 Selected: {selected_paths}
+        #         """
+        #     )
+        #
+        #     raise qtrio.FileSelectionFailedError(message)
 
     def setup(self) -> None:
         """See :meth:`qtrio.dialogs.BasicDialogProtocol.setup`."""
