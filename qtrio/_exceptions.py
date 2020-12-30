@@ -111,3 +111,19 @@ class InvalidInputError(QTrioException):
 
     # https://github.com/sphinx-doc/sphinx/issues/7493
     __module__ = "qtrio"
+
+
+class DialogNotActiveError(QTrioException):
+    """Raised when attempting to interact with a dialog while it is not actually
+    available.
+    """
+
+    # https://github.com/sphinx-doc/sphinx/issues/7493
+    __module__ = "qtrio"
+
+
+class FileSelectionFailedError(QTrioException):
+    """Raised when a request to select a file fails."""
+
+    # https://github.com/sphinx-doc/sphinx/issues/7493
+    __module__ = "qtrio"

@@ -14,6 +14,8 @@ from ._exceptions import (
     UserCancelledError,
     InvalidInputError,
     InternalError,
+    DialogNotActiveError,
+    FileSelectionFailedError,
 )
 
 from ._core import (

@@ -1,5 +1,5 @@
 import os
-import sys
+import pathlib
 
 from qtpy import QtCore
 from qtpy import QtWidgets
@@ -162,6 +162,35 @@ async def test_file_save_cancelled(qtbot, tmp_path):
         with qtrio._qt.connection(signal=dialog.shown, slot=qtbot.addWidget):
             with pytest.raises(qtrio.UserCancelledError):
                 await dialog.wait()
+
+
+async def test_file_save_select_path(tmp_path: pathlib.Path) -> None:
+    file_path = tmp_path.joinpath("some_file")
+
+    dialog = qtrio.dialogs.create_file_save_dialog()
+
+    async def user():
+        await emissions.channel.receive()
+
+        dialog.select_path(path=trio.Path(file_path))
+
+        assert dialog.accept_button is not None
+        dialog.accept_button.click()
+
+    async with qtrio.enter_emissions_channel(signals=[dialog.shown]) as emissions:
+        async with trio.open_nursery() as nursery:
+            nursery.start_soon(user)
+
+            selected_path = await dialog.wait()
+
+    assert selected_path == file_path
+
+
+def test_file_save_raises_for_path_selection_when_not_active(qtbot):
+    dialog = qtrio.dialogs.create_file_save_dialog()
+
+    with pytest.raises(qtrio.DialogNotActiveError):
+        dialog.select_path(path=trio.Path())
 
 
 async def test_information_message_box(qtbot):

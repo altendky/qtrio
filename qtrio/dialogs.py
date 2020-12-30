@@ -348,18 +348,28 @@ class FileDialog:
     finished = qtrio.Signal(int)  # QtWidgets.QDialog.DialogCode
     """See :attr:`qtrio.dialogs.BasicDialogProtocol.finished`."""
 
-    def select_path(self, path: trio.Path):
+    def select_path(self, path: trio.Path) -> None:
+        """abc
+
+        Arguments:
+            path: The full path to the file to be selected.
+        """
+        if self.dialog is None:
+            raise qtrio.DialogNotActiveError(
+                "File dialog not available for interaction."
+            )
+
         directory = os.fspath(path.parent)
-        file = os.fspath(path.name)
+        file_name = os.fspath(path.name)
+        file_path = os.fspath(path)
 
         self.dialog.setDirectory(directory)
-        self.dialog.selectFile(file)
+        self.dialog.selectFile(file_name)
 
         [selected_path] = self.dialog.selectedFiles()
 
-        if selected_path != os.fspath(path):
-            # TODO: make a properly descriptive custom exception
-            raise Exception(' - '.join([selected_path, path]))
+        if selected_path != file_path:
+            raise qtrio.FileSelectionFailedError(f"Failed to select {file_path!r}")
 
     def setup(self) -> None:
         """See :meth:`qtrio.dialogs.BasicDialogProtocol.setup`."""
