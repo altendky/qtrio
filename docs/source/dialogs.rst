@@ -14,6 +14,7 @@ Creation Functions
 .. autofunction:: qtrio.dialogs.create_file_open_dialog
 .. autofunction:: qtrio.dialogs.create_file_save_dialog
 .. autofunction:: qtrio.dialogs.create_message_box
+.. autofunction:: qtrio.dialogs.create_progress_dialog
 
 
 Classes
@@ -29,6 +30,9 @@ Classes
    :members:
 
 .. autoclass:: qtrio.dialogs.MessageBox
+   :members:
+
+.. autoclass:: qtrio.dialogs.ProgressDialog
    :members:
 
 
