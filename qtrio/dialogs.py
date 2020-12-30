@@ -17,13 +17,12 @@ else:
     from typing_extensions import Protocol
 
 
-class DialogProtocol(Protocol):
-    """The common interface used for working with QTrio dialogs.  To check that a class
-    implements this protocol see :func:`qtrio.dialogs.check_dialog_protocol`.
+class BasicDialogProtocol(Protocol):
+    """The minimal common interface used for working with QTrio dialogs.  To check that
+    a class implements this protocol see
+    :func:`qtrio.dialogs.check_basic_dialog_protocol`.
     """
 
-    shown: qtrio.Signal
-    """The signal to be emitted when the dialog is shown."""
     finished: qtrio.Signal
     """The signal to be emitted when the dialog is finished."""
 
@@ -35,6 +34,27 @@ class DialogProtocol(Protocol):
     def teardown(self) -> None:
         """Hide and teardown the dialog."""
 
+
+check_basic_dialog_protocol = qtrio._util.ProtocolChecker[BasicDialogProtocol]()
+"""Assert proper implementation of :class:`qtrio.dialogs.BasicDialogProtocol` when type
+hint checking.
+
+Arguments:
+    cls: The class to verify.
+
+Returns:
+    The same class, unmodified, that was passed in.
+"""
+
+
+class DialogProtocol(BasicDialogProtocol, Protocol):
+    """The common interface used for working with QTrio dialogs.  To check that a class
+    implements this protocol see :func:`qtrio.dialogs.check_dialog_protocol`.
+    """
+
+    shown: qtrio.Signal
+    """The signal to be emitted when the dialog is shown."""
+
     async def wait(self) -> object:
         """Show the dialog, wait for the user interaction, and return the result.
 
@@ -44,24 +64,20 @@ class DialogProtocol(Protocol):
         """
 
 
-DialogProtocolT = typing.TypeVar("DialogProtocolT", bound=DialogProtocol)
+check_dialog_protocol = qtrio._util.ProtocolChecker[DialogProtocol]()
+"""Assert proper implementation of :class:`qtrio.dialogs.DialogProtocol` when type hint
+checking.
 
+Arguments:
+    cls: The class to verify.
 
-def check_dialog_protocol(
-    cls: typing.Type[DialogProtocolT],
-) -> typing.Type[DialogProtocolT]:
-    """Decorate a class with this to verify it implements the
-    :class:`qtrio.dialogs.DialogProtocol` when a type hint checker such as mypy is run
-    against the code.  At runtime the passed class is cleanly returned.
-
-    Arguments:
-        cls: The class to verify.
-    """
-    return cls
+Returns:
+    The same class, unmodified, that was passed in.
+"""
 
 
 @contextlib.contextmanager
-def _manage(dialog: DialogProtocol) -> typing.Generator[trio.Event, None, None]:
+def _manage(dialog: BasicDialogProtocol) -> typing.Generator[trio.Event, None, None]:
     """Manage the setup and teardown of a dialog including yielding a
     :class:`trio.Event` that is set when the dialog is finished.
 
@@ -120,10 +136,10 @@ class IntegerDialog:
     shown = qtrio.Signal(QtWidgets.QInputDialog)
     """See :attr:`qtrio.dialogs.DialogProtocol.shown`."""
     finished = qtrio.Signal(int)  # QtWidgets.QDialog.DialogCode
-    """See :attr:`qtrio.dialogs.DialogProtocol.finished`."""
+    """See :attr:`qtrio.dialogs.BasicDialogProtocol.finished`."""
 
     def setup(self) -> None:
-        """See :meth:`qtrio.dialogs.DialogProtocol.setup`."""
+        """See :meth:`qtrio.dialogs.BasicDialogProtocol.setup`."""
 
         self.result = None
 
@@ -143,7 +159,7 @@ class IntegerDialog:
         self.shown.emit(self.dialog)
 
     def teardown(self) -> None:
-        """See :meth:`qtrio.dialogs.DialogProtocol.teardown`."""
+        """See :meth:`qtrio.dialogs.BasicDialogProtocol.teardown`."""
 
         if self.dialog is not None:
             self.dialog.close()
@@ -216,10 +232,10 @@ class TextInputDialog:
     shown = qtrio.Signal(QtWidgets.QInputDialog)
     """See :attr:`qtrio.dialogs.DialogProtocol.shown`."""
     finished = qtrio.Signal(int)  # QtWidgets.QDialog.DialogCode
-    """See :attr:`qtrio.dialogs.DialogProtocol.finished`."""
+    """See :attr:`qtrio.dialogs.BasicDialogProtocol.finished`."""
 
     def setup(self) -> None:
-        """See :meth:`qtrio.dialogs.DialogProtocol.setup`."""
+        """See :meth:`qtrio.dialogs.BasicDialogProtocol.setup`."""
 
         self.result = None
 
@@ -242,7 +258,7 @@ class TextInputDialog:
         self.shown.emit(self.dialog)
 
     def teardown(self) -> None:
-        """See :meth:`qtrio.dialogs.DialogProtocol.teardown`."""
+        """See :meth:`qtrio.dialogs.BasicDialogProtocol.teardown`."""
 
         if self.dialog is not None:
             self.dialog.close()
@@ -328,10 +344,10 @@ class FileDialog:
     shown = qtrio.Signal(QtWidgets.QFileDialog)
     """See :attr:`qtrio.dialogs.DialogProtocol.shown`."""
     finished = qtrio.Signal(int)  # QtWidgets.QDialog.DialogCode
-    """See :attr:`qtrio.dialogs.DialogProtocol.finished`."""
+    """See :attr:`qtrio.dialogs.BasicDialogProtocol.finished`."""
 
     def setup(self) -> None:
-        """See :meth:`qtrio.dialogs.DialogProtocol.setup`."""
+        """See :meth:`qtrio.dialogs.BasicDialogProtocol.setup`."""
 
         self.result = None
 
@@ -367,7 +383,7 @@ class FileDialog:
         self.shown.emit(self.dialog)
 
     def teardown(self) -> None:
-        """See :meth:`qtrio.dialogs.DialogProtocol.teardown`."""
+        """See :meth:`qtrio.dialogs.BasicDialogProtocol.teardown`."""
 
         if self.dialog is not None:
             self.dialog.close()
@@ -448,10 +464,10 @@ class MessageBox:
     shown = qtrio.Signal(QtWidgets.QMessageBox)
     """See :attr:`qtrio.dialogs.DialogProtocol.shown`."""
     finished = qtrio.Signal(int)  # QtWidgets.QDialog.DialogCode
-    """See :attr:`qtrio.dialogs.DialogProtocol.finished`."""
+    """See :attr:`qtrio.dialogs.BasicDialogProtocol.finished`."""
 
     def setup(self) -> None:
-        """See :meth:`qtrio.dialogs.DialogProtocol.setup`."""
+        """See :meth:`qtrio.dialogs.BasicDialogProtocol.setup`."""
 
         self.result = None
 
@@ -470,7 +486,7 @@ class MessageBox:
         self.shown.emit(self.dialog)
 
     def teardown(self) -> None:
-        """See :meth:`qtrio.dialogs.DialogProtocol.teardown`."""
+        """See :meth:`qtrio.dialogs.BasicDialogProtocol.teardown`."""
 
         if self.dialog is not None:
             self.dialog.close()
