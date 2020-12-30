@@ -360,12 +360,12 @@ class FileDialog:
                 "File dialog not available for interaction."
             )
 
-        directory = os.fspath(path.parent)
-        file_name = os.fspath(path.name)
-        file_path = os.fspath(path)
+        # file_path = os.fspath(path)
 
-        self.dialog.setDirectory(directory)
-        self.dialog.selectFile(file_name)
+        self.dialog.setDirectory(os.fspath(path.parent))
+        # self.dialog.selectFile(file_name)
+        [text_edit] = self.dialog.findChildren(QtWidgets.QLineEdit)
+        text_edit.setText(path.name)
 
         # selected_paths = self.dialog.selectedFiles()
         #
