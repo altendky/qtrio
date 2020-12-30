@@ -1,1 +1,1 @@
-Add download utility example.
+Added :ref:`download example <download_example>`.
