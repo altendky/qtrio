@@ -3,6 +3,7 @@ import os
 import sys
 import typing
 
+import async_generator
 import attr
 from qtpy import QtWidgets
 import trio
