@@ -164,10 +164,11 @@ async def test_file_save_cancelled(qtbot, tmp_path):
                 await dialog.wait()
 
 
-async def test_file_save_select_path(tmp_path: pathlib.Path) -> None:
+async def test_file_open_select_path(tmp_path: pathlib.Path) -> None:
     file_path = tmp_path.joinpath("some_file")
+    file_path.touch()
 
-    dialog = qtrio.dialogs.create_file_save_dialog()
+    dialog = qtrio.dialogs.create_file_open_dialog()
 
     async def user():
         await emissions.channel.receive()
