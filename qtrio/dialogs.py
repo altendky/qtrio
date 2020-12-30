@@ -349,11 +349,12 @@ class FileDialog:
     finished = qtrio.Signal(int)  # QtWidgets.QDialog.DialogCode
     """See :attr:`qtrio.dialogs.BasicDialogProtocol.finished`."""
 
-    async def select_path(self, path: trio.Path) -> None:
-        """abc
+    async def set_path(self, path: trio.Path) -> None:
+        """Set the directory and enter the file name in the text box.  Note that this
+        does not select the file in the file list.
 
         Arguments:
-            path: The full path to the file to be selected.
+            path: The full path to the file to be set.
         """
         if self.dialog is None:
             raise qtrio.DialogNotActiveError(

@@ -164,7 +164,7 @@ async def test_file_save_cancelled(qtbot, tmp_path):
                 await dialog.wait()
 
 
-async def test_file_open_select_path(tmp_path: pathlib.Path) -> None:
+async def test_file_open_set_path(tmp_path: pathlib.Path) -> None:
     file_path = tmp_path.joinpath("some_file")
     file_path.touch()
 
@@ -173,7 +173,7 @@ async def test_file_open_select_path(tmp_path: pathlib.Path) -> None:
     async def user():
         await emissions.channel.receive()
 
-        await dialog.select_path(path=trio.Path(file_path))
+        await dialog.set_path(path=trio.Path(file_path))
 
         assert dialog.accept_button is not None
         dialog.accept_button.click()
@@ -191,7 +191,7 @@ async def test_file_save_raises_for_path_selection_when_not_active(qtbot):
     dialog = qtrio.dialogs.create_file_save_dialog()
 
     with pytest.raises(qtrio.DialogNotActiveError):
-        await dialog.select_path(path=trio.Path())
+        await dialog.set_path(path=trio.Path())
 
 
 async def test_information_message_box(qtbot):
