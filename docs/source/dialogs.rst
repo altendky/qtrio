@@ -11,6 +11,7 @@ Creation Functions
 
 .. autofunction:: qtrio.dialogs.create_integer_dialog
 .. autofunction:: qtrio.dialogs.create_text_input_dialog
+.. autofunction:: qtrio.dialogs.create_file_open_dialog
 .. autofunction:: qtrio.dialogs.create_file_save_dialog
 .. autofunction:: qtrio.dialogs.create_message_box
 

@@ -435,6 +435,30 @@ def create_file_save_dialog(
     )
 
 
+def create_file_open_dialog(
+    parent: typing.Optional[QtWidgets.QWidget] = None,
+    default_directory: typing.Optional[trio.Path] = None,
+    default_file: typing.Optional[trio.Path] = None,
+    options: QtWidgets.QFileDialog.Option = QtWidgets.QFileDialog.Option(),
+) -> FileDialog:
+    """Create a file open dialog.
+
+    Arguments:
+        parent: See :attr:`qtrio.dialogs.FileDialog.parent`.
+        default_directory: See :attr:`qtrio.dialogs.FileDialog.default_directory`.
+        default_file: See :attr:`qtrio.dialogs.FileDialog.default_file`.
+        options: See :attr:`qtrio.dialogs.FileDialog.options`.
+    """
+    return FileDialog(
+        parent=parent,
+        default_directory=default_directory,
+        default_file=default_file,
+        options=options,
+        file_mode=QtWidgets.QFileDialog.AnyFile,
+        accept_mode=QtWidgets.QFileDialog.AcceptOpen,
+    )
+
+
 @check_dialog_protocol
 @attr.s(auto_attribs=True)
 class MessageBox:
