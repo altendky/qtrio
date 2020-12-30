@@ -1,6 +1,7 @@
 import contextlib
 import os
 import sys
+import textwrap
 import typing
 
 import async_generator
@@ -366,10 +367,17 @@ class FileDialog:
         self.dialog.setDirectory(directory)
         self.dialog.selectFile(file_name)
 
-        [selected_path] = self.dialog.selectedFiles()
+        selected_paths = self.dialog.selectedFiles()
+        [selected_path] = selected_paths
 
         if selected_path != file_path:
-            raise qtrio.FileSelectionFailedError(f"Failed to select {file_path!r}")
+            raise qtrio.FileSelectionFailedError(
+                textwrap.dedent(f"""\
+                    Failed to select the requested file.
+                        Requested: {file_path!r}
+                        Selected: {selected_paths}
+                """)
+            )
 
     def setup(self) -> None:
         """See :meth:`qtrio.dialogs.BasicDialogProtocol.setup`."""
