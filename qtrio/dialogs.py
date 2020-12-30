@@ -417,7 +417,7 @@ def create_file_save_dialog(
     default_file: typing.Optional[trio.Path] = None,
     options: QtWidgets.QFileDialog.Option = QtWidgets.QFileDialog.Option(),
 ) -> FileDialog:
-    """Create an open or save dialog.
+    """Create a file save dialog.
 
     Arguments:
         parent: See :attr:`qtrio.dialogs.FileDialog.parent`.

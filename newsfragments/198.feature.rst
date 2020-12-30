@@ -1,1 +1,1 @@
-Added :func:`qtrio.dialogs.create_file_open_dialog` file dialog creation helper.
+Added file dialog creation helper :func:`qtrio.dialogs.create_file_open_dialog`.
