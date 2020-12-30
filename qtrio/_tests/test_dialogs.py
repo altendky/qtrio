@@ -23,6 +23,7 @@ def create_message_box_without_arguments():
         qtrio.dialogs.create_integer_dialog,
         qtrio.dialogs.create_text_input_dialog,
         qtrio.dialogs.create_file_save_dialog,
+        qtrio.dialogs.create_file_open_dialog,
         create_message_box_without_arguments,
     ],
 )
