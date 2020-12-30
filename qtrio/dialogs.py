@@ -372,11 +372,13 @@ class FileDialog:
 
         if selected_path != file_path:
             raise qtrio.FileSelectionFailedError(
-                textwrap.dedent(f"""\
+                textwrap.dedent(
+                    f"""\
                     Failed to select the requested file.
                         Requested: {file_path!r}
                         Selected: {selected_paths}
-                """)
+                """
+                )
             )
 
     def setup(self) -> None:
