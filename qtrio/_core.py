@@ -430,7 +430,7 @@ class Outcomes:
 
 
 def run(
-    async_fn: typing.Callable[..., typing.Awaitable[None]],
+    async_fn: typing.Callable[..., typing.Awaitable[object]],
     *args: object,
     done_callback: typing.Optional[typing.Callable[[Outcomes], None]] = None,
     clock: trio.abc.Clock = None,
@@ -540,7 +540,7 @@ class Runner:
 
     def run(
         self,
-        async_fn: typing.Callable[[], typing.Awaitable[object]],
+        async_fn: typing.Callable[..., typing.Awaitable[object]],
         *args: object,
         execute_application: bool = True,
     ) -> Outcomes:
