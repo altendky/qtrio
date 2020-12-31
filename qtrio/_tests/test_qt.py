@@ -62,7 +62,7 @@ def test_our_signal_object_method_returns_qobject(optional_name_argument):
     """qtrio._core.Signal instance provides access to signal-hosting QObject."""
 
     class NotQObject:
-        signal = qtrio.Signal(int, optional_name_argument)
+        signal = qtrio.Signal(int, **optional_name_argument)
 
     instance = NotQObject()
 
