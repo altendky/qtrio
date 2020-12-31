@@ -575,11 +575,6 @@ class ProgressDialog:
     parent: typing.Optional[QtWidgets.QWidget] = None
     """The parent widget for the dialog."""
 
-    # result: typing.Optional[trio.Path] = None
-    # """Might be useful to check for cancellation though checking for
-    # :exception:`qtrio.UserCancelledError` will generally be better.
-    # """
-
     dialog: typing.Optional[QtWidgets.QProgressDialog] = None
     """The actual dialog widget instance."""
     cancel_button: typing.Optional[QtWidgets.QPushButton] = None
@@ -592,8 +587,6 @@ class ProgressDialog:
 
     def setup(self) -> None:
         """See :meth:`qtrio.dialogs.BasicDialogProtocol.setup`."""
-
-        # self.result = None
 
         self.final_value = None
 
