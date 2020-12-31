@@ -105,53 +105,46 @@ async def get_dialog(
         # Always show the dialog
         progress_dialog.dialog.setMinimumDuration(0)
 
-        with trio.CancelScope() as cscope:
-            with qtrio.connection(
-                signal=progress_dialog.dialog.canceled, slot=cscope.cancel
-            ):
-                start = clock()
+        start = clock()
 
-                async for progress in get(
-                    url=url,
-                    destination=destination,
-                    update_period=1 / fps,
-                    http_application=http_application,
-                ):
-                    if progress.first:
-                        if progress.total is None:
-                            maximum = 0
-                        else:
-                            maximum = progress.total
+        async for progress in get(
+            url=url,
+            destination=destination,
+            update_period=1 / fps,
+            http_application=http_application,
+        ):
+            if progress.first:
+                if progress.total is None:
+                    maximum = 0
+                else:
+                    maximum = progress.total
 
-                        progress_dialog.dialog.setMaximum(maximum)
-                        progress_dialog.dialog.setValue(0)
+                progress_dialog.dialog.setMaximum(maximum)
+                progress_dialog.dialog.setValue(0)
 
-                    if progress.total is not None:
-                        progress_dialog.dialog.setValue(progress.downloaded)
+            if progress.total is not None:
+                progress_dialog.dialog.setValue(progress.downloaded)
 
-                end = clock()
+        end = clock()
 
-        if cscope.cancelled_caught:
-            return
+    duration = end - start
+    if duration == 0:
+        # define this seems to happen when testing on Windows with an x86 Python
+        if progress.downloaded > 0:
+            bytes_per_second = math.inf
+        else:  # pragma: no cover
+            bytes_per_second = 0
+    else:
+        bytes_per_second = progress.downloaded / duration
 
-        duration = end - start
-        if duration == 0:
-            # define this seems to happen when testing on Windows with an x86 Python
-            if progress.downloaded > 0:
-                bytes_per_second = math.inf
-            else:  # pragma: no cover
-                bytes_per_second = 0
-        else:
-            bytes_per_second = progress.downloaded / duration
-
-        summary = "\n\n".join(
-            [
-                url.asText(),
-                os.fspath(destination),
-                f"Downloaded {progress.downloaded} bytes in {duration:.2f} seconds",
-                f"{bytes_per_second:.2f} bytes/second",
-            ]
-        )
+    summary = "\n\n".join(
+        [
+            url.asText(),
+            os.fspath(destination),
+            f"Downloaded {progress.downloaded} bytes in {duration:.2f} seconds",
+            f"{bytes_per_second:.2f} bytes/second",
+        ]
+    )
 
     if message_box is None:  # pragma: no cover
         message_box = qtrio.dialogs.create_message_box()

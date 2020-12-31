@@ -289,11 +289,7 @@ async def test_get_dialog_canceled(
         assert progress_dialog.dialog.isVisible()
         assert message_box.dialog is None
 
-        # TODO: humm, have to emit the canceled signal not call .cancel() to simulate
-        #       the button click since we don't manage yet to find the button to
-        #       .click() it.  Emitting .canceled triggers .cancel but not the other way
-        #       around (at least when the content length is known for some reason...).
-        progress_dialog.dialog.canceled.emit()
+        progress_dialog.cancel_button.click()
 
     async with qtrio.enter_emissions_channel(
         signals=[progress_dialog.shown],
