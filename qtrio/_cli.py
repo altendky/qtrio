@@ -19,6 +19,7 @@ def examples() -> None:
 def emissions() -> None:  # pragma: no cover
     """A simple demonstration of iterating over signal emissions."""
 
+    import qtrio
     import qtrio.examples.emissions
 
     qtrio.run(qtrio.examples.emissions.main)
