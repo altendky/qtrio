@@ -61,6 +61,7 @@ if [ "$CHECK_DOCS" = "1" ]; then
 elif [ "$CHECK_FORMATTING" = "1" ]; then
     source check.sh
 elif [ "$CHECK_TYPE_HINTS" = "1" ]; then
+    python -m pip install --upgrade pyside2
     mypy --package ${PACKAGE_NAME} $(qtpy mypy args)
 else
     # Actual tests
