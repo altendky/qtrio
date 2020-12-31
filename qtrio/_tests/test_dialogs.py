@@ -6,7 +6,6 @@ from qtpy import QtCore
 from qtpy import QtWidgets
 import pytest
 import trio
-import trio.testing
 
 
 import qtrio
