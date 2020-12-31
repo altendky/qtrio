@@ -482,6 +482,8 @@ def maybe_build_application() -> QtCore.QCoreApplication:
     Returns:
         The Qt application object.
     """
+    application: QtCore.QCoreApplication
+
     maybe_application = QtWidgets.QApplication.instance()
     if maybe_application is None:
         application = QtWidgets.QApplication(sys.argv[1:])
