@@ -24,7 +24,6 @@ import qtrio._qt
         qtrio.dialogs.create_file_open_dialog,
         qtrio.dialogs.create_message_box,
         qtrio.dialogs.create_progress_dialog,
-        qtrio.dialogs.create_progress_dialog,
     ],
 )
 def builder_fixture(request):
