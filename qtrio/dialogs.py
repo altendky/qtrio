@@ -559,8 +559,8 @@ class MessageBox:
 
 
 def create_message_box(
-    title: str,
-    text: str,
+    title: str = "",
+    text: str = "",
     icon: QtWidgets.QMessageBox.Icon = QtWidgets.QMessageBox.Information,
     buttons: QtWidgets.QMessageBox.StandardButtons = QtWidgets.QMessageBox.Ok,
     parent: typing.Optional[QtWidgets.QWidget] = None,

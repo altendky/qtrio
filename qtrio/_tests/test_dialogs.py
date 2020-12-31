@@ -15,10 +15,6 @@ import qtrio.dialogs
 import qtrio._qt
 
 
-def create_message_box_without_arguments():
-    return qtrio.dialogs.create_message_box(title="", text="")
-
-
 @pytest.fixture(
     name="builder",
     params=[
@@ -26,7 +22,7 @@ def create_message_box_without_arguments():
         qtrio.dialogs.create_text_input_dialog,
         qtrio.dialogs.create_file_save_dialog,
         qtrio.dialogs.create_file_open_dialog,
-        create_message_box_without_arguments,
+        qtrio.dialogs.create_message_box,
         qtrio.dialogs.create_progress_dialog,
     ],
 )
