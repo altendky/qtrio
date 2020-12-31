@@ -476,7 +476,7 @@ def outcome_from_application_return_code(return_code: int) -> outcome.Outcome:
     return outcome.Error(qtrio.ReturnCodeError(return_code))
 
 
-def maybe_build_application() -> QtGui.QGuiApplication:
+def maybe_build_application() -> QtCore.QCoreApplication:
     """Create a new Qt application object if one does not already exist.
 
     Returns:
@@ -497,7 +497,7 @@ def maybe_build_application() -> QtGui.QGuiApplication:
 class Runner:
     """This class helps run Trio in guest mode on a Qt host application."""
 
-    application: QtGui.QGuiApplication = attr.ib(factory=maybe_build_application)
+    application: QtCore.QCoreApplication = attr.ib(factory=maybe_build_application)
     """The Qt application object to run as the host.  If not set before calling
     :meth:`run` the application will be created as
     ``QtWidgets.QApplication(sys.argv[1:])`` and ``.setQuitOnLastWindowClosed(False)``
@@ -599,8 +599,8 @@ class Runner:
         async_fn: typing.Callable[..., typing.Awaitable[object]],
         args: typing.Tuple[object, ...],
     ) -> object:
-        """Will be run as the main async function by the Trio guest.  It creates a
-        cancellation scope to be cancelled when
+        """Will be run as the main async function by the Trio guest.  If it is a GUI
+        application then it creates a cancellation scope to be cancelled when
         :meth:`QtGui.QGuiApplication.lastWindowClosed` is emitted.  Within this scope
         the application's ``async_fn`` will be run and passed ``args``.
 
@@ -616,7 +616,10 @@ class Runner:
 
         with trio.CancelScope() as self.cancel_scope:
             with contextlib.ExitStack() as exit_stack:
-                if self.application.quitOnLastWindowClosed():
+                if (
+                    isinstance(self.application, QtGui.QGuiApplication)
+                    and self.application.quitOnLastWindowClosed()
+                ):
                     exit_stack.enter_context(
                         qtrio._qt.connection(
                             signal=self.application.lastWindowClosed,

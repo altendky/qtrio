@@ -489,6 +489,12 @@ def create_file_open_dialog(
     )
 
 
+message_box_standard_button_union = typing.Union[
+    QtWidgets.QMessageBox.StandardButton,
+    QtWidgets.QMessageBox.StandardButtons,
+]
+
+
 @check_dialog_protocol
 @attr.s(auto_attribs=True)
 class MessageBox:
@@ -502,7 +508,7 @@ class MessageBox:
     """The message text shown inside the dialog."""
     icon: QtWidgets.QMessageBox.Icon
     """The icon shown inside the dialog."""
-    buttons: QtWidgets.QMessageBox.StandardButtons
+    buttons: message_box_standard_button_union
     """The buttons to be shown in the dialog."""
     parent: typing.Optional[QtWidgets.QWidget] = None
     """The parent widget for the dialog."""
@@ -572,7 +578,7 @@ def create_message_box(
     title: str = "",
     text: str = "",
     icon: QtWidgets.QMessageBox.Icon = QtWidgets.QMessageBox.Information,
-    buttons: QtWidgets.QMessageBox.StandardButtons = QtWidgets.QMessageBox.Ok,  # type: ignore
+    buttons: message_box_standard_button_union = QtWidgets.QMessageBox.Ok,
     parent: typing.Optional[QtWidgets.QWidget] = None,
 ) -> MessageBox:
     """Create a message box.
@@ -628,7 +634,8 @@ class ProgressDialog:
         self.dialog.setLabelText(self.text)
         self.dialog.setMinimum(self.minimum)
         self.dialog.setMaximum(self.maximum)
-        self.dialog.setParent(self.parent)
+        if self.parent is not None:
+            self.dialog.setParent(self.parent)
 
         # TODO: adjust so we can use a context manager?
         self.dialog.finished.connect(self.finished)
