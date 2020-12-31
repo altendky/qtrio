@@ -1,5 +1,6 @@
 import math
 import os
+import pathlib
 import sys
 
 from qtpy import QtCore

@@ -14,6 +14,7 @@ from ._exceptions import (
     UserCancelledError,
     InvalidInputError,
     InternalError,
+    DialogNotActiveError,
 )
 
 from ._core import (

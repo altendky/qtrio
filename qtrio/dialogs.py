@@ -362,7 +362,7 @@ class FileDialog:
             )
 
         self.dialog.setDirectory(os.fspath(path.parent))
-        self.text_edit.setText(path.name)
+        self.file_name_line_edit.setText(path.name)
 
     def setup(self) -> None:
         """See :meth:`qtrio.dialogs.BasicDialogProtocol.setup`."""
