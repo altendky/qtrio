@@ -362,6 +362,12 @@ class FileDialog:
             )
 
         self.dialog.setDirectory(os.fspath(path.parent))
+
+        if self.file_name_line_edit is None: # pragma: no cover
+            raise qtrio.InternalError(
+                "File name line edit unexpectedly not known."
+            )
+
         self.file_name_line_edit.setText(path.name)
 
     def setup(self) -> None:
