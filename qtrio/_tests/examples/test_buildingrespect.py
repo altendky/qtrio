@@ -1,6 +1,7 @@
 import typing
 
 import qtrio
+import qtpy
 from qtpy import QtCore
 from qtpy import QtWidgets
 import trio
@@ -15,8 +16,11 @@ async def test_main(request, qtbot):
         def setText(self, *args, **kwargs):
             super().setText(*args, **kwargs)
             # TODO: https://bugreports.qt.io/browse/PYSIDE-1318
-            signal = typing.cast(QtCore.SignalInstance, self.text_changed)
-            signal.emit(self.text())
+            if qtpy.PYQT5:
+                self.text_changed.emit(self.text())
+            elif qtpy.PYSIDE2:
+                signal = typing.cast(QtCore.SignalInstance, self.text_changed)
+                signal.emit(self.text())
 
     widget = qtrio.examples.buildingrespect.Widget(label=SignaledLabel())
     qtbot.addWidget(widget.widget)

@@ -13,6 +13,7 @@ import typing
 import async_generator
 import attr
 import outcome
+import qtpy
 from qtpy import QtCore
 from qtpy import QtGui
 from qtpy import QtWidgets
@@ -485,9 +486,13 @@ def maybe_build_application() -> QtCore.QCoreApplication:
     application: QtCore.QCoreApplication
 
     # TODO: https://bugreports.qt.io/browse/PYSIDE-1467
-    maybe_application = typing.cast(
-        typing.Optional[QtCore.QCoreApplication], QtWidgets.QApplication.instance()
-    )
+    if qtpy.PYQT5:
+        maybe_application = QtWidgets.QApplication.instance()
+    elif qtpy.PYSIDE2:
+        maybe_application = typing.cast(
+            typing.Optional[QtCore.QCoreApplication], QtWidgets.QApplication.instance()
+        )
+
     if maybe_application is None:
         application = QtWidgets.QApplication(sys.argv[1:])
     else:
