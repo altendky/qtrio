@@ -289,6 +289,7 @@ async def test_get_dialog_canceled(
         assert progress_dialog.dialog.isVisible()
         assert message_box.dialog is None
 
+        assert progress_dialog.cancel_button is not None
         progress_dialog.cancel_button.click()
 
     async with qtrio.enter_emissions_channel(
