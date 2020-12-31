@@ -338,6 +338,8 @@ class FileDialog:
     """The confirmation button."""
     reject_button: typing.Optional[QtWidgets.QPushButton] = None
     """The cancellation button."""
+    file_name_line_edit: typing.Optional[QtWidgets.QLineEdit] = None
+    """The file name line edit widget."""
 
     result: typing.Optional[trio.Path] = None
     """The path selected by the user."""
@@ -346,6 +348,21 @@ class FileDialog:
     """See :attr:`qtrio.dialogs.DialogProtocol.shown`."""
     finished = qtrio.Signal(int)  # QtWidgets.QDialog.DialogCode
     """See :attr:`qtrio.dialogs.BasicDialogProtocol.finished`."""
+
+    async def set_path(self, path: trio.Path) -> None:
+        """Set the directory and enter the file name in the text box.  Note that this
+        does not select the file in the file list.
+
+        Arguments:
+            path: The full path to the file to be set.
+        """
+        if self.dialog is None:
+            raise qtrio.DialogNotActiveError(
+                "File dialog not available for interaction."
+            )
+
+        self.dialog.setDirectory(os.fspath(path.parent))
+        self.text_edit.setText(path.name)
 
     def setup(self) -> None:
         """See :meth:`qtrio.dialogs.BasicDialogProtocol.setup`."""
@@ -380,6 +397,7 @@ class FileDialog:
         buttons = _dialog_button_box_buttons_by_role(dialog=self.dialog)
         self.accept_button = buttons.get(QtWidgets.QDialogButtonBox.AcceptRole)
         self.reject_button = buttons.get(QtWidgets.QDialogButtonBox.RejectRole)
+        [self.file_name_line_edit] = self.dialog.findChildren(QtWidgets.QLineEdit)
 
         self.shown.emit(self.dialog)
 
@@ -392,6 +410,7 @@ class FileDialog:
         self.dialog = None
         self.accept_button = None
         self.reject_button = None
+        self.file_name_line_edit = None
 
     async def wait(self) -> trio.Path:
         """See :meth:`qtrio.dialogs.DialogProtocol.wait`."""
