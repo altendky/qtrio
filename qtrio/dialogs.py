@@ -1,7 +1,6 @@
 import contextlib
 import os
 import sys
-import textwrap
 import typing
 
 import async_generator
@@ -11,7 +10,6 @@ import trio
 
 import qtrio
 import qtrio._qt
-import qtrio._util
 
 
 if sys.version_info >= (3, 8):
