@@ -15,11 +15,13 @@ pytest = "pytest >= 6"
 # >= 0.7.0 for trio_run configuration support
 pytest_trio = "pytest-trio >= 0.7.0"
 
+quart_trio = "quart-trio; python_version >= '3.7'"
+
 # >= 19.9.0rc1 for https://github.com/twisted/towncrier/issues/144
 towncrier = "towncrier >= 19.9.0rc1"
 
 extras_cli = ["click"]
-extras_examples = [*extras_cli]
+extras_examples = [*extras_cli, "httpcore", "httpx", "hyperlink"]
 
 setup(
     name="qtrio",
@@ -55,11 +57,20 @@ setup(
         "typing-extensions; python_version < '3.8'",
     ],
     extras_require={
-        "p_checks": ["black", "flake8", "mypy", pytest, towncrier],
+        "p_checks": [
+            "black",
+            "flake8",
+            "mypy",
+            pytest,
+            quart_trio,
+            towncrier,
+            *extras_examples,
+        ],
         "p_docs": [
             # >= 3.2: https://github.com/sphinx-doc/sphinx/issues/8008
             # >= 3.2.1: https://github.com/sphinx-doc/sphinx/issues/8124
-            "sphinx >= 3.2.1",
+            # != 3.4.0, != 3.4.1: https://github.com/sphinx-doc/sphinx/issues/8567
+            "sphinx >= 3.2.1, != 3.4.0, != 3.4.1",
             "sphinx-autodoc-typehints",
             "sphinx-qt-documentation>=0.3",
             "sphinx_rtd_theme",
@@ -77,6 +88,7 @@ setup(
             "pytest-qt",
             pytest_trio,
             'pytest-xvfb; sys_platform == "linux"',
+            quart_trio,
         ],
         "cli": extras_cli,
         "examples": extras_examples,

@@ -1,0 +1,3 @@
+Extract a subset of :func:`qtrio.dialogs.check_dialog_protocol` into a parent protocol
+:func:`qtrio.dialogs.check_basic_dialog_protocol` which can be used to describe a dialog
+without ``.shown`` or ``.wait()``.
