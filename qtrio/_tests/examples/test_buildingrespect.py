@@ -21,6 +21,8 @@ async def test_main(request, qtbot):
             elif qtpy.PYSIDE2:
                 signal = typing.cast(QtCore.SignalInstance, self.text_changed)
                 signal.emit(self.text())
+            else:  # pragma: no cover
+                assert False
 
     widget = qtrio.examples.buildingrespect.Widget(label=SignaledLabel())
     qtbot.addWidget(widget.widget)

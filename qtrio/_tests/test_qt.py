@@ -4,11 +4,23 @@ import pytest
 import qtrio._qt
 
 
-def test_signal_emits(qtbot):
+@pytest.fixture(
+    name="optional_name_argument",
+    params=[False, True],
+    ids=["No name", "Some name"],
+)
+def optional_name_argument_fixture(request):
+    if request.param:
+        return {"name": "A Name"}
+
+    return {}
+
+
+def test_signal_emits(qtbot, optional_name_argument):
     """qtrio._core.Signal emits."""
 
     class NotQObject:
-        signal = qtrio.Signal()
+        signal = qtrio.Signal(**optional_name_argument)
 
     instance = NotQObject()
 
@@ -16,11 +28,11 @@ def test_signal_emits(qtbot):
         instance.signal.emit()
 
 
-def test_signal_emits_value(qtbot):
+def test_signal_emits_value(qtbot, optional_name_argument):
     """qtrio._core.Signal emits a value."""
 
     class NotQObject:
-        signal = qtrio.Signal(int)
+        signal = qtrio.Signal(int, **optional_name_argument)
 
     result = None
 
@@ -37,20 +49,20 @@ def test_signal_emits_value(qtbot):
     assert result == 13
 
 
-def test_accessing_signal_on_class_results_in_our_signal():
+def test_accessing_signal_on_class_results_in_our_signal(optional_name_argument):
     """qtrio._core.Signal instance accessible via class attribute."""
 
     class NotQObject:
-        signal = qtrio.Signal(int)
+        signal = qtrio.Signal(int, **optional_name_argument)
 
     assert isinstance(NotQObject.signal, qtrio.Signal)
 
 
-def test_our_signal_object_method_returns_qobject():
+def test_our_signal_object_method_returns_qobject(optional_name_argument):
     """qtrio._core.Signal instance provides access to signal-hosting QObject."""
 
     class NotQObject:
-        signal = qtrio.Signal(int)
+        signal = qtrio.Signal(int, optional_name_argument)
 
     instance = NotQObject()
 

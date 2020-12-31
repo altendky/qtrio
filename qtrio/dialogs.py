@@ -627,8 +627,6 @@ class ProgressDialog:
     def setup(self) -> None:
         """See :meth:`qtrio.dialogs.BasicDialogProtocol.setup`."""
 
-        self.final_value = None
-
         self.dialog = QtWidgets.QProgressDialog()
         self.dialog.setWindowTitle(self.title)
         self.dialog.setLabelText(self.text)

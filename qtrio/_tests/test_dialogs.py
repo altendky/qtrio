@@ -1,7 +1,6 @@
 import math
 import os
 import pathlib
-import sys
 
 from qtpy import QtCore
 from qtpy import QtWidgets
@@ -28,6 +27,18 @@ import qtrio._qt
 )
 def builder_fixture(request):
     yield request.param
+
+
+@pytest.fixture(
+    name="optional_parent",
+    params=[False, True],
+    ids=["No parent", "Widget parent"],
+)
+def optional_parent_fixture(request, qapp):
+    if request.param:
+        return QtWidgets.QWidget()
+
+    return None
 
 
 async def test_get_integer_gets_value(qtbot):
@@ -309,16 +320,18 @@ async def test_text_input_dialog_cancel(qtbot):
                 await dialog.wait()
 
 
-async def test_progress_dialog_dot_dot_dot(qtbot):
-    dialog = qtrio.dialogs.create_progress_dialog()
+async def test_progress_dialog_dot_dot_dot(qtbot, optional_parent):
+    dialog = qtrio.dialogs.create_progress_dialog(parent=optional_parent)
 
     with qtrio._qt.connection(signal=dialog.shown, slot=qtbot.addWidget):
         async with dialog.manage():
             pass
 
 
-async def test_progress_dialog_cancel_raises(qtbot):
-    dialog = qtrio.dialogs.create_progress_dialog(cancel_button_text="cancel here")
+async def test_progress_dialog_cancel_raises(qtbot, optional_parent):
+    dialog = qtrio.dialogs.create_progress_dialog(
+        cancel_button_text="cancel here", parent=optional_parent
+    )
 
     with qtrio._qt.connection(signal=dialog.shown, slot=qtbot.addWidget):
         with pytest.raises(qtrio.UserCancelledError):
@@ -327,8 +340,10 @@ async def test_progress_dialog_cancel_raises(qtbot):
                 dialog.dialog.cancel()
 
 
-async def test_progress_dialog_cancel_cancels_context(qtbot):
-    dialog = qtrio.dialogs.create_progress_dialog(cancel_button_text="cancel here")
+async def test_progress_dialog_cancel_cancels_context(qtbot, optional_parent):
+    dialog = qtrio.dialogs.create_progress_dialog(
+        cancel_button_text="cancel here", parent=optional_parent
+    )
 
     cancelled = False
 

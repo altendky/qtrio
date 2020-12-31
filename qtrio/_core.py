@@ -4,10 +4,8 @@ Attributes:
     _reenter_event_type: The event type enumerator for our reenter events.
 """
 import contextlib
-import functools
 import math
 import sys
-import traceback
 import typing
 
 import async_generator
@@ -98,7 +96,11 @@ class ReenterEvent(QtCore.QEvent):
 
     def __init__(self, fn: typing.Callable[[], object]):
         if _reenter_event_type is None:
-            raise Exception()
+            message = (
+                "The reenter event type must be registered before creating a reenter"
+                " event."
+            )
+            raise qtrio.InternalError(message)
 
         super().__init__(_reenter_event_type)
         self.fn = fn
@@ -491,6 +493,10 @@ def maybe_build_application() -> QtCore.QCoreApplication:
     elif qtpy.PYSIDE2:
         maybe_application = typing.cast(
             typing.Optional[QtCore.QCoreApplication], QtWidgets.QApplication.instance()
+        )
+    else:  # pragma: no cover
+        raise qtrio.InternalError(
+            "You should not be here but you are running neither PyQt5 nor PySide2.",
         )
 
     if maybe_application is None:
