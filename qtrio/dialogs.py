@@ -609,14 +609,9 @@ class ProgressDialog:
     parent: typing.Optional[QtWidgets.QWidget] = None
     """The parent widget for the dialog."""
 
-    # result: typing.Optional[trio.Path] = None
-    # """Might be useful to check for cancellation though checking for
-    # :exception:`qtrio.UserCancelledError` will generally be better.
-    # """
-
     dialog: typing.Optional[QtWidgets.QProgressDialog] = None
     """The actual dialog widget instance."""
-    reject_button: typing.Optional[QtWidgets.QPushButton] = None
+    cancel_button: typing.Optional[QtWidgets.QPushButton] = None
     """The cancellation button."""
 
     shown = qtrio.Signal(QtWidgets.QMessageBox)
@@ -626,8 +621,6 @@ class ProgressDialog:
 
     def setup(self) -> None:
         """See :meth:`qtrio.dialogs.BasicDialogProtocol.setup`."""
-
-        # self.result = None
 
         self.final_value = None
 
@@ -641,16 +634,12 @@ class ProgressDialog:
         # TODO: adjust so we can use a context manager?
         self.dialog.finished.connect(self.finished)
 
-        # self.reject_button = QtWidgets.QPushButton()
-        # self.dialog.setCancelButton(self.reject_button)
         if self.cancel_button_text is not None:
             self.dialog.setCancelButtonText(self.cancel_button_text)
 
         self.dialog.show()
 
-        # TODO: ack!  maybe needs a set minimum duration?
-        # buttons = _dialog_button_box_buttons_by_role(dialog=self.dialog)
-        # self.reject_button = buttons[QtWidgets.QDialogButtonBox.RejectRole]
+        [self.cancel_button] = self.dialog.findChildren(QtWidgets.QPushButton)
 
         self.shown.emit(self.dialog)
 
@@ -661,17 +650,24 @@ class ProgressDialog:
             self.dialog.close()
             self.dialog.finished.disconnect(self.finished)
         self.dialog = None
-        self.reject_button = None
+        self.cancel_button = None
 
     @async_generator.asynccontextmanager
     async def manage(self) -> typing.AsyncIterable[None]:
+        """A context manager to setup the progress dialog, cancel the managed context
+        and teardown the dialog when done.
+        """
         with _manage(dialog=self):
             if self.dialog is None:  # pragma: no cover
                 raise qtrio.InternalError(
                     "Dialog not assigned while it is being managed."
                 )
 
-            yield
+            with trio.CancelScope() as cancel_scope:
+                with qtrio._qt.connection(
+                    signal=self.dialog.canceled, slot=cancel_scope.cancel
+                ):
+                    yield
 
             if self.dialog.wasCanceled():
                 raise qtrio.UserCancelledError()
