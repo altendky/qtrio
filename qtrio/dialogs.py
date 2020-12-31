@@ -3,6 +3,7 @@ import os
 import sys
 import typing
 
+import async_generator
 import attr
 from qtpy import QtWidgets
 import trio
@@ -551,3 +552,116 @@ def create_message_box(
         parent: See :attr:`qtrio.dialogs.MessageBox.parent`.
     """
     return MessageBox(icon=icon, title=title, text=text, buttons=buttons, parent=parent)
+
+
+@check_basic_dialog_protocol
+@attr.s(auto_attribs=True)
+class ProgressDialog:
+    """Manage a progress dialog for updating the user.  Generally instances should be
+    built via :func:`qtrio.dialogs.create_progress_dialog`.
+    """
+
+    title: str
+    """The message box title."""
+    text: str
+    """The message text shown as the progress bar label."""
+    cancel_button_text: typing.Optional[str]
+    """The cancel button text."""
+    minimum: int
+    """The progress value corresponding to no progress."""
+    maximum: int
+    """The progress value corresponding to completion."""
+
+    parent: typing.Optional[QtWidgets.QWidget] = None
+    """The parent widget for the dialog."""
+
+    dialog: typing.Optional[QtWidgets.QProgressDialog] = None
+    """The actual dialog widget instance."""
+    cancel_button: typing.Optional[QtWidgets.QPushButton] = None
+    """The cancellation button."""
+
+    shown = qtrio.Signal(QtWidgets.QMessageBox)
+    """See :attr:`qtrio.dialogs.DialogProtocol.shown`."""
+    finished = qtrio.Signal(int)  # QtWidgets.QDialog.DialogCode
+    """See :attr:`qtrio.dialogs.BasicDialogProtocol.finished`."""
+
+    def setup(self) -> None:
+        """See :meth:`qtrio.dialogs.BasicDialogProtocol.setup`."""
+
+        self.final_value = None
+
+        self.dialog = QtWidgets.QProgressDialog()
+        self.dialog.setWindowTitle(self.title)
+        self.dialog.setLabelText(self.text)
+        self.dialog.setMinimum(self.minimum)
+        self.dialog.setMaximum(self.maximum)
+        self.dialog.setParent(self.parent)
+
+        # TODO: adjust so we can use a context manager?
+        self.dialog.finished.connect(self.finished)
+
+        if self.cancel_button_text is not None:
+            self.dialog.setCancelButtonText(self.cancel_button_text)
+
+        self.dialog.show()
+
+        [self.cancel_button] = self.dialog.findChildren(QtWidgets.QPushButton)
+
+        self.shown.emit(self.dialog)
+
+    def teardown(self) -> None:
+        """See :meth:`qtrio.dialogs.BasicDialogProtocol.teardown`."""
+
+        if self.dialog is not None:
+            self.dialog.close()
+            self.dialog.finished.disconnect(self.finished)
+        self.dialog = None
+        self.cancel_button = None
+
+    @async_generator.asynccontextmanager
+    async def manage(self) -> typing.AsyncIterable[None]:
+        """A context manager to setup the progress dialog, cancel the managed context
+        and teardown the dialog when done.
+        """
+        with _manage(dialog=self):
+            if self.dialog is None:  # pragma: no cover
+                raise qtrio.InternalError(
+                    "Dialog not assigned while it is being managed."
+                )
+
+            with trio.CancelScope() as cancel_scope:
+                with qtrio._qt.connection(
+                    signal=self.dialog.canceled, slot=cancel_scope.cancel
+                ):
+                    yield
+
+            if self.dialog.wasCanceled():
+                raise qtrio.UserCancelledError()
+
+
+def create_progress_dialog(
+    title: str = "",
+    text: str = "",
+    cancel_button_text: typing.Optional[str] = None,
+    minimum: int = 0,
+    maximum: int = 0,
+    parent: typing.Optional[QtWidgets.QWidget] = None,
+) -> ProgressDialog:
+    """Create a progress dialog.
+
+    Arguments:
+        title: See :attr:`qtrio.dialogs.ProgressDialog.title`.
+        text: See :attr:`qtrio.dialogs.ProgressDialog.text`.
+        cancel_button_text: See :attr:`qtrio.dialogs.ProgressDialog.cancel_button_text`.
+        minimum: See :attr:`qtrio.dialogs.ProgressDialog.minimum`.
+        maximum: See :attr:`qtrio.dialogs.ProgressDialog.maximum`.
+        parent: See :attr:`qtrio.dialogs.ProgressDialog.parent`.
+    """
+    return ProgressDialog(
+        title=title,
+        text=text,
+        cancel_button_text=cancel_button_text,
+        minimum=minimum,
+        maximum=maximum,
+        parent=parent,
+    )

@@ -1,0 +1,2 @@
+Added :class:`qtrio.dialogs.ProgressDialog` and creation helper
+:func:`qtrio.dialogs.create_progress_dialog`.
