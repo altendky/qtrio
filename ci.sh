@@ -46,6 +46,9 @@ try-harder python -m pip install ${INSTALL_ARTIFACT}${INSTALL_EXTRAS}
 python -m pip list
 python -m pip freeze
 
+python -m pip install --upgrade https://github.com/altendky/qtpy/archive/mypy.zip
+python -m pip install --upgrade https://github.com/stlehmann/PyQt5-stubs/archive/master.zip
+
 if [ "$CHECK_DOCS" = "1" ]; then
     git fetch --deepen=100
     git fetch --depth=100 origin master
@@ -58,8 +61,6 @@ if [ "$CHECK_DOCS" = "1" ]; then
 elif [ "$CHECK_FORMATTING" = "1" ]; then
     source check.sh
 elif [ "$CHECK_TYPE_HINTS" = "1" ]; then
-    python -m pip install --upgrade https://github.com/altendky/qtpy/archive/mypy.zip
-    python -m pip install --upgrade https://github.com/stlehmann/PyQt5-stubs/archive/master.zip
     mypy --package ${PACKAGE_NAME} $(qtpy mypy args)
 else
     # Actual tests
