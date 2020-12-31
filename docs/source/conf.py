@@ -48,6 +48,7 @@ nitpick_ignore = [
     ("py:class", "<class 'PySide2.QtWidgets.QMessageBox.Icon'>"),
     # https://github.com/sphinx-doc/sphinx/issues/8136
     ("py:class", "typing.AbstractAsyncContextManager"),
+    ("py:class", "Union[<class 'PySide2.QtWidgets.QMessageBox.StandardButton'>, PySide2.QtWidgets.QMessageBox.StandardButtons]"),
 ]
 
 # -- General configuration ------------------------------------------------
