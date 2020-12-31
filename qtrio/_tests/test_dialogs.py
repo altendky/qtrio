@@ -284,7 +284,7 @@ async def test_text_input_dialog_cancel(qtbot):
 
 
 async def test_progress_dialog_dot_dot_dot(qtbot):
-    dialog = qtrio.dialogs.create_progress_dialog(cancel_button_text="cancel here")
+    dialog = qtrio.dialogs.create_progress_dialog()
 
     with qtrio._qt.connection(signal=dialog.shown, slot=qtbot.addWidget):
         async with dialog.manage():
