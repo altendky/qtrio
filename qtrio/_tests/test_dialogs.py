@@ -302,6 +302,7 @@ async def test_progress_dialog_cancel_cancels_context(qtbot):
         with qtrio._qt.connection(signal=dialog.shown, slot=qtbot.addWidget):
             async with dialog.manage():
                 try:
+                    assert dialog.cancel_button is not None
                     dialog.cancel_button.click()
                     await trio.sleep(math.inf)
                 except trio.Cancelled:
