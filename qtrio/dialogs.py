@@ -340,6 +340,8 @@ class FileDialog:
     """The confirmation button."""
     reject_button: typing.Optional[QtWidgets.QPushButton] = None
     """The cancellation button."""
+    file_name_line_edit: typing.Optional[QtWidgets.QLineEdit] = None
+    """The file name line edit widget."""
 
     result: typing.Optional[trio.Path] = None
     """The path selected by the user."""
@@ -361,25 +363,12 @@ class FileDialog:
                 "File dialog not available for interaction."
             )
 
-        # file_path = os.fspath(path)
-
         self.dialog.setDirectory(os.fspath(path.parent))
-        # self.dialog.selectFile(file_name)
-        [text_edit] = self.dialog.findChildren(QtWidgets.QLineEdit)
-        text_edit.setText(path.name)
 
-        # selected_paths = self.dialog.selectedFiles()
-        #
-        # if len(selected_paths) != 1 or not await path.samefile(selected_paths[0]):
-        #     message = textwrap.dedent(
-        #         f"""\
-        #             Failed to select the requested file.
-        #                 Requested: {file_path!r}
-        #                 Selected: {selected_paths}
-        #         """
-        #     )
-        #
-        #     raise qtrio.FileSelectionFailedError(message)
+        if self.file_name_line_edit is None:  # pragma: no cover
+            raise qtrio.InternalError("File name line edit unexpectedly not known.")
+
+        self.file_name_line_edit.setText(path.name)
 
     def setup(self) -> None:
         """See :meth:`qtrio.dialogs.BasicDialogProtocol.setup`."""
@@ -414,6 +403,7 @@ class FileDialog:
         buttons = _dialog_button_box_buttons_by_role(dialog=self.dialog)
         self.accept_button = buttons.get(QtWidgets.QDialogButtonBox.AcceptRole)
         self.reject_button = buttons.get(QtWidgets.QDialogButtonBox.RejectRole)
+        [self.file_name_line_edit] = self.dialog.findChildren(QtWidgets.QLineEdit)
 
         self.shown.emit(self.dialog)
 
@@ -426,6 +416,7 @@ class FileDialog:
         self.dialog = None
         self.accept_button = None
         self.reject_button = None
+        self.file_name_line_edit = None
 
     async def wait(self) -> trio.Path:
         """See :meth:`qtrio.dialogs.DialogProtocol.wait`."""

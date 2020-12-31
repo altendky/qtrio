@@ -1,6 +1,7 @@
 import math
 import os
 import pathlib
+import sys
 
 from qtpy import QtCore
 from qtpy import QtWidgets

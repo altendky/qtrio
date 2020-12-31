@@ -15,7 +15,6 @@ from ._exceptions import (
     InvalidInputError,
     InternalError,
     DialogNotActiveError,
-    FileSelectionFailedError,
 )
 
 from ._core import (

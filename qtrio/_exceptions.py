@@ -120,10 +120,3 @@ class DialogNotActiveError(QTrioException):
 
     # https://github.com/sphinx-doc/sphinx/issues/7493
     __module__ = "qtrio"
-
-
-class FileSelectionFailedError(QTrioException):
-    """Raised when a request to select a file fails."""
-
-    # https://github.com/sphinx-doc/sphinx/issues/7493
-    __module__ = "qtrio"
