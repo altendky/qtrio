@@ -1,4 +1,6 @@
+import math
 import os
+import pathlib
 import sys
 
 from qtpy import QtCore
@@ -13,25 +15,22 @@ import qtrio.dialogs
 import qtrio._qt
 
 
-def create_message_box_without_arguments():
-    return qtrio.dialogs.create_message_box(title="", text="")
-
-
 @pytest.fixture(
     name="builder",
     params=[
         qtrio.dialogs.create_integer_dialog,
         qtrio.dialogs.create_text_input_dialog,
         qtrio.dialogs.create_file_save_dialog,
-        create_message_box_without_arguments,
+        qtrio.dialogs.create_file_open_dialog,
+        qtrio.dialogs.create_message_box,
+        qtrio.dialogs.create_progress_dialog,
     ],
 )
 def builder_fixture(request):
     yield request.param
 
 
-@qtrio.host
-async def test_get_integer_gets_value(request, qtbot):
+async def test_get_integer_gets_value(qtbot):
     dialog = qtrio.dialogs.create_integer_dialog()
 
     async def user(task_status):
@@ -51,8 +50,7 @@ async def test_get_integer_gets_value(request, qtbot):
     assert integer == test_value
 
 
-@qtrio.host
-async def test_get_integer_raises_cancel_when_canceled(request, qtbot):
+async def test_get_integer_raises_cancel_when_canceled(qtbot):
     dialog = qtrio.dialogs.create_integer_dialog()
 
     async def user(task_status):
@@ -69,8 +67,7 @@ async def test_get_integer_raises_cancel_when_canceled(request, qtbot):
                 await dialog.wait()
 
 
-@qtrio.host
-async def test_get_integer_raises_for_invalid_input(request, qtbot):
+async def test_get_integer_raises_for_invalid_input(qtbot):
     dialog = qtrio.dialogs.create_integer_dialog()
 
     async def user(task_status):
@@ -92,8 +89,7 @@ def test_unused_dialog_teardown_ok(builder):
     dialog.teardown()
 
 
-@qtrio.host(timeout=30)
-async def test_file_save(request, qtbot, tmp_path):
+async def test_file_save(qtbot, tmp_path):
     path_to_select = trio.Path(tmp_path) / "something.new"
 
     dialog = qtrio.dialogs.create_file_save_dialog(
@@ -121,8 +117,7 @@ async def test_file_save(request, qtbot, tmp_path):
     assert selected_path == path_to_select
 
 
-@qtrio.host(timeout=30)
-async def test_file_save_no_defaults(request, qtbot, tmp_path):
+async def test_file_save_no_defaults(qtbot, tmp_path):
     path_to_select = trio.Path(tmp_path) / "another.thing"
 
     dialog = qtrio.dialogs.create_file_save_dialog()
@@ -150,8 +145,7 @@ async def test_file_save_no_defaults(request, qtbot, tmp_path):
     assert selected_path == path_to_select
 
 
-@qtrio.host(timeout=30)
-async def test_file_save_cancelled(request, qtbot, tmp_path):
+async def test_file_save_cancelled(qtbot, tmp_path):
     dialog = qtrio.dialogs.create_file_save_dialog()
 
     async def user(task_status):
@@ -173,8 +167,37 @@ async def test_file_save_cancelled(request, qtbot, tmp_path):
                 await dialog.wait()
 
 
-@qtrio.host
-async def test_information_message_box(request, qtbot):
+async def test_file_open_set_path(tmp_path: pathlib.Path) -> None:
+    file_path = tmp_path.joinpath("some_file")
+    file_path.touch()
+
+    dialog = qtrio.dialogs.create_file_open_dialog()
+
+    async def user():
+        await emissions.channel.receive()
+
+        await dialog.set_path(path=trio.Path(file_path))
+
+        assert dialog.accept_button is not None
+        dialog.accept_button.click()
+
+    async with qtrio.enter_emissions_channel(signals=[dialog.shown]) as emissions:
+        async with trio.open_nursery() as nursery:
+            nursery.start_soon(user)
+
+            selected_path = await dialog.wait()
+
+    assert selected_path == file_path
+
+
+async def test_file_save_raises_for_path_selection_when_not_active(qtbot):
+    dialog = qtrio.dialogs.create_file_save_dialog()
+
+    with pytest.raises(qtrio.DialogNotActiveError):
+        await dialog.set_path(path=trio.Path())
+
+
+async def test_information_message_box(qtbot):
     text = "Consider yourself informed."
     queried_text = None
 
@@ -203,8 +226,7 @@ async def test_information_message_box(request, qtbot):
     assert queried_text == text
 
 
-@qtrio.host
-async def test_information_message_box_cancel(request, qtbot):
+async def test_information_message_box_cancel(qtbot):
     dialog = qtrio.dialogs.create_message_box(
         title="",
         text="",
@@ -227,8 +249,7 @@ async def test_information_message_box_cancel(request, qtbot):
                 await dialog.wait()
 
 
-@qtrio.host
-async def test_text_input_dialog(request, qtbot):
+async def test_text_input_dialog(qtbot):
     dialog = qtrio.dialogs.create_text_input_dialog()
 
     entered_text = "etcetera"
@@ -270,8 +291,7 @@ def test_text_input_dialog_with_label():
         assert label.text() == label_string
 
 
-@qtrio.host
-async def test_text_input_dialog_cancel(request, qtbot):
+async def test_text_input_dialog_cancel(qtbot):
     dialog = qtrio.dialogs.create_text_input_dialog()
 
     async def user(task_status):
@@ -287,6 +307,43 @@ async def test_text_input_dialog_cancel(request, qtbot):
         with qtrio._qt.connection(signal=dialog.shown, slot=qtbot.addWidget):
             with pytest.raises(qtrio.UserCancelledError):
                 await dialog.wait()
+
+
+async def test_progress_dialog_dot_dot_dot(qtbot):
+    dialog = qtrio.dialogs.create_progress_dialog()
+
+    with qtrio._qt.connection(signal=dialog.shown, slot=qtbot.addWidget):
+        async with dialog.manage():
+            pass
+
+
+async def test_progress_dialog_cancel_raises(qtbot):
+    dialog = qtrio.dialogs.create_progress_dialog(cancel_button_text="cancel here")
+
+    with qtrio._qt.connection(signal=dialog.shown, slot=qtbot.addWidget):
+        with pytest.raises(qtrio.UserCancelledError):
+            async with dialog.manage():
+                assert dialog.dialog is not None
+                dialog.dialog.cancel()
+
+
+async def test_progress_dialog_cancel_cancels_context(qtbot):
+    dialog = qtrio.dialogs.create_progress_dialog(cancel_button_text="cancel here")
+
+    cancelled = False
+
+    with pytest.raises(qtrio.UserCancelledError):
+        with qtrio._qt.connection(signal=dialog.shown, slot=qtbot.addWidget):
+            async with dialog.manage():
+                try:
+                    assert dialog.cancel_button is not None
+                    dialog.cancel_button.click()
+                    await trio.sleep(math.inf)
+                except trio.Cancelled:
+                    cancelled = True
+                    raise
+
+    assert cancelled
 
 
 def test_dialog_button_box_buttons_by_role_no_buttons(qtbot):

@@ -41,84 +41,112 @@ and PyQt5 are supported.
 
 By enabling use of ``async`` and ``await`` it is possible in some cases to write related
 code more concisely and clearly than you would get with the signal and slot mechanisms
-of Qt concurrency.
+of Qt concurrency.  See the ``README`` examples in the docs for the full code.  The
+first example here shows classic pure Qt code.
 
 .. code-block:: python
 
-    class TwoStep:
-        def __init__(self, a_signal, some_path):
-            self.signal = a_signal
-            self.file = None
-            self.some_path = some_path
+    class Main:
+        def __init__(
+            self,
+            input_dialog: typing.Optional[QtWidgets.QInputDialog] = None,
+            output_dialog: typing.Optional[QtWidgets.QMessageBox] = None,
+        ):
+            if input_dialog is None:  # pragma: nocover
+                input_dialog = create_input()
 
-        def before(self):
-            self.file = open(some_path, 'w')
-            self.signal.connect(self.after)
-            self.file.write('before')
+            if output_dialog is None:  # pragma: nocover
+                output_dialog = create_output()
 
-        def after(self, value):
-            self.signal.disconnect(self.after)
-            self.file.write(f'after {value!r}')
-            self.file.close()
+            self.input_dialog = input_dialog
+            self.output_dialog = output_dialog
+
+        def setup(self) -> None:
+            self.input_dialog.accepted.connect(self.input_accepted)
+            self.input_dialog.rejected.connect(self.input_rejected)
+
+            self.input_dialog.show()
+
+        def input_accepted(self) -> None:
+            name = self.input_dialog.textValue()
+
+            self.output_dialog.setText(f"Hi {name}, welcome to the team!")
+
+            self.output_dialog.finished.connect(self.output_finished)
+            self.output_dialog.show()
+
+        def input_rejected(self) -> None:
+            QtCore.QCoreApplication.instance().quit()
+
+        def output_finished(self) -> None:
+            QtCore.QCoreApplication.instance().quit()
+
+The second example, below, shows how using ``async`` and ``await`` allows for a
+more concise and clear description of the sequenced activity.
 
 .. code-block:: python
 
-    async def together(a_signal):
-        with open(self.some_path, 'w') as file:
-            async with qtrio.enter_emissions_channel(signals=[a_signal]) as emissions:
-                file.write('before')
-                emission = await emissions.channel.receive()
-                [value] = emission.args
-                file.write(f'after {value!r}')
+    async def main(
+        input_dialog: typing.Optional[qtrio.dialogs.TextInputDialog] = None,
+        output_dialog: typing.Optional[qtrio.dialogs.MessageBox] = None,
+    ) -> None:
+        if input_dialog is None:  # pragma: nocover
+            input_dialog = create_input()
 
-Note how by using ``async`` and ``await`` we are not only able to more clearly and
-concisely describe the sequenced activity, we also get to use ``with`` to manage the
-context of the open file to be sure it gets closed.
+        if output_dialog is None:  # pragma: nocover
+            output_dialog = create_output()
+
+        with contextlib.suppress(qtrio.UserCancelledError):
+            name = await input_dialog.wait()
+
+            output_dialog.text = f"Hi {name}, welcome to the team!"
+
+            await output_dialog.wait()
 
 .. _chat: https://gitter.im/python-trio/general
-.. |chat badge| image:: https://img.shields.io/badge/chat-join%20now-blue.svg?color=RoyalBlue&logo=Gitter&logoColor=WhiteSmoke
+.. |chat badge| image:: https://img.shields.io/badge/chat-join%20now-blue.svg?color=royalblue&logo=Gitter&logoColor=whitesmoke
    :target: `chat`_
    :alt: Support chatroom
 
 .. _forum: https://trio.discourse.group
-.. |forum badge| image:: https://img.shields.io/badge/forum-join%20now-blue.svg?color=RoyalBlue&logo=Discourse&logoColor=WhiteSmoke
+.. |forum badge| image:: https://img.shields.io/badge/forum-join%20now-blue.svg?color=royalblue&logo=Discourse&logoColor=whitesmoke
    :target: `forum`_
    :alt: Support forum
 
 .. _documentation: https://qtrio.readthedocs.io
-.. |documentation badge| image:: https://img.shields.io/badge/docs-read%20now-blue.svg?color=RoyalBlue&logo=Read-the-Docs&logoColor=WhiteSmoke
+.. |documentation badge| image:: https://img.shields.io/badge/docs-read%20now-blue.svg?color=royalblue&logo=Read-the-Docs&logoColor=whitesmoke
    :target: `documentation`_
    :alt: Documentation
 
 .. _distribution: https://pypi.org/project/qtrio
-.. |version badge| image:: https://img.shields.io/pypi/v/qtrio.svg?color=IndianRed&logo=PyPI&logoColor=WhiteSmoke
+.. |version badge| image:: https://img.shields.io/pypi/v/qtrio.svg?color=indianred&logo=PyPI&logoColor=whitesmoke
    :target: `distribution`_
    :alt: Latest distribution version
 
-.. |python versions badge| image:: https://img.shields.io/pypi/pyversions/qtrio.svg?color=IndianRed&logo=PyPI&logoColor=WhiteSmoke
+.. |python versions badge| image:: https://img.shields.io/pypi/pyversions/qtrio.svg?color=indianred&logo=PyPI&logoColor=whitesmoke
    :alt: Supported Python versions
    :target: `distribution`_
 
-.. |python interpreters badge| image:: https://img.shields.io/pypi/implementation/qtrio.svg?color=IndianRed&logo=PyPI&logoColor=WhiteSmoke
+.. |python interpreters badge| image:: https://img.shields.io/pypi/implementation/qtrio.svg?color=indianred&logo=PyPI&logoColor=whitesmoke
    :alt: Supported Python interpreters
    :target: `distribution`_
 
 .. _issues: https://github.com/altendky/qtrio/issues
-.. |issues badge| image:: https://img.shields.io/github/issues/altendky/qtrio?color=RoyalBlue&logo=GitHub&logoColor=WhiteSmoke
+.. |issues badge| image:: https://img.shields.io/github/issues/altendky/qtrio?color=royalblue&logo=GitHub&logoColor=whitesmoke
    :target: `issues`_
    :alt: Issues
 
 .. _repository: https://github.com/altendky/qtrio
-.. |repository badge| image:: https://img.shields.io/github/last-commit/altendky/qtrio.svg?color=SeaGreen&logo=GitHub&logoColor=WhiteSmoke
+.. |repository badge| image:: https://img.shields.io/github/last-commit/altendky/qtrio.svg?color=seagreen&logo=GitHub&logoColor=whitesmoke
    :target: `repository`_
    :alt: Repository
 
 .. _tests: https://github.com/altendky/qtrio/actions?query=branch%3Amaster
-.. |tests badge| image:: https://img.shields.io/github/workflow/status/altendky/qtrio/CI/master?color=SeaGreen&logo=GitHub-Actions&logoColor=WhiteSmoke
+.. |tests badge| image:: https://img.shields.io/github/workflow/status/altendky/qtrio/CI/master?color=seagreen&logo=GitHub-Actions&logoColor=whitesmoke
    :target: `tests`_
    :alt: Tests
 
 .. _coverage: https://codecov.io/gh/altendky/qtrio
-.. |coverage badge| image:: https://img.shields.io/codecov/c/github/altendky/qtrio/master?color=SeaGreen&logo=Codecov&logoColor=WhiteSmoke
+.. |coverage badge| image:: https://img.shields.io/codecov/c/github/altendky/qtrio/master?color=seagreen&logo=Codecov&logoColor=whitesmoke
    :target: `coverage`_
    :alt: Test coverage

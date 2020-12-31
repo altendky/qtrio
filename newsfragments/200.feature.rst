@@ -1,0 +1,1 @@
+Added :meth:`qtrio.dialogs.FileDialog.set_path`.

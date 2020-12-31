@@ -8,7 +8,6 @@ import trio
 import qtrio.examples.buildingrespect
 
 
-@qtrio.host
 async def test_main(request, qtbot):
     class SignaledLabel(QtWidgets.QLabel):
         text_changed = QtCore.Signal(str)
