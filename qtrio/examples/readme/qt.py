@@ -1,6 +1,5 @@
 import typing
 
-from qtpy import QtCore
 from qtpy import QtWidgets
 
 

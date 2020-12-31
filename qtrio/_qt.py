@@ -89,7 +89,11 @@ def connection(
     signal: QtCore.SignalInstance,
     slot: typing.Union[typing.Callable[..., object], QtCore.SignalInstance],
 ) -> typing.Generator[
-    typing.Union[QtCore.QMetaObject.Connection, typing.Callable[..., object]],
+    typing.Union[
+        QtCore.QMetaObject.Connection,
+        typing.Callable[..., object],
+        QtCore.SignalInstance,  # TODO: https://bugreports.qt.io/browse/PYSIDE-1334
+    ],
     None,
     None,
 ]:

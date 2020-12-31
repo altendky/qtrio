@@ -14,7 +14,9 @@ async def test_main(request, qtbot):
 
         def setText(self, *args, **kwargs):
             super().setText(*args, **kwargs)
-            self.text_changed.emit(self.text())
+            # TODO: https://bugreports.qt.io/browse/PYSIDE-1318
+            signal = typing.cast(QtCore.SignalInstance, self.text_changed)
+            signal.emit(self.text())
 
     widget = qtrio.examples.buildingrespect.Widget(label=SignaledLabel())
     qtbot.addWidget(widget.widget)

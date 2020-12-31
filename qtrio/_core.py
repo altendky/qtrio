@@ -484,7 +484,10 @@ def maybe_build_application() -> QtCore.QCoreApplication:
     """
     application: QtCore.QCoreApplication
 
-    maybe_application = QtWidgets.QApplication.instance()
+    # TODO: https://bugreports.qt.io/browse/PYSIDE-1467
+    maybe_application = typing.cast(
+        typing.Optional[QtCore.QCoreApplication], QtWidgets.QApplication.instance()
+    )
     if maybe_application is None:
         application = QtWidgets.QApplication(sys.argv[1:])
     else:
