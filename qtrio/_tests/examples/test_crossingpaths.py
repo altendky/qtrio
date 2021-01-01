@@ -17,7 +17,7 @@ async def test_main(qtbot):
             super().setText(*args, **kwargs)
             # TODO: https://bugreports.qt.io/browse/PYSIDE-1318
             if qtpy.PYQT5:
-                self.text_changed.emit()
+                self.text_changed.emit(self.text())
             elif qtpy.PYSIDE2:
                 signal = typing.cast(QtCore.SignalInstance, self.text_changed)
                 signal.emit(self.text())
