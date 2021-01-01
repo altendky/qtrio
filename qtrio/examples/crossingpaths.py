@@ -15,7 +15,7 @@ async def main(
         label = QtWidgets.QLabel()
     # start big enough to fit the whole message
     label.setText(message)
-    label.show()  # type: ignore
+    label.show()
     label.setText("")
 
     for i in range(len(message)):

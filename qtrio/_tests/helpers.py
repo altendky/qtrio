@@ -11,8 +11,8 @@ def qtrio_preshow_workaround_fixture(qapp):
         QtWidgets.QMessageBox.Ok,
     )
 
-    dialog.show()  # type: ignore
-    dialog.hide()  # type: ignore
+    dialog.show()
+    dialog.hide()
 
 
 @pytest.fixture(name="qtrio_testdir", autouse=True)

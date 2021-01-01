@@ -118,7 +118,7 @@ async def test_file_save(qtbot, tmp_path):
 
         assert dialog.dialog is not None
 
-        dialog.dialog.accept()  # type: ignore
+        dialog.dialog.accept()
 
     async with trio.open_nursery() as nursery:
         await nursery.start(user)
@@ -146,7 +146,7 @@ async def test_file_save_no_defaults(qtbot, tmp_path):
         dialog.dialog.setDirectory(os.fspath(path_to_select.parent))
         [text_edit] = dialog.dialog.findChildren(QtWidgets.QLineEdit)
         text_edit.setText(path_to_select.name)
-        dialog.dialog.accept()  # type: ignore
+        dialog.dialog.accept()
 
     async with trio.open_nursery() as nursery:
         await nursery.start(user)
@@ -169,7 +169,7 @@ async def test_file_save_cancelled(qtbot, tmp_path):
 
         assert dialog.dialog is not None
 
-        dialog.dialog.reject()  # type: ignore
+        dialog.dialog.reject()
 
     async with trio.open_nursery() as nursery:
         await nursery.start(user)
@@ -227,7 +227,7 @@ async def test_information_message_box(qtbot):
         assert dialog.dialog is not None
 
         queried_text = dialog.dialog.text()
-        dialog.dialog.accept()  # type: ignore
+        dialog.dialog.accept()
 
     async with trio.open_nursery() as nursery:
         await nursery.start(user)
@@ -251,7 +251,7 @@ async def test_information_message_box_cancel(qtbot):
 
         assert dialog.dialog is not None
 
-        dialog.dialog.reject()  # type: ignore
+        dialog.dialog.reject()
 
     async with trio.open_nursery() as nursery:
         await nursery.start(user)
@@ -273,7 +273,7 @@ async def test_text_input_dialog(qtbot):
 
         assert dialog.dialog is not None
 
-        dialog.dialog.accept()  # type: ignore
+        dialog.dialog.accept()
 
     async with trio.open_nursery() as nursery:
         await nursery.start(user)
@@ -311,7 +311,7 @@ async def test_text_input_dialog_cancel(qtbot):
 
         assert dialog.dialog is not None
 
-        dialog.dialog.reject()  # type: ignore
+        dialog.dialog.reject()
 
     async with trio.open_nursery() as nursery:
         await nursery.start(user)

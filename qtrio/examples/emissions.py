@@ -95,7 +95,7 @@ class Window:
     def show(self) -> None:
         """Show the primary widget for this window."""
 
-        self.widget.show()  # type: ignore
+        self.widget.show()
 
 
 async def main(window: typing.Optional[Window] = None) -> None:

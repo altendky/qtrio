@@ -150,7 +150,7 @@ class IntegerDialog:
         # TODO: adjust so we can use a context manager?
         self.dialog.finished.connect(self.finished)
 
-        self.dialog.show()  # type: ignore
+        self.dialog.show()
 
         buttons = _dialog_button_box_buttons_by_role(dialog=self.dialog)
         self.accept_button = buttons.get(QtWidgets.QDialogButtonBox.AcceptRole)
@@ -249,7 +249,7 @@ class TextInputDialog:
 
         # TODO: adjust so we can use a context manager?
         self.dialog.finished.connect(self.finished)
-        self.dialog.show()  # type: ignore
+        self.dialog.show()
 
         buttons = _dialog_button_box_buttons_by_role(dialog=self.dialog)
         self.accept_button = buttons[QtWidgets.QDialogButtonBox.AcceptRole]
@@ -402,7 +402,7 @@ class FileDialog:
         # TODO: adjust so we can use a context manager?
         self.dialog.finished.connect(self.finished)
 
-        self.dialog.show()  # type: ignore
+        self.dialog.show()
 
         buttons = _dialog_button_box_buttons_by_role(dialog=self.dialog)
         self.accept_button = buttons.get(QtWidgets.QDialogButtonBox.AcceptRole)
@@ -542,7 +542,7 @@ class MessageBox:
         # TODO: adjust so we can use a context manager?
         self.dialog.finished.connect(self.finished)
 
-        self.dialog.show()  # type: ignore
+        self.dialog.show()
 
         buttons = _dialog_button_box_buttons_by_role(dialog=self.dialog)
         self.accept_button = buttons[QtWidgets.QDialogButtonBox.AcceptRole]

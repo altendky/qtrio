@@ -665,6 +665,6 @@ class Runner:
             self.done_callback(self.outcomes)
 
         if self.quit_application:
-            self.application.quit()  # type: ignore
+            self.application.quit()
 
         self._done = True
