@@ -1,6 +1,7 @@
 import typing
 
 import qtrio
+import qtpy
 from qtpy import QtCore
 from qtpy import QtWidgets
 import trio
@@ -14,7 +15,14 @@ async def test_main(qtbot):
 
         def setText(self, *args, **kwargs):
             super().setText(*args, **kwargs)
-            self.text_changed.emit(self.text())  # type: ignore
+            # TODO: https://bugreports.qt.io/browse/PYSIDE-1318
+            if qtpy.PYQT5:
+                self.text_changed.emit()
+            elif qtpy.PYSIDE2:
+                signal = typing.cast(QtCore.SignalInstance, self.text_changed)
+                signal.emit(self.text())
+            else:  # pragma: no cover
+                assert False
 
     label = SignaledLabel()
     qtbot.addWidget(label)

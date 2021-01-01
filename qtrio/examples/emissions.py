@@ -1,6 +1,7 @@
 import typing
 
 import attr
+import qtpy
 from qtpy import QtCore
 from qtpy import QtGui
 from qtpy import QtWidgets
@@ -23,7 +24,16 @@ class QSignaledWidget(QtWidgets.QWidget):
 
         super().closeEvent(event)
         if event.isAccepted():
-            self.closed.emit()  # type: ignore
+            # TODO: https://bugreports.qt.io/browse/PYSIDE-1318
+            if qtpy.PYQT5:
+                self.closed.emit()
+            elif qtpy.PYSIDE2:
+                signal = typing.cast(QtCore.SignalInstance, self.closed)
+                signal.emit()
+            else:  # pragma: no cover
+                raise qtrio.InternalError(
+                    "You should not be here but you are running neither PyQt5 nor PySide2.",
+                )
         else:  # pragma: no cover
             pass
 
@@ -32,7 +42,16 @@ class QSignaledWidget(QtWidgets.QWidget):
 
         super().showEvent(event)
         if event.isAccepted():
-            self.shown.emit()  # type: ignore
+            # TODO: https://bugreports.qt.io/browse/PYSIDE-1318
+            if qtpy.PYQT5:
+                self.shown.emit()
+            elif qtpy.PYSIDE2:
+                signal = typing.cast(QtCore.SignalInstance, self.shown)
+                signal.emit()
+            else:  # pragma: no cover
+                raise qtrio.InternalError(
+                    "You should not be here but you are running neither PyQt5 nor PySide2.",
+                )
         else:  # pragma: no cover
             pass
 

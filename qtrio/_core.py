@@ -54,7 +54,15 @@ def register_event_type() -> None:
         raise qtrio.EventTypeRegistrationFailedError()
 
     # assign to the global
-    _reenter_event_type = QtCore.QEvent.Type(event_hint)  # type: ignore
+    # TODO: https://bugreports.qt.io/browse/PYSIDE-1347
+    if qtpy.PYQT5:
+        _reenter_event_type = QtCore.QEvent.Type(event_hint)
+    elif qtpy.PYSIDE2:
+        _reenter_event_type = QtCore.QEvent.Type(event_hint)  # type: ignore
+    else:  # pragma: no cover
+        raise qtrio.InternalError(
+            "You should not be here but you are running neither PyQt5 nor PySide2.",
+        )
 
 
 def register_requested_event_type(
@@ -78,7 +86,7 @@ def register_requested_event_type(
     if _reenter_event_type is not None:
         raise qtrio.EventTypeAlreadyRegisteredError()
 
-    event_hint = QtCore.QEvent.registerEventType(requested_value)  # type: ignore
+    event_hint = QtCore.QEvent.registerEventType(int(requested_value))
 
     if event_hint == -1:
         raise qtrio.EventTypeRegistrationFailedError()
@@ -88,7 +96,7 @@ def register_requested_event_type(
         )
 
     # assign to the global
-    _reenter_event_type = QtCore.QEvent.Type(event_hint)  # type: ignore
+    _reenter_event_type = QtCore.QEvent.Type(event_hint)
 
 
 class ReenterEvent(QtCore.QEvent):

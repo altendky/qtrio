@@ -492,6 +492,8 @@ def create_file_open_dialog(
 message_box_standard_button_union = typing.Union[
     QtWidgets.QMessageBox.StandardButton,
     QtWidgets.QMessageBox.StandardButtons,
+    # TODO: https://github.com/stlehmann/PyQt5-stubs/issues/108
+    int,
 ]
 
 

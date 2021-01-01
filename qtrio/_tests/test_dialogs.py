@@ -242,7 +242,7 @@ async def test_information_message_box_cancel(qtbot):
         title="",
         text="",
         icon=QtWidgets.QMessageBox.Information,
-        buttons=QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel,  # type: ignore
+        buttons=QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel,
     )
 
     async def user(task_status):
