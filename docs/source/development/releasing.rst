@@ -15,54 +15,38 @@ Things to do for releasing:
 
    + remove affected code
 
-* do the actual release changeset
+* tag the existing release changeset on master
 
    + select new version number
 
       - increment as per `Semantic Versioning <https://semver.org/>`_ rules
 
-   + checkout a new branch ``release-vX.Y.Z``
+   + ``git tag vX.Y.Z``
 
-   + bump version number in ``qtrio/_version.py``
-
-      - remove ``+dev`` tag from version number
-
-   + run ``towncrier``
-
-..
-   https://github.com/twisted/towncrier/pull/271
-
-      - ``towncrier build --yes --name QTrio``
-
-      - review history change
-
-      - ``git rm`` changes
-
-   + fixup `docs/source/history.rst`
-
-      - correct QTrio capitalization
-
-      - remove empty misc changelog entries from the history
-
-   + commit such as ``Bump version and run towncrier for vX.Y.Z release``
-
-* push to your personal repository
-
-* create pull request to `altendky/qtrio <https://github.com/altendky/qtrio/pulls>`_'s
-  "master" branch
-
-* verify that all checks succeeded
-
-* get a review
-
-* tag with ``vX.Y.Z``, push tag
+   + ``git push --tags``
 
 * download wheel and sdist from build artifacts and unpack
 
 * push to PyPI::
 
-    twine upload dist/*
+    ``twine upload dist/*``
 
-* replace the ``+dev`` version tag in the same pull request as ``vX.Y.Z+dev``
+* create a post-release cleanup branch
 
-* merge the release pull request
+   + ``git checkout -b cleanup_vX.Y.Z``
+
+..
+   https://github.com/twisted/towncrier/pull/271
+
+   + ``towncrier build --yes --name QTrio``
+
+   + ``git commit -m 'Cleanup for release vX.Y.Z'``
+
+* push to your personal repository
+
+* create pull request to `altendky/qtrio <https://github.com/altendky/qtrio/pulls>`_'s
+  ``master`` branch
+
+* get a review
+
+* merge the cleanup pull request

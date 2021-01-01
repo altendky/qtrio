@@ -47,14 +47,16 @@ python -m pip list
 python -m pip freeze
 
 if [ "$CHECK_DOCS" = "1" ]; then
-    git fetch --deepen=100
-    git fetch --depth=100 origin master
     # https://github.com/twisted/towncrier/pull/271
     towncrier build --yes --name QTrio  # catch errors in newsfragments
     cd docs
     # -n (nit-picky): warn on missing references
     # -W: turn warnings into errors
     sphinx-build -nW  -b html source build
+    # check for the version in the changelog in the docs
+    git tag
+    grep --before 1 '\---------' source/history.rst
+    grep --quiet $(python -c 'import qtrio; print(qtrio.__version__)') source/history.rst
 elif [ "$CHECK_FORMATTING" = "1" ]; then
     source check.sh
 elif [ "$CHECK_TYPE_HINTS" = "1" ]; then
