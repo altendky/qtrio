@@ -45,6 +45,7 @@ setup(
     author_email="sda@fstab.net",
     license="MIT -or- Apache License 2.0",
     packages=find_packages(),
+    include_package_data=True,
     install_requires=[
         "async_generator",
         "attrs",
@@ -59,6 +60,7 @@ setup(
     extras_require={
         "p_checks": [
             "black",
+            "check-manifest",
             "flake8",
             "mypy",
             pytest,
