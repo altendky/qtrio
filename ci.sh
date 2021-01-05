@@ -2,11 +2,6 @@
 
 set -ex -o pipefail
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-set -o allexport
-source ${DIR}/.env
-set +o allexport
-
 # Log some general info about the environment
 env | sort
 
