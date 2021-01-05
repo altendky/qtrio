@@ -1,4 +1,8 @@
 include README.rst LICENSE* CODE_OF_CONDUCT* CONTRIBUTING*
-include .coveragerc
+include .coveragerc .flake8
+include *.ini *.toml *.yml
+include *.sh
 recursive-include docs *
+recursive-include newsfragments *.rst
 prune docs/build
+global-exclude .gitkeep
