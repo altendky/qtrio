@@ -2,11 +2,6 @@
 
 set -ex
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-set -o allexport
-source ${DIR}/.env
-set +o allexport
-
 # Log some general info about the environment
 env | sort
 
@@ -23,7 +18,7 @@ if ! black --check .; then
 fi
 
 # Run flake8 without pycodestyle and import-related errors
-flake8 setup.py docs ${PACKAGE_NAME}/ || EXIT_STATUS=$?
+flake8 setup.py docs qtrio/ || EXIT_STATUS=$?
 
 # Finally, leave a really clear warning of any issues and exit
 if [ $EXIT_STATUS -ne 0 ]; then
