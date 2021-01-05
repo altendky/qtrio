@@ -2,6 +2,7 @@ include README.rst LICENSE* CODE_OF_CONDUCT* CONTRIBUTING*
 include .coveragerc .flake8
 include *.ini *.toml *.yml
 include *.sh
+include qtrio/py.typed
 recursive-include docs *
 recursive-include newsfragments *.rst
 prune docs/build
