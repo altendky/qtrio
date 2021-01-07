@@ -5,6 +5,15 @@ Release history
 
 .. towncrier release notes start
 
+Qtrio 0.4.1 (2021-01-06)
+------------------------
+
+Features
+~~~~~~~~
+
+- Constrained all dependencies for better long term compatibility and reduced pip resolution time. (`#211 <https://github.com/altendky/qtrio/issues/211>`__)
+
+
 Qtrio 0.4.0 (2021-01-04)
 ------------------------
 
