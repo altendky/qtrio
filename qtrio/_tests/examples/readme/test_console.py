@@ -12,14 +12,15 @@ def test_normal_usage():
 
     assert (
         output_file.getvalue()
-        == f"What is your name? Hi Ms. Console, welcome to the team!\n"
+        == "What is your name? Hi Ms. Console, welcome to the team!\n"
     )
 
 
 class CancellingStringIO(io.StringIO):
-    def readline(
-        self, size: typing.Optional[int] = -1
-    ) -> str:  # type: ignore[override]
+    def readline(  # type: ignore[override]
+        self,
+        size: typing.Optional[int] = -1,
+    ) -> str:
         raise KeyboardInterrupt()
 
 
@@ -29,4 +30,4 @@ def test_cancellation():
 
     qtrio.examples.readme.console.main(input_file=input_file, output_file=output_file)
 
-    assert output_file.getvalue() == f"What is your name? "
+    assert output_file.getvalue() == "What is your name? "
