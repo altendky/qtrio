@@ -305,7 +305,7 @@ class EmissionsNursery:
         signal: qtrio._util.SignalInstance,
         slot: typing.Callable[..., typing.Awaitable[object]],
     ) -> None:
-        """Connect to an async slot to this emissions nursery so when called the slot
+        """Connect an async signal to this emissions nursery so when called the slot
         will be run in the nursery.
         """
         if self.wrapper is not None:
