@@ -643,7 +643,7 @@ class ProgressDialog:
         self.cancel_button = None
 
     @async_generator.asynccontextmanager
-    async def manage(self) -> typing.AsyncIterable[None]:
+    async def manage(self) -> typing.AsyncIterator[None]:
         """A context manager to setup the progress dialog, cancel the managed context
         and teardown the dialog when done.
         """
