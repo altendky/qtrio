@@ -4,9 +4,9 @@ QTrio - a library bringing Qt GUIs together with ``async`` and ``await`` via Tri
 
 abc
 
-.. only::
+.. only:: Internal
 
-    def
+   Content to be included only in the internal version of the document.
 
 Resources
 ---------
