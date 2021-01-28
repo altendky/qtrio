@@ -51,9 +51,9 @@ QTrio way last.
 
 .. code-block:: python
 
-    # Complete runnable source files with imports and helpers are available in
+    # A complete runnable source file with imports and helpers is available in
     # either the documentation readme examples or in the repository under
-    # qtrio/examples/readme/.
+    # qtrio/examples/readme/console.py.
 
     def main(
         input_file: typing.TextIO = sys.stdin, output_file: typing.TextIO = sys.stdout
@@ -72,9 +72,9 @@ kind of explodes when you shift into a classic Qt GUI setup.
 
 .. code-block:: python
 
-    # Complete runnable source files with imports and helpers are available in
+    # A complete runnable source file with imports and helpers is available in
     # either the documentation readme examples or in the repository under
-    # qtrio/examples/readme/.
+    # qtrio/examples/readme/qt.py.
 
     class Main:
         def __init__(
@@ -118,9 +118,9 @@ really containing the activity.
 
 .. code-block:: python
 
-    # Complete runnable source files with imports and helpers are available in
+    # A complete runnable source file with imports and helpers is available in
     # either the documentation readme examples or in the repository under
-    # qtrio/examples/readme/.
+    # qtrio/examples/readme/qtrio.py.
 
     async def main(
         input_dialog: typing.Optional[qtrio.dialogs.TextInputDialog] = None,
