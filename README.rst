@@ -43,11 +43,15 @@ By enabling use of ``async`` and ``await`` it is possible in some cases to write
 related code more concisely and clearly than you would get with the signal and slot
 mechanisms of Qt concurrency.  In this set of small examples we will allow the user to
 input their name then use that input to generate an output message.  The user will be
-able to cancel the input to terminate the program early.  See the ``README`` examples
-in the docs for the full code.  In the first example we will do it in the form of a
-classic "hello" console program.  Well, classic plus a bit of boilerplate to allow
-explicit testing without using special external tooling.  Then second, the form this
-same activity takes in a general Qt program.  And finally, the QTrio way last.
+able to cancel the input to terminate the program early.  In the first example we will
+do it in the form of a classic "hello" console program.  Well, classic plus a bit of
+boilerplate to allow explicit testing without using special external tooling.  Then
+second, the form this same activity takes in a general Qt program.  And finally, the
+QTrio way last.
+
+Note:
+    Complete runnable source files with imports and helpers are available in either the
+    documentation readme examples or in the repository under ``qtrio/examples/readme/``.
 
 .. code-block:: python
 
