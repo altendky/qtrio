@@ -223,7 +223,7 @@ async def test_main(
             )
 
     async with await destination.open("rb") as written_file:
-        written = await written_file.read()
+        written = await written_file.read()  # type: ignore[attr-defined]
 
     assert written == data
 
@@ -264,7 +264,7 @@ async def test_get_dialog(
             )
 
     async with await destination.open("rb") as written_file:
-        written = await written_file.read()
+        written = await written_file.read()  # type: ignore[attr-defined]
 
     assert written == data
 
@@ -332,7 +332,7 @@ async def test_get(
         progresses.append(progress)
 
     async with await destination.open("rb") as written_file:
-        written = await written_file.read()
+        written = await written_file.read()  # type: ignore[attr-defined]
 
     assert written == data
     assert all(progress.total == content_length for progress in progresses)
