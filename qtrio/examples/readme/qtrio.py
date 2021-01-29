@@ -30,7 +30,7 @@ class Dialogs:
     output: qtrio.dialogs.MessageBox = attr.ib(factory=create_output)
 
 
-async def main(task_status=trio.TASK_STATUS_IGNORED) -> None:
+async def main(*, task_status=trio.TASK_STATUS_IGNORED) -> None:
     dialogs = Dialogs()
     task_status.started(dialogs)
 
