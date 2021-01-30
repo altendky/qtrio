@@ -186,7 +186,7 @@ async def get(
             async with (await destination.open("wb")) as file:
                 async for chunk in response.aiter_raw():
                     downloaded += len(chunk)
-                    await file.write(chunk)
+                    await file.write(chunk)  # type: ignore[attr-defined]
 
                     if clock() - last_update > update_period:
                         progress = attr.evolve(progress, downloaded=downloaded)

@@ -173,10 +173,12 @@ async def test_file_open_set_path(tmp_path: pathlib.Path) -> None:
 
     dialog = qtrio.dialogs.create_file_open_dialog()
 
+    trio_file_path = trio.Path(file_path)
+
     async def user():
         await emissions.channel.receive()
 
-        await dialog.set_path(path=trio.Path(file_path))
+        await dialog.set_path(path=trio_file_path)
 
         assert dialog.accept_button is not None
         dialog.accept_button.click()
@@ -187,7 +189,7 @@ async def test_file_open_set_path(tmp_path: pathlib.Path) -> None:
 
             selected_path = await dialog.wait()
 
-    assert selected_path == file_path
+    assert selected_path == trio_file_path
 
 
 async def test_file_save_raises_for_path_selection_when_not_active(qtbot):
