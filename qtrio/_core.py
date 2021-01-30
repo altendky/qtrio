@@ -286,7 +286,7 @@ class StarterProtocol(typing_extensions.Protocol):
         ...
 
 
-@attr.s(auto_attribs=True)
+@attr.s(auto_attribs=True, frozen=True)
 class DirectStarter:
     slot: typing.Callable[..., typing.Awaitable[object]]
     nursery: trio.Nursery
@@ -295,7 +295,7 @@ class DirectStarter:
         self.nursery.start_soon(self.slot, *args)
 
 
-@attr.s(auto_attribs=True)
+@attr.s(auto_attribs=True, frozen=True)
 class WrappedStarter:
     slot: typing.Callable[..., typing.Awaitable[object]]
     wrapper: typing.Callable[
