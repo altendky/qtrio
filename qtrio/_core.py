@@ -201,7 +201,7 @@ class EmissionsChannelSlot:
             self.send_channel.send_nowait(
                 Emission(signal=self.internal_signal, args=args)
             )
-        except trio.WouldBlock: # trio.ClosedResourceError
+        except (trio.WouldBlock, trio.ClosedResourceError):
             # TODO: log this or... ?
             pass
 
