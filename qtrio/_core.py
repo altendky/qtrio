@@ -217,7 +217,6 @@ class Emissions:
     """A memory receive channel to be fed by signal emissions."""
     send_channel: trio.MemorySendChannel
     """A memory send channel collecting signal emissions."""
-    channel_slots: typing.List[EmissionsChannelSlot] = attr.ib(factory=list)
 
     async def aclose(self) -> None:
         """Asynchronously close the send channel when signal emissions are no longer of
@@ -264,7 +263,6 @@ async def open_emissions_channel(
                 slot = EmissionsChannelSlot(
                     internal_signal=signal, send_channel=send_channel
                 )
-                emissions.channel_slots.append(slot)
                 stack.enter_context(qtrio._qt.connection(signal, slot.slot))
 
             yield emissions
