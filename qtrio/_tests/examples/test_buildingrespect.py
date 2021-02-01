@@ -7,11 +7,6 @@ import trio.testing
 import qtrio.examples.buildingrespect
 
 
-async def call(fn, count):
-    for _ in range(count):
-        fn()
-
-
 async def test_main(qtbot):
     message = "test world"
     results: typing.List[str] = []
