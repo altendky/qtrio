@@ -107,8 +107,6 @@ def connection(
 
         try:
             # can we precheck and avoid the exception?
-            print("before disconnect", signal, this_connection, flush=True)
             signal.disconnect(this_connection)
-            print("after disconnect", flush=True)
         except expected_exception:
             pass

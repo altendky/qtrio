@@ -14,7 +14,7 @@ class Widget:
     button: QtWidgets.QPushButton = attr.ib(factory=QtWidgets.QPushButton)
     label: QtWidgets.QWidget = attr.ib(factory=QtWidgets.QLabel)
 
-    text_changed = qtrio.Signal()
+    text_changed = qtrio.Signal(str)
 
     def setup(self, message: str) -> None:
         self.button.setText("More")
@@ -32,17 +32,19 @@ class Widget:
 
     def set_text(self, text: str) -> None:
         self.label.setText(text)
-        print("before emit", flush=True)
         self.text_changed.emit(text)
-        print("after emit", flush=True)
 
-    async def run(self, message: str):
-        print("inner before", flush=True)
+    async def run(
+        self,
+        message: str,
+        *,
+        task_status: trio_typing.TaskStatus[None] = trio.TASK_STATUS_IGNORED,
+    ):
         async with qtrio.enter_emissions_channel(
             signals=[self.button.clicked]
         ) as emissions:
             i = 1
-            print("inner after", flush=True)
+            task_status.started(self)
 
             async for _ in emissions.channel:  # pragma: no branch
                 self.set_text(message[:i])
@@ -69,15 +71,5 @@ class Widget:
             task_status.started(self)
 
 
-async def main(
-    message: str = "Hello world.",
-    *,
-    task_status: trio_typing.TaskStatus[Widget] = trio.TASK_STATUS_IGNORED,
-) -> None:
-    async with trio.open_nursery() as nursery:
-        widget = await nursery.start(Widget.start, message)
-        task_status.started(widget)
-
-
 if __name__ == "__main__":  # pragma: no cover
-    qtrio.run(main)
+    qtrio.run(Widget.start)
