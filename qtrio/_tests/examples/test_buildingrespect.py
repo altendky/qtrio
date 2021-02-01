@@ -17,7 +17,7 @@ async def test_main(qtbot):
     results: typing.List[str] = []
 
     async with trio.open_nursery() as nursery:
-        widget = await nursery.start(
+        widget: qtrio.examples.buildingrespect.Widget = await nursery.start(
             qtrio.examples.buildingrespect.Widget.start, message
         )
         qtbot.addWidget(widget.widget)

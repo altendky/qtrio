@@ -38,8 +38,8 @@ class Widget:
         self,
         message: str,
         *,
-        task_status: trio_typing.TaskStatus[None] = trio.TASK_STATUS_IGNORED,
-    ):
+        task_status: trio_typing.TaskStatus["Widget"] = trio.TASK_STATUS_IGNORED,
+    ) -> None:
         async with qtrio.enter_emissions_channel(
             signals=[self.button.clicked]
         ) as emissions:
@@ -61,7 +61,7 @@ class Widget:
         cls,
         message: str = "Hello world.",
         *,
-        task_status: trio_typing.TaskStatus[None] = trio.TASK_STATUS_IGNORED,
+        task_status: trio_typing.TaskStatus["Widget"] = trio.TASK_STATUS_IGNORED,
     ) -> None:
         self = cls()
         self.setup(message=message)
