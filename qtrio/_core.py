@@ -188,10 +188,13 @@ class Emission:
         return self.is_from(signal=other.signal) and self.args == other.args
 
 
-@attr.s(auto_attribs=True, frozen=True)
+# @attr.s(auto_attribs=True, frozen=True)
 class EmissionsChannelSlot:
-    internal_signal: qtrio._util.SignalInstance
-    send_channel: trio.MemorySendChannel
+    # internal_signal: qtrio._util.SignalInstance
+    # send_channel: trio.MemorySendChannel
+    def __init__(self, internal_signal, send_channel):
+        self.internal_signal = internal_signal
+        self.send_channel = send_channel
 
     def slot(
         self,
