@@ -72,7 +72,7 @@ else
     # 'coverage xml' to generate the report that it uses, and that will only
     # apply the ignore patterns in the current directory's .coveragerc.
     cp ../.coveragerc .
-    if pytest -W error -ra --junitxml=../test-results.xml --cov="$INSTALLDIR" --verbose --pyargs qtrio; then
+    if pytest -W error -ra --junitxml=../test-results.xml --cov="$INSTALLDIR" --verbose --pyargs qtrio._tests.examples.test_buildingrespect; then
         PASSED=true
     else
         PASSED=false
