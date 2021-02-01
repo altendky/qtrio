@@ -22,27 +22,28 @@ async def test_main(request, qtbot):
     message = "test world"
     results: typing.List[str] = []
 
-    async def user():
-        for _ in message:
-            widget.button.click()
-
-        with trio.move_on_after(1):
-            async for emission in emissions.channel:
-                [text] = emission.args
-                results.append(text)
-
-        widget.button.click()
-
     async with qtrio.enter_emissions_channel(
         signals=[widget.label.text_changed],
     ) as emissions:
         async with trio.open_nursery() as nursery:
-            nursery.start_soon(user)
+            widget = nursery.start(qtrio.examples.buildingrespect.Widget.start, message)
+            await trio.sleep(1)
+            for _ in message:
+                print("outer before", flush=True)
+                widget.button.click()
+                print("outer after", flush=True)
 
-            await qtrio.examples.buildingrespect.main(
-                widget=widget,
-                message=message,
-            )
+            with trio.move_on_after(1):
+                async for emission in emissions.channel:
+                    [text] = emission.args
+                    results.append(text)
+
+            widget.button.click()
+
+            # await qtrio.examples.buildingrespect.main(
+            #     widget=widget,
+            #     message=message,
+            # )
 
     assert results == [
         "test world",
