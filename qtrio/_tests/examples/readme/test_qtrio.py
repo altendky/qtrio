@@ -29,7 +29,7 @@ async def test_main_cancelled():
     text_to_enter = "everyone"
 
     def output_was_shown(*args, **kwargs):
-        assert False, "Output dialog was shown"
+        assert False, "Output dialog was shown"  # pragma: no cover
 
     async with trio.open_nursery() as nursery:
         dialogs = await nursery.start(async_fn=qtrio.examples.readme.qtrio.main)
