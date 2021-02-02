@@ -122,7 +122,10 @@ really containing the activity.
     # either the documentation readme examples or in the repository under
     # qtrio/examples/readme/qtrio.py.
 
-    async def main(*, task_status=trio.TASK_STATUS_IGNORED) -> None:
+    async def main(
+        *,
+        task_status: trio_typing.TaskStatus[Dialogs] = trio.TASK_STATUS_IGNORED,
+    ) -> None:
         dialogs = Dialogs()
         task_status.started(dialogs)
 
