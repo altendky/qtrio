@@ -46,8 +46,8 @@ input their name then use that input to generate an output message.  The user wi
 able to cancel the input to terminate the program early.  In the first example we will
 do it in the form of a classic "hello" console program.  Well, classic plus a bit of
 boilerplate to allow explicit testing without using special external tooling.  Then
-second, the form this same activity takes in a general Qt program.  And finally, the
-QTrio way last.
+second, the form of a general Qt program implementing this same activity.  And finally,
+the QTrio way.
 
 .. code-block:: python
 
