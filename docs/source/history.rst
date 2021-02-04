@@ -5,6 +5,12 @@ Release history
 
 .. towncrier release notes start
 
+Qtrio 0.4.2 (2021-02-04)
+------------------------
+
+No significant changes.  Released for documentation improvements.
+
+
 Qtrio 0.4.1 (2021-01-06)
 ------------------------
 
