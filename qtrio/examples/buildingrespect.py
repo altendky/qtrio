@@ -9,34 +9,37 @@ import trio_typing
 
 @attr.s(auto_attribs=True, eq=False)
 class Widget:
+    message: str
     widget: QtWidgets.QWidget = attr.ib(factory=QtWidgets.QWidget)
     layout: QtWidgets.QLayout = attr.ib(factory=QtWidgets.QVBoxLayout)
     button: QtWidgets.QPushButton = attr.ib(factory=QtWidgets.QPushButton)
     label: QtWidgets.QWidget = attr.ib(factory=QtWidgets.QLabel)
+
+    shown_event: trio.Event = attr.ib(factory=trio.Event)
 
     text_changed = qtrio.Signal(str)
 
     def setup(self, message: str) -> None:
         self.button.setText("More")
 
-        # start big enough to fit the whole message
-        self.set_text(message)
-
         self.layout.addWidget(self.button)
         self.layout.addWidget(self.label)
         self.widget.setLayout(self.layout)
 
-    def show(self) -> None:
+    async def show(self) -> None:
+        # TODO: maybe raise if already started?
+        # start big enough to fit the whole message
+        self.label.setText(self.message)
         self.widget.show()
-        self.set_text("")
+        self.label.setText("")
+        self.shown_event.set()
 
     def set_text(self, text: str) -> None:
         self.label.setText(text)
         self.text_changed.emit(text)
 
-    async def run(
+    async def serve(
         self,
-        message: str,
         *,
         task_status: trio_typing.TaskStatus["Widget"] = trio.TASK_STATUS_IGNORED,
     ) -> None:
@@ -47,28 +50,41 @@ class Widget:
             task_status.started(self)
 
             async for _ in emissions.channel:  # pragma: no branch
-                self.set_text(message[:i])
+                self.set_text(self.message[:i])
                 i += 1
 
-                if i > len(message):
+                if i > len(self.message):
                     break
 
             # wait for another click to finish
             await emissions.channel.receive()
 
     @classmethod
+    async def create(
+        cls: "Widget",
+        message: typing.Optional[str] = None,
+    ) -> "Widget":
+        if message is None:
+            message = "Hello World."
+
+        self = cls(message=message)
+        self.setup(message=message)
+
+        return self
+
+    @classmethod
     async def start(
         cls,
-        message: str = "Hello world.",
+        message: typing.Optional[str] = None,
         *,
         task_status: trio_typing.TaskStatus["Widget"] = trio.TASK_STATUS_IGNORED,
     ) -> None:
-        self = cls()
-        self.setup(message=message)
-        self.show()
-        async with trio.open_nursery() as nursery:
-            await nursery.start(self.run, message)
-            task_status.started(self)
+        self = await cls.create(message=message)
+
+        await self.show()
+        task_status.started(self)
+
+        await self.serve()
 
 
 if __name__ == "__main__":  # pragma: no cover
