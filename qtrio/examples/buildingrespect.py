@@ -19,7 +19,7 @@ class Widget:
 
     text_changed = qtrio.Signal(str)
 
-    def setup(self, message: str) -> None:
+    def setup(self) -> None:
         self.button.setText("More")
 
         self.layout.addWidget(self.button)
@@ -62,20 +62,17 @@ class Widget:
     @classmethod
     async def create(
         cls,
-        message: typing.Optional[str] = None,
+        message: str,
     ) -> "Widget":
-        if message is None:
-            message = "Hello World."
-
         self = cls(message=message)
-        self.setup(message=message)
+        self.setup()
 
         return self
 
     @classmethod
     async def start(
         cls,
-        message: typing.Optional[str] = None,
+        message: str,
         *,
         task_status: trio_typing.TaskStatus["Widget"] = trio.TASK_STATUS_IGNORED,
     ) -> None:
