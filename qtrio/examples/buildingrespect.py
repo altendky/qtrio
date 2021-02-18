@@ -61,7 +61,7 @@ class Widget:
 
     @classmethod
     async def create(
-        cls: "Widget",
+        cls,
         message: typing.Optional[str] = None,
     ) -> "Widget":
         if message is None:
