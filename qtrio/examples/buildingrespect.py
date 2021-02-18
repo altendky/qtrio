@@ -60,23 +60,14 @@ class Widget:
             await emissions.channel.receive()
 
     @classmethod
-    async def create(
-        cls,
-        message: str,
-    ) -> "Widget":
-        self = cls(message=message)
-        self.setup()
-
-        return self
-
-    @classmethod
     async def start(
         cls,
         message: str,
         *,
         task_status: trio_typing.TaskStatus["Widget"] = trio.TASK_STATUS_IGNORED,
     ) -> None:
-        self = await cls.create(message=message)
+        self = cls(message=message)
+        self.setup()
 
         await self.show()
         task_status.started(self)
