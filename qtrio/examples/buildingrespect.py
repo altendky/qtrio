@@ -85,4 +85,4 @@ class Widget:
 
 
 if __name__ == "__main__":  # pragma: no cover
-    qtrio.run(Widget.start, message="Hellow world.")
+    qtrio.run(Widget.start, "Hello world.")
