@@ -22,7 +22,7 @@ def emissions() -> None:  # pragma: no cover
     import qtrio
     import qtrio.examples.emissions
 
-    qtrio.run(qtrio.examples.emissions.main)
+    qtrio.run(qtrio.examples.emissions.Widget.start)
 
 
 @examples.command()

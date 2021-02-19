@@ -1,15 +1,15 @@
 import typing
 
-import qtrio
+import pytestqt.qtbot
 import trio
 import trio.testing
 
+import qtrio
 import qtrio.examples.buildingrespect
 
 
-async def test_main(qtbot):
+async def test_main(qtbot: pytestqt.qtbot.QtBot) -> None:
     message = "test world"
-    results: typing.List[str] = []
 
     async with trio.open_nursery() as nursery:
         widget: qtrio.examples.buildingrespect.Widget = await nursery.start(
@@ -31,21 +31,21 @@ async def test_main(qtbot):
                 # give Qt etc a chance to handle the clicks before closing the channel
                 await trio.testing.wait_all_tasks_blocked()
 
-            async for emission in emissions.channel:
-                [text] = emission.args
-                results.append(text)
+            results: typing.List[typing.Tuple[object]] = [
+                emission.args async for emission in emissions.channel
+            ]
 
             widget.button.click()
 
     assert results == [
-        "t",
-        "te",
-        "tes",
-        "test",
-        "test ",
-        "test w",
-        "test wo",
-        "test wor",
-        "test worl",
-        "test world",
+        ("t",),
+        ("te",),
+        ("tes",),
+        ("test",),
+        ("test ",),
+        ("test w",),
+        ("test wo",),
+        ("test wor",),
+        ("test worl",),
+        ("test world",),
     ]

@@ -15,8 +15,6 @@ class Widget:
     button: QtWidgets.QPushButton = attr.ib(factory=QtWidgets.QPushButton)
     label: QtWidgets.QWidget = attr.ib(factory=QtWidgets.QLabel)
 
-    shown_event: trio.Event = attr.ib(factory=trio.Event)
-
     text_changed = qtrio.Signal(str)
 
     def setup(self) -> None:
@@ -32,7 +30,6 @@ class Widget:
         self.label.setText(self.message)
         self.widget.show()
         self.label.setText("")
-        self.shown_event.set()
 
     def set_text(self, text: str) -> None:
         self.label.setText(text)
@@ -41,13 +38,14 @@ class Widget:
     async def serve(
         self,
         *,
-        task_status: trio_typing.TaskStatus["Widget"] = trio.TASK_STATUS_IGNORED,
+        task_status: trio_typing.TaskStatus[None] = trio.TASK_STATUS_IGNORED,
     ) -> None:
         async with qtrio.enter_emissions_channel(
             signals=[self.button.clicked]
         ) as emissions:
             i = 1
-            task_status.started(self)
+            await self.show()
+            task_status.started()
 
             async for _ in emissions.channel:  # pragma: no branch
                 self.set_text(self.message[:i])
@@ -63,14 +61,17 @@ class Widget:
     async def start(
         cls,
         message: str,
+        hold_event: typing.Optional[trio.Event] = None,
         *,
         task_status: trio_typing.TaskStatus["Widget"] = trio.TASK_STATUS_IGNORED,
     ) -> None:
         self = cls(message=message)
         self.setup()
 
-        await self.show()
         task_status.started(self)
+
+        if hold_event is not None:
+            await hold_event.wait()
 
         await self.serve()
 

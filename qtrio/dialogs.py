@@ -7,6 +7,7 @@ import async_generator
 import attr
 from qtpy import QtWidgets
 import trio
+import trio_typing
 
 import qtrio
 import qtrio._qt
@@ -236,6 +237,8 @@ class TextInputDialog:
     finished = qtrio.Signal(int)  # QtWidgets.QDialog.DialogCode
     """See :attr:`qtrio.dialogs.BasicDialogProtocol.finished`."""
 
+    finished_event: trio.Event = attr.ib(factory=trio.Event)
+
     def setup(self) -> None:
         """See :meth:`qtrio.dialogs.BasicDialogProtocol.setup`."""
 
@@ -269,7 +272,7 @@ class TextInputDialog:
         self.accept_button = None
         self.reject_button = None
 
-    async def wait(self) -> str:
+    async def wait(self, shown_event: typing.Optional[trio.Event] = None) -> str:
         """See :meth:`qtrio.dialogs.DialogProtocol.wait`."""
 
         with _manage(dialog=self) as finished_event:
@@ -278,6 +281,38 @@ class TextInputDialog:
                     "Dialog not assigned while it is being managed."
                 )
 
+            if shown_event is not None:
+                shown_event.set()
+
+            await finished_event.wait()
+
+            dialog_result = self.dialog.result()
+
+            if dialog_result == QtWidgets.QDialog.Rejected:
+                raise qtrio.UserCancelledError()
+
+            # TODO: `: str` is a workaround for
+            #       https://github.com/spyder-ide/qtpy/pull/217
+            text_result: str = self.dialog.textValue()
+
+            self.result = text_result
+
+            return text_result
+
+    async def serve(
+        self,
+        *,
+        task_status: trio_typing.TaskStatus["Widget"] = trio.TASK_STATUS_IGNORED,
+    ) -> str:
+        """See :meth:`qtrio.dialogs.DialogProtocol.wait`."""
+
+        with _manage(dialog=self) as finished_event:
+            if self.dialog is None:  # pragma: no cover
+                raise qtrio.InternalError(
+                    "Dialog not assigned while it is being managed."
+                )
+
+            task_status.started()
             await finished_event.wait()
 
             dialog_result = self.dialog.result()
@@ -417,7 +452,7 @@ class FileDialog:
         self.reject_button = None
         self.file_name_line_edit = None
 
-    async def wait(self) -> trio.Path:
+    async def wait(self, shown_event: typing.Optional[trio.Event] = None) -> trio.Path:
         """See :meth:`qtrio.dialogs.DialogProtocol.wait`."""
 
         with _manage(dialog=self) as finished_event:
@@ -425,6 +460,9 @@ class FileDialog:
                 raise qtrio.InternalError(
                     "Dialog not assigned while it is being managed."
                 )
+
+            if shown_event is not None:
+                shown_event.set()
 
             await finished_event.wait()
             if self.dialog.result() != QtWidgets.QDialog.Accepted:
@@ -542,7 +580,7 @@ class MessageBox:
         self.dialog = None
         self.accept_button = None
 
-    async def wait(self) -> None:
+    async def wait(self, shown_event: typing.Optional[trio.Event] = None) -> None:
         """See :meth:`qtrio.dialogs.DialogProtocol.wait`."""
 
         with _manage(dialog=self) as finished_event:
@@ -550,6 +588,9 @@ class MessageBox:
                 raise qtrio.InternalError(
                     "Dialog not assigned while it is being managed."
                 )
+
+            if shown_event is not None:
+                shown_event.set()
 
             await finished_event.wait()
 
