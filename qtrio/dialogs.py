@@ -302,7 +302,7 @@ class TextInputDialog:
     async def serve(
         self,
         *,
-        task_status: trio_typing.TaskStatus["Widget"] = trio.TASK_STATUS_IGNORED,
+        task_status: trio_typing.TaskStatus[None] = trio.TASK_STATUS_IGNORED,
     ) -> str:
         """See :meth:`qtrio.dialogs.DialogProtocol.wait`."""
 

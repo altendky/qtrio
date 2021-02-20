@@ -52,7 +52,7 @@ class Downloader:
         http_application: typing.Optional[typing.Callable[..., typing.Any]] = None,
         *,
         task_status: trio_typing.TaskStatus[None] = trio.TASK_STATUS_IGNORED,
-    ):
+    ) -> None:
         task_status.started()
 
         converted_url: hyperlink.URL
@@ -107,7 +107,7 @@ class Downloader:
         http_application: typing.Callable[..., typing.Any],
         hold_event: typing.Optional[trio.Event] = None,
         *,
-        task_status: trio_typing.TaskStatus["Widget"] = trio.TASK_STATUS_IGNORED,
+        task_status: trio_typing.TaskStatus["Downloader"] = trio.TASK_STATUS_IGNORED,
     ) -> None:
         self = cls()
 
@@ -209,13 +209,13 @@ class GetDialog:
     @classmethod
     async def start(
         cls,
-        url: typing.Optional[hyperlink.URL],
-        destination: typing.Optional[trio.Path],
+        url: hyperlink.URL,
+        destination: trio.Path,
         fps: float,
         http_application: typing.Callable[..., typing.Any],
         hold_event: typing.Optional[trio.Event] = None,
         *,
-        task_status: trio_typing.TaskStatus["Widget"] = trio.TASK_STATUS_IGNORED,
+        task_status: trio_typing.TaskStatus["GetDialog"] = trio.TASK_STATUS_IGNORED,
     ) -> None:
         self = cls(fps=fps, http_application=http_application)
 

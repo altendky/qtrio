@@ -8,7 +8,9 @@ import qtrio
 import qtrio.examples.crossingpaths
 
 
-async def test_main(qtbot: pytestqt.qtbot.QtBot, optional_hold_event: typing.Optional[trio.Event]) -> None:
+async def test_main(
+    qtbot: pytestqt.qtbot.QtBot, optional_hold_event: typing.Optional[trio.Event]
+) -> None:
     message = "test world"
 
     async with trio.open_nursery() as nursery:

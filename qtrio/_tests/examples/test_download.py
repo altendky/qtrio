@@ -166,10 +166,11 @@ async def test_main(
             fps=10,
             http_application=http_application,
         )
-        widget = await nursery.start(start)
+        widget: qtrio.examples.download.Downloader = await nursery.start(start)
 
         if not pass_url:
             await widget.text_input_shown_event.wait()
+            assert widget.text_input_dialog is not None
 
             assert widget.text_input_dialog.line_edit is not None
             widget.text_input_dialog.line_edit.setText(url.to_text())
@@ -179,6 +180,7 @@ async def test_main(
 
         if not pass_destination:
             await widget.file_dialog_shown_event.wait()
+            assert widget.file_dialog is not None
 
             assert widget.file_dialog.dialog is not None
             await widget.file_dialog.set_path(path=destination)
@@ -187,7 +189,10 @@ async def test_main(
             widget.file_dialog.accept_button.click()
 
         await widget.get_dialog_created_event.wait()
+        assert widget.get_dialog is not None
+
         await widget.get_dialog.message_box_shown_event.wait()
+        assert widget.get_dialog.message_box is not None
 
         assert widget.get_dialog.message_box.accept_button is not None
         widget.get_dialog.message_box.accept_button.click()
@@ -217,9 +222,10 @@ async def test_get_dialog(
             fps=0.1,
             http_application=http_application,
         )
-        widget = await nursery.start(start)
+        widget: qtrio.examples.download.GetDialog = await nursery.start(start)
 
         await widget.message_box_shown_event.wait()
+        assert widget.message_box is not None
 
         assert widget.message_box.accept_button is not None
         widget.message_box.accept_button.click()
@@ -249,9 +255,10 @@ async def test_get_dialog_canceled(
                 fps=0.1,
                 http_application=http_application,
             )
-            widget = await nursery.start(start)
+            widget: qtrio.examples.download.GetDialog = await nursery.start(start)
 
             await widget.progress_dialog_shown_event.wait()
+            assert widget.progress_dialog is not None
 
             assert widget.progress_dialog.dialog is not None
             assert widget.progress_dialog.dialog.isVisible()

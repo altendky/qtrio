@@ -42,4 +42,4 @@ def download(url: str, destination: str, fps: int) -> None:  # pragma: no cover
     import qtrio
     import qtrio.examples.download
 
-    qtrio.run(qtrio.examples.download.main, url, destination, fps)
+    qtrio.run(qtrio.examples.download.Downloader.start, url, destination, fps)
