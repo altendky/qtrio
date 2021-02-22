@@ -6,4 +6,6 @@ source=qtrio
 precision = 1
 exclude_lines =
   pragma: no cover
-  abc.abstractmethod
+  abc\.abstractmethod
+  typing\.overload
+  ^\s*\.\.\.\s*$

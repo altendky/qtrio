@@ -1,1 +1,0 @@
-Added qtrio.open_emissions_nursery() for connecting signals to both async and sync slots.

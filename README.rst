@@ -1,8 +1,29 @@
-[image: Join chatroom][image]
-
-
 QTrio - a library bringing Qt GUIs together with ``async`` and ``await`` via Trio
 *********************************************************************************
+
+Resources
+---------
+
+=================================  =================================  =============================
+
+`Documentation <documentation_>`_  `Read the Docs <documentation_>`_  |documentation badge|
+`Chat <chat_>`_                    `Gitter <chat_>`_                  |chat badge|
+`Forum <forum_>`_                  `Discourse <forum_>`_              |forum badge|
+`Issues <issues_>`_                `GitHub <issues_>`_                |issues badge|
+
+`Repository <repository_>`_        `GitHub <repository_>`_            |repository badge|
+`Tests <tests_>`_                  `GitHub Actions <tests_>`_         |tests badge|
+`Coverage <coverage_>`_            `Codecov <coverage_>`_             |coverage badge|
+
+`Distribution <distribution_>`_    `PyPI <distribution_>`_            | |version badge|
+                                                                      | |python versions badge|
+                                                                      | |python interpreters badge|
+
+=================================  =================================  =============================
+
+
+Introduction
+------------
 
 Note:
    This library is in early development.  It works.  It has tests.  It has
@@ -17,39 +38,150 @@ correct code and a more pleasant developer experience.  QTrio is `permissively l
 restrictions beyond those of the underlying Python Qt library you choose.  Both PySide2
 and PyQt5 are supported.
 
-By enabling use of ``async`` and ``await`` it is possible in some cases to write related
-code more concisely and clearly than you would get with the signal and slot mechanisms
-of Qt concurrency.
+By enabling use of ``async`` and ``await`` it is possible in some cases to write
+related code more concisely and clearly than you would get with the signal and slot
+mechanisms of Qt concurrency.  In this set of small examples we will allow the user to
+input their name then use that input to generate an output message.  The user will be
+able to cancel the input to terminate the program early.  In the first example we will
+do it in the form of a classic "hello" console program.  Well, classic plus a bit of
+boilerplate to allow explicit testing without using special external tooling.  Then
+second, the form of a general Qt program implementing this same activity.  And finally,
+the QTrio way.
 
 .. code-block:: python3
 
-   class TwoStep:
-       def __init__(self, a_signal, some_path):
-           self.signal = a_signal
-           self.file = None
-           self.some_path = some_path
+   # A complete runnable source file with imports and helpers is available in
+           # either the documentation readme examples or in the repository under
+    # qtrio/examples/readme/console.py.
 
-       def before(self):
-           self.file = open(some_path, 'w')
-           self.signal.connect(self.after)
-           self.file.write('before')
+       def main(
+        input_file: typing.TextIO = sys.stdin, output_file: typing.TextIO = sys.stdout
+           ) -> None:
+           try:
+           output_file.write("What is your name? ")
+            output_file.flush()
+            name = input_file.readline()[:-1]
+            output_file.write(f"Hi {name}, welcome to the team!\n")
+        except KeyboardInterrupt:
+            pass
 
-       def after(self, value):
-           self.signal.disconnect(self.after)
-           self.file.write(f'after {value!r}')
-           self.file.close()
-           
+       Nice and concise, including the cancellation via ``ctrl+c``.  This is because we can
+           stay in one scope thus using both local variables and a ``try``/``except`` block.  This
+           kind of explodes when you shift into a classic Qt GUI setup.
+
 
 .. code-block:: python3
 
-   async def together(a_signal):
-           with open(self.some_path, 'w') as file:
-               async with qtrio.enter_emissions_channel(signals=[a_signal]) as emissions:
-                   file.write('before')
-                   emission = await emissions.channel.receive()
-                   [value] = emission.args
-                   file.write(f'after {value!r}') 
+   # A complete runnable source file with imports and helpers is available in
+    # either the documentation readme examples or in the repository under
+    # qtrio/examples/readme/qt.py.
 
-Note how by using ``async`` and ``await`` we are not only able to more clearly and
-concisely describe the sequenced activity, we also get to use ``with`` to manage the
-context of the open file to be sure it gets closed.
+    class Main:
+        def __init__(
+           self,
+            input_dialog: typing.Optional[QtWidgets.QInputDialog] = None,
+            output_dialog: typing.Optional[QtWidgets.QMessageBox] = None,
+        ):
+            if input_dialog is None:  # pragma: nocover
+                input_dialog = create_input()
+
+            if output_dialog is None:  # pragma: nocover
+                output_dialog = create_output()
+
+            self.input_dialog = input_dialog
+            self.output_dialog = output_dialog
+
+        def setup(self) -> None:
+            self.input_dialog.accepted.connect(self.input_accepted)
+            self.input_dialog.rejected.connect(self.input_rejected)
+
+            self.input_dialog.show()
+
+        def input_accepted(self) -> None:
+            name = self.input_dialog.textValue()
+
+            self.output_dialog.setText(f"Hi {name}, welcome to the team!")
+
+            self.output_dialog.finished.connect(self.output_finished)
+            self.output_dialog.show()
+
+        def input_rejected(self) -> None:
+            QtCore.QCoreApplication.instance().quit()
+
+        def output_finished(self) -> None:
+            QtCore.QCoreApplication.instance().quit()
+               The third example, below, shows how using ``async`` and ``await`` allows us to
+return to the more concise and clear description of the sequenced activity.
+Most of the code is just setup for testability with only the last four lines
+really containing the activity.
+
+.. code-block:: python
+                  # A complete runnable source file with imports and helpers is available in
+    # either the documentation readme examples or in the repository under
+    # qtrio/examples/readme/qtrio.py.
+
+    async def main(
+        input_dialog: typing.Optional[qtrio.dialogs.TextInputDialog] = None,
+        output_dialog: typing.Optional[qtrio.dialogs.MessageBox] = None,
+    ) -> None:
+        if input_dialog is None:  # pragma: nocover
+            input_dialog = create_input()
+
+        if output_dialog is None:  # pragma: nocover
+            output_dialog = create_output()
+
+        with contextlib.suppress(qtrio.UserCancelledError):
+                   name = await input_dialog.wait()
+
+                   output_dialog.text = f"Hi {name}, welcome to the team!"
+
+            await output_dialog.wait()
+
+
+.. _chat: https://gitter.im/python-trio/general
+.. |chat badge| image:: https://img.shields.io/badge/chat-join%20now-blue.svg?color=royalblue&logo=Gitter&logoColor=whitesmoke
+   :target: `chat`_
+   :alt: Support chatroom
+
+.. _forum: https://trio.discourse.group
+.. |forum badge| image:: https://img.shields.io/badge/forum-join%20now-blue.svg?color=royalblue&logo=Discourse&logoColor=whitesmoke
+   :target: `forum`_
+   :alt: Support forum
+
+.. _documentation: https://qtrio.readthedocs.io
+.. |documentation badge| image:: https://img.shields.io/badge/docs-read%20now-blue.svg?color=royalblue&logo=Read-the-Docs&logoColor=whitesmoke
+   :target: `documentation`_
+   :alt: Documentation
+
+.. _distribution: https://pypi.org/project/qtrio
+.. |version badge| image:: https://img.shields.io/pypi/v/qtrio.svg?color=indianred&logo=PyPI&logoColor=whitesmoke
+   :target: `distribution`_
+   :alt: Latest distribution version
+
+.. |python versions badge| image:: https://img.shields.io/pypi/pyversions/qtrio.svg?color=indianred&logo=PyPI&logoColor=whitesmoke
+   :alt: Supported Python versions
+   :target: `distribution`_
+
+.. |python interpreters badge| image:: https://img.shields.io/pypi/implementation/qtrio.svg?color=indianred&logo=PyPI&logoColor=whitesmoke
+   :alt: Supported Python interpreters
+   :target: `distribution`_
+
+.. _issues: https://github.com/altendky/qtrio/issues
+.. |issues badge| image:: https://img.shields.io/github/issues/altendky/qtrio?color=royalblue&logo=GitHub&logoColor=whitesmoke
+   :target: `issues`_
+   :alt: Issues
+
+.. _repository: https://github.com/altendky/qtrio
+.. |repository badge| image:: https://img.shields.io/github/last-commit/altendky/qtrio.svg?color=seagreen&logo=GitHub&logoColor=whitesmoke
+   :target: `repository`_
+   :alt: Repository
+
+.. _tests: https://github.com/altendky/qtrio/actions?query=branch%3Amaster
+.. |tests badge| image:: https://img.shields.io/github/workflow/status/altendky/qtrio/CI/master?color=seagreen&logo=GitHub-Actions&logoColor=whitesmoke
+   :target: `tests`_
+   :alt: Tests
+
+.. _coverage: https://codecov.io/gh/altendky/qtrio
+.. |coverage badge| image:: https://img.shields.io/codecov/c/github/altendky/qtrio/master?color=seagreen&logo=Codecov&logoColor=whitesmoke
+   :target: `coverage`_
+   :alt: Test coverage
