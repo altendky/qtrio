@@ -9,7 +9,7 @@ import trio
 import qtrio.examples.crossingpaths
 
 
-async def test_main(qtbot: pytestqt.qtbot.QtBot):
+async def test_main(qtbot: pytestqt.qtbot.QtBot) -> None:
     class SignaledLabel(QtWidgets.QLabel):
         text_changed = QtCore.Signal(str)
 

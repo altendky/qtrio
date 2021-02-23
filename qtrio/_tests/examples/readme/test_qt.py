@@ -4,7 +4,7 @@ from qtpy import QtWidgets
 import qtrio.examples.readme.qt
 
 
-def test_main(qtbot: pytestqt.qtbot.QtBot):
+def test_main(qtbot: pytestqt.qtbot.QtBot) -> None:
     input_dialog = qtrio.examples.readme.qt.create_input()
     output_dialog = qtrio.examples.readme.qt.create_output()
 
@@ -35,7 +35,7 @@ def test_main(qtbot: pytestqt.qtbot.QtBot):
     assert text_to_enter in output_text
 
 
-def test_main_cancelled(qtbot: pytestqt.qtbot.QtBot):
+def test_main_cancelled(qtbot: pytestqt.qtbot.QtBot) -> None:
     input_dialog = qtrio.examples.readme.qt.create_input()
     output_dialog = qtrio.examples.readme.qt.create_output()
 

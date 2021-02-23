@@ -9,7 +9,7 @@ import trio.testing
 import qtrio.examples.emissions
 
 
-async def test_main(qtbot: pytestqt.qtbot.QtBot):
+async def test_main(qtbot: pytestqt.qtbot.QtBot) -> None:
     window = qtrio.examples.emissions.Window.build()
     qtbot.addWidget(window.widget)
 
