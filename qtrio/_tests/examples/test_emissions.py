@@ -1,5 +1,6 @@
 import typing
 
+import pytestqt.qtbot
 import qtrio
 from qtpy import QtCore
 import trio
@@ -8,7 +9,7 @@ import trio.testing
 import qtrio.examples.emissions
 
 
-async def test_main(qtbot):
+async def test_main(qtbot: pytestqt.qtbot.QtBot):
     window = qtrio.examples.emissions.Window.build()
     qtbot.addWidget(window.widget)
 

@@ -3,6 +3,7 @@ import os
 import pathlib
 import sys
 
+import pytestqt.qtbot
 from qtpy import QtCore
 from qtpy import QtWidgets
 import pytest
@@ -30,7 +31,7 @@ def builder_fixture(request):
     yield request.param
 
 
-async def test_get_integer_gets_value(qtbot):
+async def test_get_integer_gets_value(qtbot: pytestqt.qtbot.QtBot):
     dialog = qtrio.dialogs.create_integer_dialog()
 
     async def user(task_status):
@@ -50,7 +51,7 @@ async def test_get_integer_gets_value(qtbot):
     assert integer == test_value
 
 
-async def test_get_integer_raises_cancel_when_canceled(qtbot):
+async def test_get_integer_raises_cancel_when_canceled(qtbot: pytestqt.qtbot.QtBot):
     dialog = qtrio.dialogs.create_integer_dialog()
 
     async def user(task_status):
@@ -67,7 +68,7 @@ async def test_get_integer_raises_cancel_when_canceled(qtbot):
                 await dialog.wait()
 
 
-async def test_get_integer_raises_for_invalid_input(qtbot):
+async def test_get_integer_raises_for_invalid_input(qtbot: pytestqt.qtbot.QtBot):
     dialog = qtrio.dialogs.create_integer_dialog()
 
     async def user(task_status):
@@ -89,7 +90,7 @@ def test_unused_dialog_teardown_ok(builder):
     dialog.teardown()
 
 
-async def test_file_save(qtbot, tmp_path):
+async def test_file_save(qtbot: pytestqt.qtbot.QtBot, tmp_path):
     path_to_select = trio.Path(tmp_path) / "something.new"
 
     dialog = qtrio.dialogs.create_file_save_dialog(
@@ -117,7 +118,7 @@ async def test_file_save(qtbot, tmp_path):
     assert selected_path == path_to_select
 
 
-async def test_file_save_no_defaults(qtbot, tmp_path):
+async def test_file_save_no_defaults(qtbot: pytestqt.qtbot.QtBot, tmp_path):
     path_to_select = trio.Path(tmp_path) / "another.thing"
 
     dialog = qtrio.dialogs.create_file_save_dialog()
@@ -145,7 +146,7 @@ async def test_file_save_no_defaults(qtbot, tmp_path):
     assert selected_path == path_to_select
 
 
-async def test_file_save_cancelled(qtbot, tmp_path):
+async def test_file_save_cancelled(qtbot: pytestqt.qtbot.QtBot, tmp_path):
     dialog = qtrio.dialogs.create_file_save_dialog()
 
     async def user(task_status):
@@ -192,14 +193,14 @@ async def test_file_open_set_path(tmp_path: pathlib.Path) -> None:
     assert selected_path == trio_file_path
 
 
-async def test_file_save_raises_for_path_selection_when_not_active(qtbot):
+async def test_file_save_raises_for_path_selection_when_not_active(qtbot: pytestqt.qtbot.QtBot):
     dialog = qtrio.dialogs.create_file_save_dialog()
 
     with pytest.raises(qtrio.DialogNotActiveError):
         await dialog.set_path(path=trio.Path())
 
 
-async def test_information_message_box(qtbot):
+async def test_information_message_box(qtbot: pytestqt.qtbot.QtBot):
     text = "Consider yourself informed."
     queried_text = None
 
@@ -228,7 +229,7 @@ async def test_information_message_box(qtbot):
     assert queried_text == text
 
 
-async def test_information_message_box_cancel(qtbot):
+async def test_information_message_box_cancel(qtbot: pytestqt.qtbot.QtBot):
     dialog = qtrio.dialogs.create_message_box(
         title="",
         text="",
@@ -251,7 +252,7 @@ async def test_information_message_box_cancel(qtbot):
                 await dialog.wait()
 
 
-async def test_text_input_dialog(qtbot):
+async def test_text_input_dialog(qtbot: pytestqt.qtbot.QtBot):
     dialog = qtrio.dialogs.create_text_input_dialog()
 
     entered_text = "etcetera"
@@ -293,7 +294,7 @@ def test_text_input_dialog_with_label():
         assert label.text() == label_string
 
 
-async def test_text_input_dialog_cancel(qtbot):
+async def test_text_input_dialog_cancel(qtbot: pytestqt.qtbot.QtBot):
     dialog = qtrio.dialogs.create_text_input_dialog()
 
     async def user(task_status):
@@ -311,7 +312,7 @@ async def test_text_input_dialog_cancel(qtbot):
                 await dialog.wait()
 
 
-async def test_progress_dialog_dot_dot_dot(qtbot):
+async def test_progress_dialog_dot_dot_dot(qtbot: pytestqt.qtbot.QtBot):
     dialog = qtrio.dialogs.create_progress_dialog()
 
     with qtrio._qt.connection(signal=dialog.shown, slot=qtbot.addWidget):
@@ -319,7 +320,7 @@ async def test_progress_dialog_dot_dot_dot(qtbot):
             pass
 
 
-async def test_progress_dialog_cancel_raises(qtbot):
+async def test_progress_dialog_cancel_raises(qtbot: pytestqt.qtbot.QtBot):
     dialog = qtrio.dialogs.create_progress_dialog(cancel_button_text="cancel here")
 
     with qtrio._qt.connection(signal=dialog.shown, slot=qtbot.addWidget):
@@ -329,7 +330,7 @@ async def test_progress_dialog_cancel_raises(qtbot):
                 dialog.dialog.cancel()
 
 
-async def test_progress_dialog_cancel_cancels_context(qtbot):
+async def test_progress_dialog_cancel_cancels_context(qtbot: pytestqt.qtbot.QtBot):
     dialog = qtrio.dialogs.create_progress_dialog(cancel_button_text="cancel here")
 
     cancelled = False
@@ -348,6 +349,6 @@ async def test_progress_dialog_cancel_cancels_context(qtbot):
     assert cancelled
 
 
-def test_dialog_button_box_buttons_by_role_no_buttons(qtbot):
+def test_dialog_button_box_buttons_by_role_no_buttons(qtbot: pytestqt.qtbot.QtBot):
     dialog = QtWidgets.QDialog()
     assert qtrio.dialogs._dialog_button_box_buttons_by_role(dialog=dialog) == {}

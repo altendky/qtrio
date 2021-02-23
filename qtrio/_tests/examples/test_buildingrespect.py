@@ -1,5 +1,6 @@
 import typing
 
+import pytestqt.qtbot
 import qtrio
 from qtpy import QtCore
 from qtpy import QtWidgets
@@ -8,7 +9,7 @@ import trio
 import qtrio.examples.buildingrespect
 
 
-async def test_main(request, qtbot):
+async def test_main(request, qtbot: pytestqt.qtbot.QtBot):
     class SignaledLabel(QtWidgets.QLabel):
         text_changed = QtCore.Signal(str)
 
