@@ -193,7 +193,9 @@ async def test_file_open_set_path(tmp_path: pathlib.Path) -> None:
     assert selected_path == trio_file_path
 
 
-async def test_file_save_raises_for_path_selection_when_not_active(qtbot: pytestqt.qtbot.QtBot):
+async def test_file_save_raises_for_path_selection_when_not_active(
+    qtbot: pytestqt.qtbot.QtBot,
+):
     dialog = qtrio.dialogs.create_file_save_dialog()
 
     with pytest.raises(qtrio.DialogNotActiveError):
