@@ -60,6 +60,14 @@ class Downloader:
 
         with contextlib.suppress(qtrio.UserCancelledError):
             if url is None:
+                # async with trio.open_nursery() as nursery:
+                #     start = functools.partial(
+                #         qtrio.dialogs.TextInputDialog.serve,
+                #         title=create_title("Enter URL"),
+                #         label="URL to download:",
+                #     )
+                #     self.text_input_dialog = await nursery.start(start)
+
                 self.text_input_dialog = qtrio.dialogs.create_text_input_dialog()
 
                 self.text_input_dialog.title = create_title("Enter URL")
