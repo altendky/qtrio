@@ -2,7 +2,6 @@ import functools
 import typing
 
 import pytestqt.qtbot
-import pytestqt.qtbot
 import trio
 
 import qtrio

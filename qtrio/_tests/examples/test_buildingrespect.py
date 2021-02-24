@@ -1,7 +1,6 @@
 import typing
 
 import pytestqt.qtbot
-import pytestqt.qtbot
 import trio
 import trio.testing
 
