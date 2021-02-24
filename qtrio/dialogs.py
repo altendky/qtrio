@@ -272,7 +272,7 @@ class TextInputDialog:
         self.accept_button = None
         self.reject_button = None
 
-    async def wait(self, shown_event: typing.Optional[trio.Event] = None) -> str:
+    async def wait(self, shown_event: trio.Event = trio.Event()) -> str:
         """See :meth:`qtrio.dialogs.DialogProtocol.wait`."""
 
         with _manage(dialog=self) as finished_event:
@@ -281,8 +281,7 @@ class TextInputDialog:
                     "Dialog not assigned while it is being managed."
                 )
 
-            if shown_event is not None:
-                shown_event.set()
+            shown_event.set()
 
             await finished_event.wait()
 
@@ -452,7 +451,7 @@ class FileDialog:
         self.reject_button = None
         self.file_name_line_edit = None
 
-    async def wait(self, shown_event: typing.Optional[trio.Event] = None) -> trio.Path:
+    async def wait(self, shown_event: trio.Event = trio.Event()) -> trio.Path:
         """See :meth:`qtrio.dialogs.DialogProtocol.wait`."""
 
         with _manage(dialog=self) as finished_event:
@@ -461,8 +460,7 @@ class FileDialog:
                     "Dialog not assigned while it is being managed."
                 )
 
-            if shown_event is not None:
-                shown_event.set()
+            shown_event.set()
 
             await finished_event.wait()
             if self.dialog.result() != QtWidgets.QDialog.Accepted:
@@ -580,7 +578,7 @@ class MessageBox:
         self.dialog = None
         self.accept_button = None
 
-    async def wait(self, shown_event: typing.Optional[trio.Event] = None) -> None:
+    async def wait(self, shown_event: trio.Event = trio.Event()) -> None:
         """See :meth:`qtrio.dialogs.DialogProtocol.wait`."""
 
         with _manage(dialog=self) as finished_event:
@@ -589,8 +587,7 @@ class MessageBox:
                     "Dialog not assigned while it is being managed."
                 )
 
-            if shown_event is not None:
-                shown_event.set()
+            shown_event.set()
 
             await finished_event.wait()
 
