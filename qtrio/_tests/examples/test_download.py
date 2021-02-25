@@ -152,6 +152,7 @@ async def test_main(
     pass_url: bool,
     tmp_path: pathlib.Path,
     pass_destination: bool,
+    optional_hold_event: typing.Optional[trio.Event],
 ) -> None:
     temporary_directory = trio.Path(tmp_path)
 
@@ -165,8 +166,12 @@ async def test_main(
             destination=destination if pass_destination else None,
             fps=10,
             http_application=http_application,
+            hold_event=optional_hold_event,
         )
         widget: qtrio.examples.download.Downloader = await nursery.start(start)
+
+        if optional_hold_event is not None:
+            optional_hold_event.set()
 
         if not pass_url:
             await widget.text_input_shown_event.wait()

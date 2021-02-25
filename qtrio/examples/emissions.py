@@ -50,6 +50,7 @@ class Widget:
     label: QtWidgets.QLabel = attr.ib(factory=QtWidgets.QLabel)
     layout: QtWidgets.QHBoxLayout = attr.ib(factory=QtWidgets.QHBoxLayout)
     count: int = 0
+    serving_event: trio.Event = attr.ib(factory=trio.Event)
 
     def setup(self, title: str, parent: typing.Optional[QtWidgets.QWidget]) -> None:
         self.widget.setParent(parent)
@@ -97,6 +98,7 @@ class Widget:
         async with qtrio.enter_emissions_channel(signals=signals) as emissions:
             await self.show()
             task_status.started()
+            self.serving_event.set()
 
             async for emission in emissions.channel:
                 if emission.is_from(self.decrement.clicked):
@@ -125,5 +127,4 @@ class Widget:
         if hold_event is not None:
             await hold_event.wait()
 
-        await self.show()
         await self.serve()
