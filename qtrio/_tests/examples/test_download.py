@@ -213,6 +213,7 @@ async def test_get_dialog(
     http_application: quart_trio.QuartTrio,
     url: hyperlink.URL,
     tmp_path: pathlib.Path,
+    optional_hold_event: typing.Optional[trio.Event],
 ) -> None:
     temporary_directory = trio.Path(tmp_path)
 
@@ -226,8 +227,12 @@ async def test_get_dialog(
             destination=destination,
             fps=0.1,
             http_application=http_application,
+            hold_event=optional_hold_event,
         )
         widget: qtrio.examples.download.GetDialog = await nursery.start(start)
+
+        if optional_hold_event is not None:
+            optional_hold_event.set()
 
         await widget.message_box_shown_event.wait()
         assert widget.message_box is not None
