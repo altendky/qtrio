@@ -188,6 +188,24 @@ class Emission:
         return self.is_from(signal=other.signal) and self.args == other.args
 
 
+@attr.s(auto_attribs=True, frozen=True)
+class EmissionsChannelSlot:
+    internal_signal: qtrio._util.SignalInstance
+    send_channel: trio.MemorySendChannel
+
+    def slot(
+        self,
+        *args: object,
+    ) -> None:
+        try:
+            self.send_channel.send_nowait(
+                Emission(signal=self.internal_signal, args=args)
+            )
+        except (trio.WouldBlock, trio.ClosedResourceError):
+            # TODO: log this or... ?
+            pass
+
+
 @attr.s(auto_attribs=True)
 class Emissions:
     """Hold elements useful for the application to work with emissions from signals.
@@ -239,22 +257,15 @@ async def open_emissions_channel(
 
     async with send_channel:
         with contextlib.ExitStack() as stack:
+            emissions = Emissions(channel=receive_channel, send_channel=send_channel)
+
             for signal in signals:
+                slot = EmissionsChannelSlot(
+                    internal_signal=signal, send_channel=send_channel
+                )
+                stack.enter_context(qtrio._qt.connection(signal, slot.slot))
 
-                def slot(
-                    *args: object, internal_signal: qtrio._util.SignalInstance = signal
-                ) -> None:
-                    try:
-                        send_channel.send_nowait(
-                            Emission(signal=internal_signal, args=args)
-                        )
-                    except trio.WouldBlock:
-                        # TODO: log this or... ?
-                        pass
-
-                stack.enter_context(qtrio._qt.connection(signal, slot))
-
-            yield Emissions(channel=receive_channel, send_channel=send_channel)
+            yield emissions
 
 
 @async_generator.asynccontextmanager
