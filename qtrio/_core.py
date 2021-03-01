@@ -257,15 +257,13 @@ async def open_emissions_channel(
 
     async with send_channel:
         with contextlib.ExitStack() as stack:
-            emissions = Emissions(channel=receive_channel, send_channel=send_channel)
-
             for signal in signals:
                 slot = EmissionsChannelSlot(
                     internal_signal=signal, send_channel=send_channel
                 )
                 stack.enter_context(qtrio._qt.connection(signal, slot.slot))
 
-            yield emissions
+            yield Emissions(channel=receive_channel, send_channel=send_channel)
 
 
 @async_generator.asynccontextmanager
