@@ -30,7 +30,7 @@ async def test_main(
             if optional_hold_event is not None:
                 optional_hold_event.set()
 
-            await trio.testing.wait_all_tasks_blocked()
+            await trio.testing.wait_all_tasks_blocked(cushion=0.01)
 
             # lazily click the button and collect results in the memory channel rather
             # than starting concurrent tasks.
@@ -40,8 +40,8 @@ async def test_main(
                 for _ in message:
                     widget.button.click()
 
-                # give Qt etc a chance to handle the clicks before closing the channel
-                await trio.testing.wait_all_tasks_blocked()
+                    # give Qt etc a chance to handle the clicks before closing the channel
+                    await trio.testing.wait_all_tasks_blocked(cushion=0.01)
 
             results: typing.List[typing.Tuple[object]] = [
                 emission.args async for emission in emissions.channel
