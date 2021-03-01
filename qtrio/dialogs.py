@@ -298,51 +298,6 @@ class TextInputDialog:
 
             return text_result
 
-    # async def serve(
-    #     self,
-    #     *,
-    #     task_status: trio_typing.TaskStatus[None] = trio.TASK_STATUS_IGNORED,
-    # ) -> str:
-    #     """See :meth:`qtrio.dialogs.DialogProtocol.wait`."""
-    #
-    #     with _manage(dialog=self) as finished_event:
-    #         if self.dialog is None:  # pragma: no cover
-    #             raise qtrio.InternalError(
-    #                 "Dialog not assigned while it is being managed."
-    #             )
-    #
-    #         task_status.started()
-    #         await finished_event.wait()
-    #
-    #         dialog_result = self.dialog.result()
-    #
-    #         if dialog_result == QtWidgets.QDialog.Rejected:
-    #             raise qtrio.UserCancelledError()
-    #
-    #         # TODO: `: str` is a workaround for
-    #         #       https://github.com/spyder-ide/qtpy/pull/217
-    #         text_result: str = self.dialog.textValue()
-    #
-    #         self.result = text_result
-    #
-    #         return text_result
-    #
-    # @classmethod
-    # async def start(
-    #     cls,
-    #     title: str,
-    #     label: str,
-    #     parent: QtWidgets.QWidget = None,
-    #     *,
-    #     task_status: trio_typing.TaskStatus[
-    #         "TextInputDialog"
-    #     ] = trio.TASK_STATUS_IGNORED,
-    # ):
-    #     self = cls(title=title, label=label, parent=parent)
-    #     task_status.started(self)
-    #
-    #     await self.serve()
-
 
 def create_text_input_dialog(
     title: typing.Optional[str] = None,
