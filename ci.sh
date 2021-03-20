@@ -50,6 +50,12 @@ if [ "$CHECK_DOCS" = "1" ]; then
     # -n (nit-picky): warn on missing references
     # -W: turn warnings into errors
     sphinx-build -nW  -b html source build
+    
+    # Check whether the root readme is out of date with the build readme
+    ROOT_README="../README.rst"
+    BUILD_README="build/rst/README.rst"
+    diff $BUILD_README $ROOT_README
+    
 elif [ "$CHECK_FORMATTING" = "1" ]; then
     source check.sh
 elif [ "$CHECK_TYPE_HINTS" = "1" ]; then

@@ -68,6 +68,7 @@ extensions = [
     "sphinx_autodoc_typehints",
     "sphinx_qt_documentation",
     "sphinxcontrib_trio",
+    "sphinxcontrib.restbuilder",
 ]
 
 intersphinx_mapping = {
