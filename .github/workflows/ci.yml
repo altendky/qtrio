@@ -76,6 +76,7 @@ jobs:
           - python: '3.8'
             check_manifest: '1'
             name: 'Check manifest'
+            qt_library: 'PySide2'
     steps:
       - name: Checkout
         uses: actions/checkout@v2
