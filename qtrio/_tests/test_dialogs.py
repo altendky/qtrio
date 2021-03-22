@@ -1,6 +1,7 @@
 import math
 import os
 import pathlib
+import typing
 
 import pytestqt.qtbot
 from qtpy import QtCore
