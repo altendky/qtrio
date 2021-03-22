@@ -883,7 +883,7 @@ async def test_enter_emissions_channel_closes_both_channels():
 
 def emissions_nursery_connect_maybe_async(
     is_async: bool,
-    nursery: trio.Nursery,
+    nursery: qtrio.EmissionsNursery,
     signal: QtCore.SignalInstance,
     slot: typing.Callable[..., object],
 ) -> None:
@@ -1063,7 +1063,7 @@ async def test_emissions_nursery_wraps(is_async):
     class LocalUniqueException(Exception):
         pass
 
-    result: qtrio.Outcomes
+    result: outcome.Outcome
 
     event = trio.Event()
     signal_host = SignalHost()

@@ -39,12 +39,42 @@ correct code and a more pleasant developer experience.  QTrio is `permissively l
 restrictions beyond those of the underlying Python Qt library you choose.  Both PySide2
 and PyQt5 are supported.
 
-By enabling use of ``async`` and ``await`` it is possible in some cases to write related
-code more concisely and clearly than you would get with the signal and slot mechanisms
-of Qt concurrency.  See the ``README`` examples in the docs for the full code.  The
-first example here shows classic pure Qt code.
+By enabling use of ``async`` and ``await`` it is possible in some cases to write
+related code more concisely and clearly than you would get with the signal and slot
+mechanisms of Qt concurrency.  In this set of small examples we will allow the user to
+input their name then use that input to generate an output message.  The user will be
+able to cancel the input to terminate the program early.  In the first example we will
+do it in the form of a classic "hello" console program.  Well, classic plus a bit of
+boilerplate to allow explicit testing without using special external tooling.  Then
+second, the form of a general Qt program implementing this same activity.  And finally,
+the QTrio way.
 
 .. code-block:: python
+
+    # A complete runnable source file with imports and helpers is available in
+    # either the documentation readme examples or in the repository under
+    # qtrio/examples/readme/console.py.
+
+    def main(
+        input_file: typing.TextIO = sys.stdin, output_file: typing.TextIO = sys.stdout
+    ) -> None:
+        try:
+            output_file.write("What is your name? ")
+            output_file.flush()
+            name = input_file.readline()[:-1]
+            output_file.write(f"Hi {name}, welcome to the team!\n")
+        except KeyboardInterrupt:
+            pass
+
+Nice and concise, including the cancellation via ``ctrl+c``.  This is because we can
+stay in one scope thus using both local variables and a ``try``/``except`` block.  This
+kind of explodes when you shift into a classic Qt GUI setup.
+
+.. code-block:: python
+
+    # A complete runnable source file with imports and helpers is available in
+    # either the documentation readme examples or in the repository under
+    # qtrio/examples/readme/qt.py.
 
     class Main:
         def __init__(
@@ -84,10 +114,16 @@ first example here shows classic pure Qt code.
         def output_finished(self) -> None:
             self.application.quit()
 
-The second example, below, shows how using ``async`` and ``await`` allows for a
-more concise and clear description of the sequenced activity.
+The third example, below, shows how using ``async`` and ``await`` allows us to
+return to the more concise and clear description of the sequenced activity.
+Most of the code is just setup for testability with only the last four lines
+really containing the activity.
 
 .. code-block:: python
+
+    # A complete runnable source file with imports and helpers is available in
+    # either the documentation readme examples or in the repository under
+    # qtrio/examples/readme/qtrio.py.
 
     async def main(
         input_dialog: typing.Optional[qtrio.dialogs.TextInputDialog] = None,
@@ -105,6 +141,7 @@ more concise and clear description of the sequenced activity.
             output_dialog.text = f"Hi {name}, welcome to the team!"
 
             await output_dialog.wait()
+
 
 .. _chat: https://gitter.im/python-trio/general
 .. |chat badge| image:: https://img.shields.io/badge/chat-join%20now-blue.svg?color=royalblue&logo=Gitter&logoColor=whitesmoke

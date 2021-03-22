@@ -1,5 +1,6 @@
 import typing
 
+import pytestqt.qtbot
 import qtrio
 import qtpy
 from qtpy import QtCore
@@ -9,7 +10,7 @@ import trio
 import qtrio.examples.crossingpaths
 
 
-async def test_main(qtbot):
+async def test_main(qtbot: pytestqt.qtbot.QtBot) -> None:
     class SignaledLabel(QtWidgets.QLabel):
         text_changed = QtCore.Signal(str)
 

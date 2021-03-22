@@ -1,3 +1,4 @@
+import pytestqt.qtbot
 from qtpy import QtCore
 import pytest
 
@@ -16,7 +17,10 @@ def optional_name_argument_fixture(request):
     return {}
 
 
-def test_signal_emits(qtbot, optional_name_argument):
+def test_signal_emits(
+    qtbot: pytestqt.qtbot.QtBot,
+    optional_name_argument: typing.Dict[str, str],
+) -> None:
     """qtrio._core.Signal emits."""
 
     class NotQObject:
@@ -28,7 +32,10 @@ def test_signal_emits(qtbot, optional_name_argument):
         instance.signal.emit()
 
 
-def test_signal_emits_value(qtbot, optional_name_argument):
+def test_signal_emits_value(
+    qtbot: pytestqt.qtbot.QtBot,
+    optional_name_argument: typing.Dict[str, str],
+) -> None:
     """qtrio._core.Signal emits a value."""
 
     class NotQObject:
@@ -69,7 +76,7 @@ def test_our_signal_object_method_returns_qobject(optional_name_argument):
     assert isinstance(NotQObject.signal.object(instance=instance), QtCore.QObject)
 
 
-def test_connection_connects(qtbot):
+def test_connection_connects(qtbot: pytestqt.qtbot.QtBot) -> None:
     """qtrio._core.connection connects signal inside managed context."""
 
     class MyQObject(QtCore.QObject):
@@ -90,7 +97,7 @@ def test_connection_connects(qtbot):
     assert results == [2]
 
 
-def test_connection_disconnects(qtbot):
+def test_connection_disconnects(qtbot: pytestqt.qtbot.QtBot) -> None:
     """qtrio._core.connection disconnects signal when exiting managed context."""
 
     class MyQObject(QtCore.QObject):
@@ -111,7 +118,7 @@ def test_connection_disconnects(qtbot):
     assert results == [1]
 
 
-def test_connection_yield_can_be_disconnected(qtbot):
+def test_connection_yield_can_be_disconnected(qtbot: pytestqt.qtbot.QtBot) -> None:
     """qtrio._core.connection result can be used to disconnect the signal early."""
 
     class MyQObject(QtCore.QObject):

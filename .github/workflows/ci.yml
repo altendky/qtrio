@@ -73,6 +73,9 @@ jobs:
             check_type_hints: '1'
             name: 'Check type hints (PyQt5)'
             qt_library: 'PyQt5'
+          - python: '3.8'
+            check_manifest: '1'
+            name: 'Check manifest'
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -86,6 +89,7 @@ jobs:
           CHECK_DOCS: '${{ matrix.check_docs }}'
           CHECK_FORMATTING: '${{ matrix.check_formatting }}'
           CHECK_TYPE_HINTS: '${{ matrix.check_type_hints }}'
+          CHECK_MANIFEST: '${{ matrix.check_manifest }}'
           # Should match 'name:' up above
           JOB_NAME: '${{ matrix.name }}'
           # TODO: needs some Qt library but I'm not clear the implications of

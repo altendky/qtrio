@@ -5,6 +5,48 @@ Release history
 
 .. towncrier release notes start
 
+Qtrio 0.4.2 (2021-02-04)
+------------------------
+
+No significant changes.  Released for documentation improvements.
+
+
+Qtrio 0.4.1 (2021-01-06)
+------------------------
+
+Features
+~~~~~~~~
+
+- Constrained all dependencies for better long term compatibility and reduced pip resolution time. (`#211 <https://github.com/altendky/qtrio/issues/211>`__)
+
+
+Qtrio 0.4.0 (2021-01-04)
+------------------------
+
+Features
+~~~~~~~~
+
+- Extract a subset of :func:`qtrio.dialogs.check_dialog_protocol` into a parent protocol
+  :func:`qtrio.dialogs.check_basic_dialog_protocol` which can be used to describe a dialog
+  without ``.shown`` or ``.wait()``. (`#197 <https://github.com/altendky/qtrio/issues/197>`__)
+- Added file dialog creation helper :func:`qtrio.dialogs.create_file_open_dialog`. (`#198 <https://github.com/altendky/qtrio/issues/198>`__)
+- Added :class:`qtrio.dialogs.ProgressDialog` and creation helper
+  :func:`qtrio.dialogs.create_progress_dialog`. (`#199 <https://github.com/altendky/qtrio/issues/199>`__)
+- Added :meth:`qtrio.dialogs.FileDialog.set_path`. (`#200 <https://github.com/altendky/qtrio/issues/200>`__)
+
+
+Bugfixes
+~~~~~~~~
+
+- Include the missing ``py.typed`` file that is used to state there are type hints to process. (`#206 <https://github.com/altendky/qtrio/issues/206>`__)
+
+
+Improved documentation
+~~~~~~~~~~~~~~~~~~~~~~
+
+- Added :ref:`download example <download_example>`. (`#23 <https://github.com/altendky/qtrio/issues/23>`__)
+
+
 Qtrio 0.3.0 (2020-10-16)
 ------------------------
 

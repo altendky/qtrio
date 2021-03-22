@@ -103,6 +103,10 @@ def connection(
         signal: The signal to connect.
         slot: The callable to connect the signal to.
     """
+
+    # if you get segfault or sigsegv here, especially from pyside2<5.15.2, make
+    # sure the slot isn't on a non-hashable (frozen will make it hashable) attrs
+    # class.  https://bugreports.qt.io/browse/PYSIDE-1422
     this_connection = signal.connect(slot)
 
     import qtpy

@@ -7,6 +7,7 @@ import contextlib
 import math
 import sys
 import typing
+import typing_extensions
 
 import async_generator
 import attr
@@ -223,6 +224,24 @@ class Emission:
         return self.is_from(signal=other.signal) and self.args == other.args
 
 
+@attr.s(auto_attribs=True, frozen=True)
+class EmissionsChannelSlot:
+    internal_signal: QtCore.SignalInstance
+    send_channel: trio.MemorySendChannel
+
+    def slot(
+        self,
+        *args: object,
+    ) -> None:
+        try:
+            self.send_channel.send_nowait(
+                Emission(signal=self.internal_signal, args=args)
+            )
+        except (trio.WouldBlock, trio.ClosedResourceError):
+            # TODO: log this or... ?
+            pass
+
+
 @attr.s(auto_attribs=True)
 class Emissions:
     """Hold elements useful for the application to work with emissions from signals.
@@ -268,26 +287,17 @@ async def open_emissions_channel(
     # info in a `slot()` stack frame rather than in the memory channel.  Perhaps in the
     # future we can implement a limit beyond which events are thrown away to avoid
     # infinite queueing.  Maybe trio.MemorySendChannel.send_nowait() instead.
-    send_channel, receive_channel = trio.open_memory_channel(
+    send_channel, receive_channel = trio.open_memory_channel[Emission](
         max_buffer_size=max_buffer_size
     )
 
     async with send_channel:
         with contextlib.ExitStack() as stack:
             for signal in signals:
-
-                def slot(
-                    *args: object, internal_signal: QtCore.SignalInstance = signal
-                ) -> None:
-                    try:
-                        send_channel.send_nowait(
-                            Emission(signal=internal_signal, args=args)
-                        )
-                    except trio.WouldBlock:
-                        # TODO: log this or... ?
-                        pass
-
-                stack.enter_context(qtrio._qt.connection(signal, slot))
+                slot = EmissionsChannelSlot(
+                    internal_signal=signal, send_channel=send_channel
+                )
+                stack.enter_context(qtrio._qt.connection(signal, slot.slot))
 
             yield Emissions(channel=receive_channel, send_channel=send_channel)
 
@@ -316,6 +326,32 @@ async def enter_emissions_channel(
                 yield emissions
 
 
+class StarterProtocol(typing_extensions.Protocol):
+    def start(self, *args: object) -> None:
+        ...
+
+
+@attr.s(auto_attribs=True, frozen=True)
+class DirectStarter:
+    slot: typing.Callable[..., typing.Awaitable[object]]
+    nursery: trio.Nursery
+
+    def start(self, *args: object) -> None:
+        self.nursery.start_soon(self.slot, *args)
+
+
+@attr.s(auto_attribs=True, frozen=True)
+class WrappedStarter:
+    slot: typing.Callable[..., typing.Awaitable[object]]
+    wrapper: typing.Callable[
+        [typing.Callable[..., typing.Awaitable[object]]], typing.Awaitable[object]
+    ]
+    nursery: trio.Nursery
+
+    def start(self, *args: object) -> None:
+        self.nursery.start_soon(self.wrapper, self.slot, *args)
+
+
 @attr.s(auto_attribs=True)
 class EmissionsNursery:
     """Holds the nursery, exit stack, and wrapper needed to support connecting signals
@@ -341,20 +377,19 @@ class EmissionsNursery:
         signal: QtCore.SignalInstance,
         slot: typing.Callable[..., typing.Awaitable[object]],
     ) -> None:
-        """Connect to an async slot to this emissions nursery so when called the slot
+        """Connect an async signal to this emissions nursery so when called the slot
         will be run in the nursery.
         """
-        if self.wrapper is not None:
+        starter: StarterProtocol
 
-            def starter(*args: object) -> None:
-                self.nursery.start_soon(self.wrapper, slot, *args)
-
+        if self.wrapper is None:
+            starter = DirectStarter(slot=slot, nursery=self.nursery)
         else:
+            starter = WrappedStarter(
+                slot=slot, wrapper=self.wrapper, nursery=self.nursery
+            )
 
-            def starter(*args: object) -> None:
-                self.nursery.start_soon(slot, *args)
-
-        self.exit_stack.enter_context(qtrio._qt.connection(signal, starter))
+        self.exit_stack.enter_context(qtrio._qt.connection(signal, starter.start))
 
     def connect_sync(
         self, signal: QtCore.SignalInstance, slot: typing.Callable[..., object]
@@ -469,7 +504,7 @@ def run(
     async_fn: typing.Callable[..., typing.Awaitable[object]],
     *args: object,
     done_callback: typing.Optional[typing.Callable[[Outcomes], None]] = None,
-    clock: trio.abc.Clock = None,
+    clock: typing.Optional[trio.abc.Clock] = None,
     instruments: typing.Sequence[trio.abc.Instrument] = (),
 ) -> object:
     """Run a Trio-flavored async function in guest mode on a Qt host application, and
@@ -555,7 +590,7 @@ class Runner:
     """When true, the :meth:`done_callback` method will quit the application when the
     async function passed to :meth:`qtrio.Runner.run` has completed.
     """
-    clock: trio.abc.Clock = None
+    clock: typing.Optional[trio.abc.Clock] = None
     """The clock to use for this run.  This is primarily used to speed up tests that
     include timeouts.  The value will be passed on to
     :func:`trio.lowlevel.start_guest_run`.
@@ -616,7 +651,7 @@ class Runner:
             args,
             run_sync_soon_threadsafe=self.run_sync_soon_threadsafe,
             done_callback=self.trio_done,
-            clock=self.clock,
+            clock=self.clock,  # type: ignore[arg-type]
             instruments=self.instruments,
         )
 

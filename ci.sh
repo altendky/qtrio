@@ -2,11 +2,6 @@
 
 set -ex -o pipefail
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-set -o allexport
-source ${DIR}/.env
-set +o allexport
-
 # Log some general info about the environment
 env | sort
 
@@ -64,7 +59,9 @@ elif [ "$CHECK_TYPE_HINTS" = "1" ]; then
     if [[ "${INSTALL_EXTRAS,,}" == *"pyside2"* ]]; then
         python -m pip install --upgrade pyside2
     fi
-    mypy --package ${PACKAGE_NAME} $(qtpy mypy-args)
+    mypy --package qtrio $(qtpy mypy-args)
+elif [ "$CHECK_MANIFEST" = "1" ]; then
+    check-manifest
 else
     # Actual tests
 
@@ -74,14 +71,14 @@ else
     mkdir empty || true
     cd empty
 
-    INSTALLDIR=$(python -c "import os, ${PACKAGE_NAME}; print(os.path.dirname(${PACKAGE_NAME}.__file__))")
+    INSTALLDIR=$(python -c "import os, qtrio; print(os.path.dirname(qtrio.__file__))")
     cp ../setup.cfg $INSTALLDIR
     # We have to copy .coveragerc into this directory, rather than passing
     # --cov-config=../.coveragerc to pytest, because codecov.sh will run
     # 'coverage xml' to generate the report that it uses, and that will only
     # apply the ignore patterns in the current directory's .coveragerc.
     cp ../.coveragerc .
-    if pytest -W error -ra --junitxml=../test-results.xml --cov="$INSTALLDIR" --verbose --pyargs ${PACKAGE_NAME}; then
+    if pytest -W error -ra --junitxml=../test-results.xml --cov="$INSTALLDIR" --verbose --pyargs qtrio; then
         PASSED=true
     else
         PASSED=false

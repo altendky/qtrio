@@ -1,10 +1,17 @@
 README
 ======
 
+Console
+-------
+
+.. literalinclude:: ../../../qtrio/examples/readme/console.py
+
+
 Qt
 --
 
 .. literalinclude:: ../../../qtrio/examples/readme/qt.py
+
 
 QTrio
 -----
