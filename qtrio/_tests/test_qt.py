@@ -1,3 +1,5 @@
+import typing
+
 import pytestqt.qtbot
 from qtpy import QtCore
 import pytest
