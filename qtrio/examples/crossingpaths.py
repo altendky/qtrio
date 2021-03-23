@@ -57,7 +57,7 @@ async def start_widget(
     close_delay: float = 3,
     hold_event: typing.Optional[trio.Event] = None,
     *,
-    cls=Widget,
+    cls: typing.Type[Widget] = Widget,
     task_status: trio_typing.TaskStatus[Widget] = trio.TASK_STATUS_IGNORED,
 ) -> None:
     self = cls(message=message, change_delay=change_delay, close_delay=close_delay)

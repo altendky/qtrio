@@ -22,7 +22,7 @@ def emissions() -> None:  # pragma: no cover
     import qtrio
     import qtrio.examples.emissions
 
-    qtrio.run(qtrio.examples.emissions.Widget.start)
+    qtrio.run(qtrio.examples.emissions.start_widget)
 
 
 @examples.command()
@@ -42,4 +42,4 @@ def download(url: str, destination: str, fps: int) -> None:  # pragma: no cover
     import qtrio
     import qtrio.examples.download
 
-    qtrio.run(qtrio.examples.download.Downloader.start, url, destination, fps)
+    qtrio.run(qtrio.examples.download.start_downloader, url, destination, fps)

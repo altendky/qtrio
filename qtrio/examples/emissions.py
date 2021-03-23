@@ -116,7 +116,7 @@ async def start_widget(
     parent: typing.Optional[QtWidgets.QWidget] = None,
     hold_event: typing.Optional[trio.Event] = None,
     *,
-    cls=Widget,
+    cls: typing.Type[Widget] = Widget,
     task_status: trio_typing.TaskStatus[Widget] = trio.TASK_STATUS_IGNORED,
 ) -> None:
     self = cls()

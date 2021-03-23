@@ -61,8 +61,8 @@ class Widget:
 async def start_widget(
     message: str,
     hold_event: typing.Optional[trio.Event] = None,
-    cls=Widget,
     *,
+    cls: typing.Type[Widget] = Widget,
     task_status: trio_typing.TaskStatus[Widget] = trio.TASK_STATUS_IGNORED,
 ) -> None:
     self = cls(message=message)

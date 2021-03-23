@@ -114,7 +114,7 @@ async def start_downloader(
     http_application: typing.Callable[..., typing.Any],
     hold_event: typing.Optional[trio.Event] = None,
     *,
-    cls=Downloader,
+    cls: typing.Type[Downloader] = Downloader,
     task_status: trio_typing.TaskStatus[Downloader] = trio.TASK_STATUS_IGNORED,
 ) -> None:
     self = cls()
@@ -222,7 +222,7 @@ async def start_get_dialog(
     http_application: typing.Callable[..., typing.Any],
     hold_event: typing.Optional[trio.Event] = None,
     *,
-    cls=GetDialog,
+    cls: typing.Type[GetDialog] = GetDialog,
     task_status: trio_typing.TaskStatus["GetDialog"] = trio.TASK_STATUS_IGNORED,
 ) -> None:
     self = cls(fps=fps, http_application=http_application)
