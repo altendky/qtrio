@@ -57,24 +57,24 @@ class Widget:
             # wait for another click to finish
             await emissions.channel.receive()
 
-    @classmethod
-    async def start(
-        cls,
-        message: str,
-        hold_event: typing.Optional[trio.Event] = None,
-        *,
-        task_status: trio_typing.TaskStatus["Widget"] = trio.TASK_STATUS_IGNORED,
-    ) -> None:
-        self = cls(message=message)
-        self.setup()
 
-        task_status.started(self)
+async def start_widget(
+    message: str,
+    hold_event: typing.Optional[trio.Event] = None,
+    cls=Widget,
+    *,
+    task_status: trio_typing.TaskStatus[Widget] = trio.TASK_STATUS_IGNORED,
+) -> None:
+    self = cls(message=message)
+    self.setup()
 
-        if hold_event is not None:
-            await hold_event.wait()
+    task_status.started(self)
 
-        await self.serve()
+    if hold_event is not None:
+        await hold_event.wait()
+
+    await self.serve()
 
 
 if __name__ == "__main__":  # pragma: no cover
-    qtrio.run(Widget.start, "Hello world.")
+    qtrio.run(start_widget, "Hello world.")

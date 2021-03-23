@@ -97,7 +97,7 @@ class Downloader:
 
             async with trio.open_nursery() as nursery:
                 start = functools.partial(
-                    GetDialog.start,
+                    start_get_dialog,
                     url=converted_url,
                     destination=converted_destination,
                     fps=fps,
@@ -106,27 +106,27 @@ class Downloader:
                 self.get_dialog = await nursery.start(start)
                 self.get_dialog_created_event.set()
 
-    @classmethod
-    async def start(
-        cls,
-        url: typing.Optional[hyperlink.URL],
-        destination: typing.Optional[trio.Path],
-        fps: float,
-        http_application: typing.Callable[..., typing.Any],
-        hold_event: typing.Optional[trio.Event] = None,
-        *,
-        task_status: trio_typing.TaskStatus["Downloader"] = trio.TASK_STATUS_IGNORED,
-    ) -> None:
-        self = cls()
 
-        task_status.started(self)
+async def start_downloader(
+    url: typing.Optional[hyperlink.URL],
+    destination: typing.Optional[trio.Path],
+    fps: float,
+    http_application: typing.Callable[..., typing.Any],
+    hold_event: typing.Optional[trio.Event] = None,
+    *,
+    cls=Downloader,
+    task_status: trio_typing.TaskStatus[Downloader] = trio.TASK_STATUS_IGNORED,
+) -> None:
+    self = cls()
 
-        if hold_event is not None:
-            await hold_event.wait()
+    task_status.started(self)
 
-        await self.serve(
-            url=url, destination=destination, fps=fps, http_application=http_application
-        )
+    if hold_event is not None:
+        await hold_event.wait()
+
+    await self.serve(
+        url=url, destination=destination, fps=fps, http_application=http_application
+    )
 
 
 @attr.s(auto_attribs=True, eq=False)
@@ -214,25 +214,25 @@ class GetDialog:
 
         self.message_box = None
 
-    @classmethod
-    async def start(
-        cls,
-        url: hyperlink.URL,
-        destination: trio.Path,
-        fps: float,
-        http_application: typing.Callable[..., typing.Any],
-        hold_event: typing.Optional[trio.Event] = None,
-        *,
-        task_status: trio_typing.TaskStatus["GetDialog"] = trio.TASK_STATUS_IGNORED,
-    ) -> None:
-        self = cls(fps=fps, http_application=http_application)
 
-        task_status.started(self)
+async def start_get_dialog(
+    url: hyperlink.URL,
+    destination: trio.Path,
+    fps: float,
+    http_application: typing.Callable[..., typing.Any],
+    hold_event: typing.Optional[trio.Event] = None,
+    *,
+    cls=GetDialog,
+    task_status: trio_typing.TaskStatus["GetDialog"] = trio.TASK_STATUS_IGNORED,
+) -> None:
+    self = cls(fps=fps, http_application=http_application)
 
-        if hold_event is not None:
-            await hold_event.wait()
+    task_status.started(self)
 
-        await self.serve(url=url, destination=destination)
+    if hold_event is not None:
+        await hold_event.wait()
+
+    await self.serve(url=url, destination=destination)
 
 
 async def get(

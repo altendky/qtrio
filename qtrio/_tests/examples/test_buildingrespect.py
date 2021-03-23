@@ -17,7 +17,7 @@ async def test_main(
 
     async with trio.open_nursery() as nursery:
         start = functools.partial(
-            qtrio.examples.buildingrespect.Widget.start,
+            qtrio.examples.buildingrespect.start_widget,
             message=message,
             hold_event=optional_hold_event,
         )

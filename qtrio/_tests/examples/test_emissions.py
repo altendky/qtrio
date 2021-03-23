@@ -15,7 +15,7 @@ async def test_main(
 ) -> None:
     async with trio.open_nursery() as nursery:
         start = functools.partial(
-            qtrio.examples.emissions.Widget.start,
+            qtrio.examples.emissions.start_widget,
             hold_event=optional_hold_event,
         )
         widget: qtrio.examples.emissions.Widget = await nursery.start(start)

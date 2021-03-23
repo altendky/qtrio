@@ -50,26 +50,25 @@ class Widget:
         await trio.sleep(self.close_delay)
         self.done_event.set()
 
-    @classmethod
-    async def start(
-        cls,
-        message: str,
-        change_delay: float = 0.5,
-        close_delay: float = 3,
-        hold_event: typing.Optional[trio.Event] = None,
-        *,
-        task_status: trio_typing.TaskStatus["Widget"] = trio.TASK_STATUS_IGNORED,
-    ) -> None:
-        self = cls(message=message, change_delay=change_delay, close_delay=close_delay)
-        self.setup()
+async def start_widget(
+    message: str,
+    change_delay: float = 0.5,
+    close_delay: float = 3,
+    hold_event: typing.Optional[trio.Event] = None,
+    *,
+    cls=Widget,
+    task_status: trio_typing.TaskStatus[Widget] = trio.TASK_STATUS_IGNORED,
+) -> None:
+    self = cls(message=message, change_delay=change_delay, close_delay=close_delay)
+    self.setup()
 
-        task_status.started(self)
+    task_status.started(self)
 
-        if hold_event is not None:
-            await hold_event.wait()
+    if hold_event is not None:
+        await hold_event.wait()
 
-        await self.serve()
+    await self.serve()
 
 
 if __name__ == "__main__":  # pragma: no cover
-    qtrio.run(Widget.start, "Hello world.")
+    qtrio.run(start_widget, "Hello world.")

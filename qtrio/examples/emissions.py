@@ -110,21 +110,21 @@ class Widget:
                 else:  # pragma: no cover
                     raise qtrio.QTrioException(f"Unexpected emission: {emission}")
 
-    @classmethod
-    async def start(
-        cls,
-        title: str = "QTrio Emissions Example",
-        parent: typing.Optional[QtWidgets.QWidget] = None,
-        hold_event: typing.Optional[trio.Event] = None,
-        *,
-        task_status: trio_typing.TaskStatus["Widget"] = trio.TASK_STATUS_IGNORED,
-    ) -> None:
-        self = cls()
-        self.setup(title=title, parent=parent)
 
-        task_status.started(self)
+async def start_widget(
+    title: str = "QTrio Emissions Example",
+    parent: typing.Optional[QtWidgets.QWidget] = None,
+    hold_event: typing.Optional[trio.Event] = None,
+    *,
+    cls=Widget,
+    task_status: trio_typing.TaskStatus[Widget] = trio.TASK_STATUS_IGNORED,
+) -> None:
+    self = cls()
+    self.setup(title=title, parent=parent)
 
-        if hold_event is not None:
-            await hold_event.wait()
+    task_status.started(self)
 
-        await self.serve()
+    if hold_event is not None:
+        await hold_event.wait()
+
+    await self.serve()

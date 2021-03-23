@@ -15,7 +15,7 @@ async def test_main(
 
     async with trio.open_nursery() as nursery:
         start = functools.partial(
-            qtrio.examples.crossingpaths.Widget.start,
+            qtrio.examples.crossingpaths.start_widget,
             message=message,
             change_delay=0.01,
             close_delay=0.01,

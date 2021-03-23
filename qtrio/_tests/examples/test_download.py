@@ -161,7 +161,7 @@ async def test_main(
 
     async with trio.open_nursery() as nursery:
         start = functools.partial(
-            qtrio.examples.download.Downloader.start,
+            qtrio.examples.download.start_downloader,
             url=url if pass_url else None,
             destination=destination if pass_destination else None,
             fps=10,
@@ -222,7 +222,7 @@ async def test_get_dialog(
 
     async with trio.open_nursery() as nursery:
         start = functools.partial(
-            qtrio.examples.download.GetDialog.start,
+            qtrio.examples.download.start_get_dialog,
             url=url,
             destination=destination,
             fps=0.1,
@@ -259,7 +259,7 @@ async def test_get_dialog_canceled(
     with pytest.raises(qtrio.UserCancelledError):
         async with trio.open_nursery() as nursery:
             start = functools.partial(
-                qtrio.examples.download.GetDialog.start,
+                qtrio.examples.download.start_get_dialog,
                 url=url,
                 destination=destination,
                 fps=0.1,
