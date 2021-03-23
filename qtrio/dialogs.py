@@ -7,6 +7,7 @@ import async_generator
 import attr
 from qtpy import QtWidgets
 import trio
+import trio_typing
 
 import qtrio
 import qtrio._qt
@@ -236,6 +237,8 @@ class TextInputDialog:
     finished = qtrio.Signal(int)  # QtWidgets.QDialog.DialogCode
     """See :attr:`qtrio.dialogs.BasicDialogProtocol.finished`."""
 
+    finished_event: trio.Event = attr.ib(factory=trio.Event)
+
     def setup(self) -> None:
         """See :meth:`qtrio.dialogs.BasicDialogProtocol.setup`."""
 
@@ -269,7 +272,7 @@ class TextInputDialog:
         self.accept_button = None
         self.reject_button = None
 
-    async def wait(self) -> str:
+    async def wait(self, shown_event: trio.Event = trio.Event()) -> str:
         """See :meth:`qtrio.dialogs.DialogProtocol.wait`."""
 
         with _manage(dialog=self) as finished_event:
@@ -277,6 +280,8 @@ class TextInputDialog:
                 raise qtrio.InternalError(
                     "Dialog not assigned while it is being managed."
                 )
+
+            shown_event.set()
 
             await finished_event.wait()
 
@@ -417,7 +422,7 @@ class FileDialog:
         self.reject_button = None
         self.file_name_line_edit = None
 
-    async def wait(self) -> trio.Path:
+    async def wait(self, shown_event: trio.Event = trio.Event()) -> trio.Path:
         """See :meth:`qtrio.dialogs.DialogProtocol.wait`."""
 
         with _manage(dialog=self) as finished_event:
@@ -425,6 +430,8 @@ class FileDialog:
                 raise qtrio.InternalError(
                     "Dialog not assigned while it is being managed."
                 )
+
+            shown_event.set()
 
             await finished_event.wait()
             if self.dialog.result() != QtWidgets.QDialog.Accepted:
@@ -542,7 +549,7 @@ class MessageBox:
         self.dialog = None
         self.accept_button = None
 
-    async def wait(self) -> None:
+    async def wait(self, shown_event: trio.Event = trio.Event()) -> None:
         """See :meth:`qtrio.dialogs.DialogProtocol.wait`."""
 
         with _manage(dialog=self) as finished_event:
@@ -550,6 +557,8 @@ class MessageBox:
                 raise qtrio.InternalError(
                     "Dialog not assigned while it is being managed."
                 )
+
+            shown_event.set()
 
             await finished_event.wait()
 

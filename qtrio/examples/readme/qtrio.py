@@ -1,7 +1,9 @@
 import contextlib
-import typing
 
+import attr
 from qtpy import QtWidgets
+import trio
+import trio_typing
 
 import qtrio
 import qtrio.dialogs
@@ -23,22 +25,23 @@ def create_output() -> qtrio.dialogs.MessageBox:
     )
 
 
-async def main(
-    input_dialog: typing.Optional[qtrio.dialogs.TextInputDialog] = None,
-    output_dialog: typing.Optional[qtrio.dialogs.MessageBox] = None,
-) -> None:
-    if input_dialog is None:  # pragma: no cover
-        input_dialog = create_input()
+@attr.s
+class Dialogs:
+    input: qtrio.dialogs.TextInputDialog = attr.ib(factory=create_input)
+    output: qtrio.dialogs.MessageBox = attr.ib(factory=create_output)
 
-    if output_dialog is None:  # pragma: no cover
-        output_dialog = create_output()
+
+async def main(
+    *,
+    task_status: trio_typing.TaskStatus[Dialogs] = trio.TASK_STATUS_IGNORED,
+) -> None:
+    dialogs = Dialogs()
+    task_status.started(dialogs)
 
     with contextlib.suppress(qtrio.UserCancelledError):
-        name = await input_dialog.wait()
-
-        output_dialog.text = f"Hi {name}, welcome to the team!"
-
-        await output_dialog.wait()
+        name = await dialogs.input.wait()
+        dialogs.output.text = f"Hi {name}, welcome to the team!"
+        await dialogs.output.wait()
 
 
 if __name__ == "__main__":  # pragma: no cover
