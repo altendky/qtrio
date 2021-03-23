@@ -50,6 +50,7 @@ class Widget:
         await trio.sleep(self.close_delay)
         self.done_event.set()
 
+
 async def start_widget(
     message: str,
     change_delay: float = 0.5,
