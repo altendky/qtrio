@@ -124,9 +124,12 @@ def pass_destination_fixture(request):
     return request.param
 
 
-@pytest.fixture(name="url")
-def url_fixture():
-    return hyperlink.URL.from_text("http://test/")
+urls = [hyperlink.URL.from_text(s) for s in ["http://test/", "http://test"]]
+
+
+@pytest.fixture(name="url", params=urls)
+def url_fixture(request):
+    return request.param
 
 
 @pytest.fixture(name="http_application")
