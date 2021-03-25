@@ -88,7 +88,11 @@ class Downloader:
             if destination is None:
                 self.file_dialog = qtrio.dialogs.create_file_save_dialog()
 
-                self.file_dialog.default_file = trio.Path(converted_url.path[-1])
+                default_file: str = ""
+                if len(converted_url.path) > 0:
+                    default_file = converted_url.path[-1]
+
+                self.file_dialog.default_file = trio.Path(default_file)
 
                 destination = await self.file_dialog.wait(
                     shown_event=self.file_dialog_shown_event,
