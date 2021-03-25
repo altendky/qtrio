@@ -1,5 +1,7 @@
 # Add any project-specific files here:
 venv/
+testvenv/
+test-results.xml
 .idea/
 empty/
 
