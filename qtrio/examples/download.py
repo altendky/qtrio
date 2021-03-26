@@ -22,6 +22,8 @@ import qtrio.dialogs
 # Default is 4096
 httpcore._async.http11.AsyncHTTP11Connection.READ_NUM_BYTES = 100_000
 
+default_fps: int = 60
+
 
 def create_title(specific: str) -> str:
     return f"QTrio Download Example - {specific}"
@@ -30,8 +32,8 @@ def create_title(specific: str) -> str:
 @attr.s(auto_attribs=True, frozen=True)
 class Progress:
     downloaded: int
-    total: typing.Optional[int]
     first: bool
+    total: typing.Optional[int] = None
 
 
 @attr.s(auto_attribs=True, eq=False)
@@ -46,9 +48,9 @@ class Downloader:
 
     async def serve(
         self,
-        url: typing.Optional[typing.Union[str, hyperlink.URL]],
-        destination: typing.Optional[typing.Union[str, os.PathLike]],
-        fps: float = 60,
+        url: typing.Optional[typing.Union[str, hyperlink.URL]] = None,
+        destination: typing.Optional[typing.Union[str, os.PathLike]] = None,
+        fps: float = default_fps,
         http_application: typing.Optional[typing.Callable[..., typing.Any]] = None,
         *,
         task_status: trio_typing.TaskStatus[None] = trio.TASK_STATUS_IGNORED,
@@ -112,10 +114,10 @@ class Downloader:
 
 
 async def start_downloader(
-    url: typing.Optional[hyperlink.URL],
-    destination: typing.Optional[trio.Path],
-    fps: float,
-    http_application: typing.Callable[..., typing.Any],
+    url: typing.Optional[hyperlink.URL] = None,
+    destination: typing.Optional[trio.Path] = None,
+    fps: float = default_fps,
+    http_application: typing.Optional[typing.Callable[..., typing.Any]] = None,
     hold_event: typing.Optional[trio.Event] = None,
     *,
     cls: typing.Type[Downloader] = Downloader,
@@ -135,7 +137,7 @@ async def start_downloader(
 
 @attr.s(auto_attribs=True, eq=False)
 class GetDialog:
-    fps: float = 60
+    fps: float = default_fps
     clock: typing.Callable[[], float] = time.monotonic
     http_application: typing.Optional[typing.Callable[..., typing.Any]] = None
 
@@ -222,12 +224,12 @@ class GetDialog:
 async def start_get_dialog(
     url: hyperlink.URL,
     destination: trio.Path,
-    fps: float,
-    http_application: typing.Callable[..., typing.Any],
+    fps: float = default_fps,
+    http_application: typing.Optional[typing.Callable[..., typing.Any]] = None,
     hold_event: typing.Optional[trio.Event] = None,
     *,
     cls: typing.Type[GetDialog] = GetDialog,
-    task_status: trio_typing.TaskStatus["GetDialog"] = trio.TASK_STATUS_IGNORED,
+    task_status: trio_typing.TaskStatus[GetDialog] = trio.TASK_STATUS_IGNORED,
 ) -> None:
     self = cls(fps=fps, http_application=http_application)
 
@@ -280,3 +282,7 @@ async def get(
             if progress.downloaded != downloaded:
                 progress = attr.evolve(progress, downloaded=downloaded)
                 yield progress
+
+
+if __name__ == "__main__":  # pragma: no cover
+    qtrio.run(start_downloader)
