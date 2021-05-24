@@ -7,7 +7,7 @@ from qtpy import QtCore
 class QTrioException(Exception):
     """Base exception for all QTrio exceptions."""
 
-    
+
 class NoOutcomesError(QTrioException):
     """Raised if you try to unwrap a :class:`qtrio.Outcomes` which has no outcomes."""
 
