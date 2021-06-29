@@ -5,7 +5,7 @@ import typing
 
 import async_generator
 import attr
-from qtpy import QtWidgets
+from qts import QtWidgets
 import trio
 import trio_typing
 

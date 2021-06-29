@@ -14,9 +14,9 @@ import typing_extensions
 import async_generator
 import attr
 import outcome
-from qtpy import QtCore
-from qtpy import QtGui
-from qtpy import QtWidgets
+from qts import QtCore
+from qts import QtGui
+from qts import QtWidgets
 import trio
 import trio.abc
 

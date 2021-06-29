@@ -1,11 +1,11 @@
 import typing
 
-import qtpy
-from qtpy import QtCore
+import qts
+from qts import QtCore
 
 
 SignalInstance: typing.Any
-if qtpy.API in qtpy.PYQT5_API and not hasattr(QtCore, "SignalInstance"):
+if qts.is_pyqt_5_wrapper and not hasattr(QtCore, "SignalInstance"):
     SignalInstance = QtCore.pyqtBoundSignal
 else:
     SignalInstance = QtCore.SignalInstance

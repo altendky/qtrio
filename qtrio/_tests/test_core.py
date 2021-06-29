@@ -4,7 +4,7 @@ import typing
 
 import outcome
 import pytest
-from qtpy import QtCore
+from qts import QtCore
 import qtrio
 import qtrio._core
 import trio
@@ -103,7 +103,7 @@ def test_qt_last_window_closed_does_not_quit_qt_or_cancel_trio(testdir):
 
     test_file = r"""
     import outcome
-    from qtpy import QtCore
+    from qts import QtCore
     import trio
 
     import qtrio
@@ -143,8 +143,8 @@ def test_qt_quit_cancels_trio_with_custom_application(testdir):
 
     test_file = r"""
     import outcome
-    from qtpy import QtCore
-    from qtpy import QtWidgets
+    from qts import QtCore
+    from qts import QtWidgets
     import trio
 
     import qtrio
@@ -310,7 +310,7 @@ def test_out_of_hints_raises(testdir):
     """
     test_file = r"""
     import pytest
-    from qtpy import QtCore
+    from qts import QtCore
     import qtrio
 
 
@@ -335,7 +335,7 @@ def test_out_of_hints_raises_for_requested(testdir):
     """
     test_file = r"""
     import pytest
-    from qtpy import QtCore
+    from qts import QtCore
     import qtrio
 
 
@@ -359,7 +359,7 @@ def test_out_of_hints_raises_when_requesting_already_used_type(testdir):
     """
     test_file = r"""
     import pytest
-    from qtpy import QtCore
+    from qts import QtCore
     import qtrio
 
 
@@ -378,7 +378,7 @@ def test_out_of_hints_raises_when_requesting_already_used_type(testdir):
 def test_requesting_available_event_type_succeeds(testdir):
     """Requesting an available event type succeeds."""
     test_file = r"""
-    from qtpy import QtCore
+    from qts import QtCore
     import qtrio
 
 
@@ -601,7 +601,7 @@ def test_failed_hosted_trio_exception_on_stdout(testdir):
     """Except is printed when main Trio function raises."""
 
     test_file = r"""
-    from qtpy import QtCore
+    from qts import QtCore
     import qtrio
 
 
@@ -1136,7 +1136,7 @@ def test_not_quitting_application_does_not(testdir):
     """Not quitting the application doesn't quit."""
 
     test_file = r"""
-    from qtpy import QtCore
+    from qts import QtCore
     import qtrio
 
 

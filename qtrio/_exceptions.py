@@ -1,7 +1,8 @@
 """A central location to define QTrio specific exceptions and avoid introducing
 inter-module dependency issues."""
 import typing
-from qtpy import QtCore
+
+from qts import QtCore
 
 
 class QTrioException(Exception):

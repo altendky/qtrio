@@ -3,7 +3,7 @@
 import contextlib
 import typing
 
-from qtpy import QtCore
+from qts import QtCore
 
 import qtrio._python
 import qtrio._util
@@ -88,9 +88,9 @@ def connection(
     # class.  https://bugreports.qt.io/browse/PYSIDE-1422
     this_connection = signal.connect(slot)
 
-    import qtpy
+    import qts
 
-    if qtpy.PYSIDE2:
+    if qts.is_pyside_5_wrapper or qts.is_pyside_6_wrapper:
         # PySide2 presently returns a bool rather than a QMetaObject.Connection
         # https://bugreports.qt.io/browse/PYSIDE-1334
         this_connection = slot
@@ -100,7 +100,7 @@ def connection(
     finally:
         expected_exception: typing.Type[Exception]
 
-        if qtpy.PYSIDE2:
+        if qts.is_pyside_5_wrapper or qts.is_pyside_6_wrapper:
             expected_exception = RuntimeError
         else:
             expected_exception = TypeError
