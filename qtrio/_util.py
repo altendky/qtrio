@@ -1,15 +1,5 @@
 import typing
 
-import qts
-from qts import QtCore
-
-
-SignalInstance: typing.Any
-if qts.is_pyqt_5_wrapper and not hasattr(QtCore, "SignalInstance"):
-    SignalInstance = QtCore.pyqtBoundSignal
-else:
-    SignalInstance = QtCore.SignalInstance
-
 
 T = typing.TypeVar("T")
 

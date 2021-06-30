@@ -27,13 +27,15 @@ def test_reenter_event_triggers_in_main_thread(qapp):
     """Reenter events posted in another thread result in the function being run in the
     main thread.
     """
+    import qtrio.qt
+
     result = []
 
-    reenter = qtrio._core.Reenter()
+    reenter = qtrio.qt.Reenter()
 
     def post():
         qtrio.register_event_type()
-        event = qtrio._core.ReenterEvent(fn=handler)
+        event = qtrio.qt.ReenterEvent(fn=handler)
         qapp.postEvent(reenter, event)
 
     def handler():
@@ -864,7 +866,7 @@ async def test_enter_emissions_channel_closes_both_channels():
 def emissions_nursery_connect_maybe_async(
     is_async: bool,
     nursery: qtrio.EmissionsNursery,
-    signal: qtrio._util.SignalInstance,
+    signal: "QtCore.SignalInstance",
     slot: typing.Callable[..., object],
 ) -> None:
     if is_async:
