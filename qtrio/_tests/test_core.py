@@ -163,7 +163,7 @@ def test_qt_quit_cancels_trio_with_custom_application(testdir):
         runner = qtrio.Runner(application=QtWidgets.QApplication([]))
         outcomes = runner.run(async_fn=main)
 
-        assert outcomes.trio.value == None
+        assert outcomes.trio.unwrap() == None
     """
     testdir.makepyfile(test_file)
 
@@ -236,7 +236,7 @@ def test_runner_runs_in_main_thread(testdir):
         runner = qtrio.Runner()
         outcomes = runner.run(main)
 
-        assert outcomes.trio.value == threading.get_ident()
+        assert outcomes.trio.unwrap() == threading.get_ident()
     """
     testdir.makepyfile(test_file)
 
