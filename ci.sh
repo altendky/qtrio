@@ -53,7 +53,7 @@ if [ "$CHECK_DOCS" = "1" ]; then
 elif [ "$CHECK_FORMATTING" = "1" ]; then
     source check.sh
 elif [ "$CHECK_TYPE_HINTS" = "1" ]; then
-    mypy --package qtrio
+    mypy --package qtrio $(qts mypy args)
 elif [ "$CHECK_MANIFEST" = "1" ]; then
     check-manifest
 else
