@@ -504,7 +504,7 @@ def maybe_build_application() -> "QtGui.QGuiApplication":
     Returns:
         The Qt application object.
     """
-    from qts import QtWidgets
+    from qts import QtWidgets  # noqa: F811
 
     maybe_application = QtWidgets.QApplication.instance()
     if maybe_application is None:
