@@ -34,9 +34,7 @@ class Signal:
         self.object_cls = _SignalQObject
 
     @typing.overload
-    def __get__(
-        self, instance: None, owner: object
-    ) -> typing.Union["Signal"]:
+    def __get__(self, instance: None, owner: object) -> typing.Union["Signal"]:
         ...
 
     @typing.overload
