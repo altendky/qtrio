@@ -33,6 +33,18 @@ class Signal:
 
         self.object_cls = _SignalQObject
 
+    @typing.overload
+    def __get__(
+        self, instance: None, owner: object
+    ) -> typing.Union["Signal"]:
+        ...
+
+    @typing.overload
+    def __get__(
+        self, instance: object, owner: object
+    ) -> typing.Union["QtCore.SignalInstance"]:
+        ...
+
     def __get__(
         self, instance: object, owner: object
     ) -> typing.Union["Signal", "QtCore.SignalInstance"]:

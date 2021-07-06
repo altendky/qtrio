@@ -517,7 +517,7 @@ def maybe_build_application() -> "QtGui.QGuiApplication":
     return application
 
 
-def create_reenter():
+def create_reenter() -> "qtrio.qt.Reenter":
     import qtrio.qt
 
     return qtrio.qt.Reenter()
