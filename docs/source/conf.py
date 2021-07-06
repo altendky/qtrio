@@ -122,11 +122,15 @@ author = "The QTrio authors"
 def get_version():
     here = pathlib.Path(__file__).parent
     root = here.parent.parent
-    
+
     version_globals = {}
-    exec(root.joinpath("qtrio", "_version.py").read_text(encoding="utf-8"), version_globals)
-    
+    exec(
+        root.joinpath("qtrio", "_version.py").read_text(encoding="utf-8"),
+        version_globals,
+    )
+
     return version_globals["__version__"]
+
 
 version = get_version()
 # The full version, including alpha/beta/rc tags.

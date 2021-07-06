@@ -33,7 +33,9 @@ class Signal:
 
         self.object_cls = _SignalQObject
 
-    def __get__(self, instance: object, owner: object) -> typing.Union["Signal", "QtCore.SignalInstance"]:
+    def __get__(
+        self, instance: object, owner: object
+    ) -> typing.Union["Signal", "QtCore.SignalInstance"]:
         if instance is None:
             return self
 

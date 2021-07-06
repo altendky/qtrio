@@ -14,6 +14,7 @@ import typing_extensions
 import async_generator
 import attr
 import outcome
+
 if typing.TYPE_CHECKING:
     from qts import QtCore
     from qts import QtGui
@@ -518,6 +519,7 @@ def maybe_build_application() -> "QtGui.QGuiApplication":
 
 def create_reenter():
     import qtrio.qt
+
     return qtrio.qt.Reenter()
 
 
@@ -620,6 +622,7 @@ class Runner:
             fn: A no parameter callable.
         """
         import qtrio.qt
+
         event = qtrio.qt.ReenterEvent(fn=fn)
         self.application.postEvent(self.reenter, event)
 

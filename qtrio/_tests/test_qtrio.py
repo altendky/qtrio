@@ -15,7 +15,7 @@ def test_importing_qtrio_does_not_import_qt(testdir):
     """
     testdir.makepyfile(test_file)
 
-    result = testdir.runpytest_subprocess('-p', 'no:qt')
+    result = testdir.runpytest_subprocess("-p", "no:qt")
     result.assert_outcomes(passed=1)
 
 
@@ -42,5 +42,5 @@ def test_importing_qtrio_does_not_import_qt_wrappers(testdir):
     """
     testdir.makepyfile(test_file)
 
-    result = testdir.runpytest_subprocess('-p', 'no:pytest-qt')
+    result = testdir.runpytest_subprocess("-p", "no:pytest-qt")
     result.assert_outcomes(passed=1)
