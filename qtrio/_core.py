@@ -15,16 +15,19 @@ import async_generator
 import attr
 import outcome
 
-if typing.TYPE_CHECKING:
-    from qts import QtCore
-    from qts import QtGui
-    from qts import QtWidgets
 import trio
 import trio.abc
 
 import qtrio
 import qtrio._qt
 import qtrio._util
+
+
+if typing.TYPE_CHECKING:
+    from qts import QtCore
+    from qts import QtGui
+    from qts import QtWidgets
+
 
 _reenter_event_type: typing.Optional["QtCore.QEvent.Type"] = None
 
