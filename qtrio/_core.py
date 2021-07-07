@@ -110,7 +110,7 @@ class Reenter(QtCore.QObject):
 
         reenter_event = typing.cast(Reenter, event)
         reenter_event.fn()
-        return False
+        return True
 
 
 async def wait_signal(signal: qtrio._util.SignalInstance) -> typing.Tuple[object, ...]:
