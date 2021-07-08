@@ -2,7 +2,7 @@ import typing
 
 import attr
 import qtrio
-from qtpy import QtWidgets
+from qts import QtWidgets
 import trio
 import trio_typing
 

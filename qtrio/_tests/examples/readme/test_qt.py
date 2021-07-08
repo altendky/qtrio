@@ -1,5 +1,5 @@
 import pytestqt.qtbot
-from qtpy import QtWidgets
+from qts import QtWidgets
 
 import qtrio.examples.readme.qt
 

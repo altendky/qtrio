@@ -9,3 +9,4 @@ exclude_lines =
   abc\.abstractmethod
   typing\.overload
   ^\s*\.\.\.\s*$
+  if typing.TYPE_CHECKING:

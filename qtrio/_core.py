@@ -14,9 +14,7 @@ import typing_extensions
 import async_generator
 import attr
 import outcome
-from qtpy import QtCore
-from qtpy import QtGui
-from qtpy import QtWidgets
+
 import trio
 import trio.abc
 
@@ -24,10 +22,17 @@ import qtrio
 import qtrio._qt
 import qtrio._util
 
-_reenter_event_type: typing.Optional[QtCore.QEvent.Type] = None
+
+if typing.TYPE_CHECKING:
+    from qts import QtCore
+    from qts import QtGui
+    from qts import QtWidgets
 
 
-def registered_event_type() -> typing.Optional[QtCore.QEvent.Type]:
+_reenter_event_type: typing.Optional["QtCore.QEvent.Type"] = None
+
+
+def registered_event_type() -> typing.Optional["QtCore.QEvent.Type"]:
     """Get the registered event type.
 
     Returns:
@@ -46,6 +51,8 @@ def register_event_type() -> None:
         qtrio.EventTypeRegistrationFailedError:  if a type was not able to be
             registered.
     """
+    from qts import QtCore
+
     global _reenter_event_type
 
     if _reenter_event_type is not None:
@@ -61,7 +68,7 @@ def register_event_type() -> None:
 
 
 def register_requested_event_type(
-    requested_value: typing.Union[int, QtCore.QEvent.Type]
+    requested_value: typing.Union[int, "QtCore.QEvent.Type"]
 ) -> None:
     """Register the requested Qt event type for use by Trio to reenter into the Qt event
     loop.
@@ -76,6 +83,8 @@ def register_requested_event_type(
         qtrio.RequestedEventTypeUnavailableError: if the type returned by Qt does not
             match the requested type.
     """
+    from qts import QtCore
+
     global _reenter_event_type
 
     if _reenter_event_type is not None:
@@ -94,26 +103,7 @@ def register_requested_event_type(
     _reenter_event_type = QtCore.QEvent.Type(event_hint)
 
 
-class ReenterEvent(QtCore.QEvent):
-    """A proper ``ReenterEvent`` for reentering into the Qt host loop."""
-
-    def __init__(self, fn: typing.Callable[[], object]):
-        super().__init__(_reenter_event_type)
-        self.fn = fn
-
-
-class Reenter(QtCore.QObject):
-    """A ``QtCore.QObject`` for handling reenter events."""
-
-    def event(self, event: QtCore.QEvent) -> bool:
-        """Qt calls this when the object receives an event."""
-
-        reenter_event = typing.cast(Reenter, event)
-        reenter_event.fn()
-        return False
-
-
-async def wait_signal(signal: qtrio._util.SignalInstance) -> typing.Tuple[object, ...]:
+async def wait_signal(signal: "QtCore.SignalInstance") -> typing.Tuple[object, ...]:
     """Block for the next emission of ``signal`` and return the emitted arguments.
 
     Warning:
@@ -159,12 +149,12 @@ class Emission:
         PySide2 or ``QtCore.pyqtBoundSignal`` in PyQt5.
     """
 
-    signal: qtrio._util.SignalInstance
+    signal: "QtCore.SignalInstance"
     """An instance of the original signal."""
     args: typing.Tuple[object, ...]
     """A tuple of the arguments emitted by the signal."""
 
-    def is_from(self, signal: qtrio._util.SignalInstance) -> bool:
+    def is_from(self, signal: "QtCore.SignalInstance") -> bool:
         """Check if this emission came from ``signal``.
 
         Args:
@@ -190,7 +180,7 @@ class Emission:
 
 @attr.s(auto_attribs=True, frozen=True)
 class EmissionsChannelSlot:
-    internal_signal: qtrio._util.SignalInstance
+    internal_signal: "QtCore.SignalInstance"
     send_channel: trio.MemorySendChannel
 
     def slot(
@@ -227,7 +217,7 @@ class Emissions:
 
 @async_generator.asynccontextmanager
 async def open_emissions_channel(
-    signals: typing.Collection[qtrio._util.SignalInstance],
+    signals: typing.Collection["QtCore.SignalInstance"],
     max_buffer_size: typing.Union[int, float] = math.inf,
 ) -> typing.AsyncGenerator[Emissions, None]:
     """Create a memory channel fed by the emissions of the signals.  Each signal
@@ -270,7 +260,7 @@ async def open_emissions_channel(
 
 @async_generator.asynccontextmanager
 async def enter_emissions_channel(
-    signals: typing.Collection[qtrio._util.SignalInstance],
+    signals: typing.Collection["QtCore.SignalInstance"],
     max_buffer_size: typing.Union[int, float] = math.inf,
 ) -> typing.AsyncGenerator[Emissions, None]:
     """Create a memory channel fed by the emissions of the signals and enter both the
@@ -340,7 +330,7 @@ class EmissionsNursery:
 
     def connect(
         self,
-        signal: qtrio._util.SignalInstance,
+        signal: "QtCore.SignalInstance",
         slot: typing.Callable[..., typing.Awaitable[object]],
     ) -> None:
         """Connect an async signal to this emissions nursery so when called the slot
@@ -358,7 +348,7 @@ class EmissionsNursery:
         self.exit_stack.enter_context(qtrio._qt.connection(signal, starter.start))
 
     def connect_sync(
-        self, signal: qtrio._util.SignalInstance, slot: typing.Callable[..., object]
+        self, signal: "QtCore.SignalInstance", slot: typing.Callable[..., object]
     ) -> None:
         """Connect to a sync slot to this emissions nursery so when called the slot will
         be run in the nursery.
@@ -372,7 +362,7 @@ class EmissionsNursery:
 
 @async_generator.asynccontextmanager
 async def open_emissions_nursery(
-    until: typing.Optional[qtrio._util.SignalInstance] = None,
+    until: typing.Optional["QtCore.SignalInstance"] = None,
     wrapper: typing.Optional[typing.Callable[..., typing.Awaitable[object]]] = None,
 ) -> typing.AsyncGenerator[EmissionsNursery, None]:
     """Open a nursery for handling callbacks triggered by signal emissions.  This allows
@@ -405,7 +395,7 @@ async def open_emissions_nursery(
 
 @async_generator.asynccontextmanager
 async def wait_signal_context(
-    signal: qtrio._util.SignalInstance,
+    signal: "QtCore.SignalInstance",
 ) -> typing.AsyncGenerator[None, None]:
     """Connect a signal during the context and wait for it on exit.  Presently no
     mechanism is provided for retrieving the emitted arguments.
@@ -511,12 +501,14 @@ def outcome_from_application_return_code(return_code: int) -> outcome.Outcome:
     return outcome.Error(qtrio.ReturnCodeError(return_code))
 
 
-def maybe_build_application() -> QtGui.QGuiApplication:
+def maybe_build_application() -> "QtGui.QGuiApplication":
     """Create a new Qt application object if one does not already exist.
 
     Returns:
         The Qt application object.
     """
+    from qts import QtWidgets  # noqa: F811
+
     maybe_application = QtWidgets.QApplication.instance()
     if maybe_application is None:
         application = QtWidgets.QApplication(sys.argv[1:])
@@ -528,11 +520,17 @@ def maybe_build_application() -> QtGui.QGuiApplication:
     return application
 
 
+def create_reenter() -> "qtrio.qt.Reenter":
+    import qtrio.qt
+
+    return qtrio.qt.Reenter()
+
+
 @attr.s(auto_attribs=True, slots=True)
 class Runner:
     """This class helps run Trio in guest mode on a Qt host application."""
 
-    application: QtGui.QGuiApplication = attr.ib(factory=maybe_build_application)
+    application: "QtGui.QGuiApplication" = attr.ib(factory=maybe_build_application)
     """The Qt application object to run as the host.  If not set before calling
     :meth:`run` the application will be created as
     ``QtWidgets.QApplication(sys.argv[1:])`` and ``.setQuitOnLastWindowClosed(False)``
@@ -553,7 +551,7 @@ class Runner:
     :func:`trio.lowlevel.start_guest_run`.
     """
 
-    reenter: Reenter = attr.ib(factory=Reenter)
+    reenter: "qtrio.qt.Reenter" = attr.ib(factory=create_reenter)
     """The :class:`QtCore.QObject` instance which will receive the events requesting
     execution of the needed Trio and user code in the host's event loop and thread.
     """
@@ -626,7 +624,9 @@ class Runner:
         Args:
             fn: A no parameter callable.
         """
-        event = ReenterEvent(fn=fn)
+        import qtrio.qt
+
+        event = qtrio.qt.ReenterEvent(fn=fn)
         self.application.postEvent(self.reenter, event)
 
     async def trio_main(
