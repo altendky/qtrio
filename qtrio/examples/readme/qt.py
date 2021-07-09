@@ -1,6 +1,6 @@
 import typing
 
-from qtpy import QtWidgets
+from qts import QtWidgets
 
 
 def create_input() -> QtWidgets.QInputDialog:

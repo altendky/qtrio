@@ -1,3 +1,4 @@
+import functools
 import os
 import pathlib
 import random
@@ -109,9 +110,26 @@ def content_length_fixture(content_length_specified, chunked_data):
     return content_length
 
 
-@pytest.fixture(name="url")
-def url_fixture():
-    return hyperlink.URL.from_text("http://test/")
+@pytest.fixture(name="pass_url", params=[True, False], ids=["pass URL", "enter URL"])
+def pass_url_fixture(request):
+    return request.param
+
+
+@pytest.fixture(
+    name="pass_destination",
+    params=[True, False],
+    ids=["pass destination", "enter destination"],
+)
+def pass_destination_fixture(request):
+    return request.param
+
+
+urls = [hyperlink.URL.from_text(s) for s in ["http://test/", "http://test"]]
+
+
+@pytest.fixture(name="url", params=urls)
+def url_fixture(request):
+    return request.param
 
 
 @pytest.fixture(name="http_application")
@@ -130,97 +148,62 @@ def http_application_fixture(chunked_data, content_length_specified, content_len
     return application
 
 
-@pytest.fixture(
-    name="optional_text_input_dialog",
-    params=[False, True],
-    ids=["No text input dialog", "Text input dialog"],
-)
-def optional_text_input_dialog_fixture(request):
-    if request.param:
-        return qtrio.dialogs.create_text_input_dialog()
-
-    return None
-
-
-@pytest.fixture(
-    name="optional_file_dialog",
-    params=[False, True],
-    ids=["No file dialog", "File dialog"],
-)
-def optional_file_dialog_fixture(request):
-    if request.param:
-        return qtrio.dialogs.create_file_save_dialog()
-
-    return None
-
-
 async def test_main(
     chunked_data: typing.List[bytes],
     http_application: quart_trio.QuartTrio,
-    optional_text_input_dialog: typing.Optional[qtrio.dialogs.TextInputDialog],
-    optional_file_dialog: typing.Optional[qtrio.dialogs.FileDialog],
     url: hyperlink.URL,
+    pass_url: bool,
     tmp_path: pathlib.Path,
+    pass_destination: bool,
+    optional_hold_event: typing.Optional[trio.Event],
 ) -> None:
     temporary_directory = trio.Path(tmp_path)
 
     data = b"".join(chunked_data)
     destination = temporary_directory.joinpath("file")
 
-    progress_dialog = qtrio.dialogs.create_progress_dialog()
-    message_box = qtrio.dialogs.create_message_box()
+    async with trio.open_nursery() as nursery:
+        start = functools.partial(
+            qtrio.examples.download.start_downloader,
+            url=url if pass_url else None,
+            destination=destination if pass_destination else None,
+            fps=10,
+            http_application=http_application,
+            hold_event=optional_hold_event,
+        )
+        widget: qtrio.examples.download.Downloader = await nursery.start(start)
 
-    async def user():
-        if optional_text_input_dialog is not None:
-            emission = await emissions.channel.receive()
-            assert emission.is_from(optional_text_input_dialog.shown)
+        if optional_hold_event is not None:
+            optional_hold_event.set()
 
-            assert optional_text_input_dialog.line_edit is not None
-            optional_text_input_dialog.line_edit.setText(url.to_text())
+        if not pass_url:
+            await widget.text_input_shown_event.wait()
+            assert widget.text_input_dialog is not None
 
-            assert optional_text_input_dialog.accept_button is not None
-            optional_text_input_dialog.accept_button.click()
+            assert widget.text_input_dialog.line_edit is not None
+            widget.text_input_dialog.line_edit.setText(url.to_text())
 
-        if optional_file_dialog is not None:
-            emission = await emissions.channel.receive()
-            assert emission.is_from(optional_file_dialog.shown)
+            assert widget.text_input_dialog.accept_button is not None
+            widget.text_input_dialog.accept_button.click()
 
-            assert optional_file_dialog.dialog is not None
-            await optional_file_dialog.set_path(path=destination)
+        if not pass_destination:
+            await widget.file_dialog_shown_event.wait()
+            assert widget.file_dialog is not None
 
-            assert optional_file_dialog.accept_button is not None
-            optional_file_dialog.accept_button.click()
+            assert widget.file_dialog.dialog is not None
+            await widget.file_dialog.set_path(path=destination)
 
-        emission = await emissions.channel.receive()
-        assert emission.is_from(message_box.shown)
+            assert widget.file_dialog.accept_button is not None
+            widget.file_dialog.accept_button.click()
 
-        assert message_box.accept_button is not None
-        message_box.accept_button.click()
+        await widget.get_dialog_created_event.wait()
+        assert widget.get_dialog is not None
 
-    signals = []
+        await widget.get_dialog.message_box_shown_event.wait()
+        assert widget.get_dialog.message_box is not None
 
-    if optional_text_input_dialog is not None:
-        signals.append(optional_text_input_dialog.shown)
-
-    if optional_file_dialog is not None:
-        signals.append(optional_file_dialog.shown)
-
-    signals.append(message_box.shown)
-
-    async with qtrio.enter_emissions_channel(signals=signals) as emissions:
-        async with trio.open_nursery() as nursery:
-            nursery.start_soon(user)
-
-            await qtrio.examples.download.main(
-                url=url if optional_text_input_dialog is None else None,
-                destination=destination if optional_file_dialog is None else None,
-                fps=10,
-                text_input_dialog=optional_text_input_dialog,
-                file_dialog=optional_file_dialog,
-                progress_dialog=progress_dialog,
-                message_box=message_box,
-                http_application=http_application,
-            )
+        assert widget.get_dialog.message_box.accept_button is not None
+        widget.get_dialog.message_box.accept_button.click()
 
     async with await destination.open("rb") as written_file:
         written = await written_file.read()  # type: ignore[attr-defined]
@@ -233,35 +216,32 @@ async def test_get_dialog(
     http_application: quart_trio.QuartTrio,
     url: hyperlink.URL,
     tmp_path: pathlib.Path,
+    optional_hold_event: typing.Optional[trio.Event],
 ) -> None:
     temporary_directory = trio.Path(tmp_path)
 
     data = b"".join(chunked_data)
     destination = temporary_directory.joinpath("file")
 
-    progress_dialog = qtrio.dialogs.create_progress_dialog()
-    message_box = qtrio.dialogs.create_message_box()
+    async with trio.open_nursery() as nursery:
+        start = functools.partial(
+            qtrio.examples.download.start_get_dialog,
+            url=url,
+            destination=destination,
+            fps=0.1,
+            http_application=http_application,
+            hold_event=optional_hold_event,
+        )
+        widget: qtrio.examples.download.GetDialog = await nursery.start(start)
 
-    async def user():
-        await emissions.channel.receive()
+        if optional_hold_event is not None:
+            optional_hold_event.set()
 
-        assert message_box.accept_button is not None
-        message_box.accept_button.click()
+        await widget.message_box_shown_event.wait()
+        assert widget.message_box is not None
 
-    async with qtrio.enter_emissions_channel(
-        signals=[message_box.shown],
-    ) as emissions:
-        async with trio.open_nursery() as nursery:
-            nursery.start_soon(user)
-
-            await qtrio.examples.download.get_dialog(
-                url=url,
-                destination=destination,
-                fps=0.1,
-                progress_dialog=progress_dialog,
-                message_box=message_box,
-                http_application=http_application,
-            )
+        assert widget.message_box.accept_button is not None
+        widget.message_box.accept_button.click()
 
     async with await destination.open("rb") as written_file:
         written = await written_file.read()  # type: ignore[attr-defined]
@@ -279,34 +259,26 @@ async def test_get_dialog_canceled(
 
     destination = temporary_directory.joinpath("file")
 
-    progress_dialog = qtrio.dialogs.create_progress_dialog()
-    message_box = qtrio.dialogs.create_message_box()
+    with pytest.raises(qtrio.UserCancelledError):
+        async with trio.open_nursery() as nursery:
+            start = functools.partial(
+                qtrio.examples.download.start_get_dialog,
+                url=url,
+                destination=destination,
+                fps=0.1,
+                http_application=http_application,
+            )
+            widget: qtrio.examples.download.GetDialog = await nursery.start(start)
 
-    async def user():
-        await emissions.channel.receive()
+            await widget.progress_dialog_shown_event.wait()
+            assert widget.progress_dialog is not None
 
-        assert progress_dialog.dialog is not None
-        assert progress_dialog.dialog.isVisible()
-        assert message_box.dialog is None
+            assert widget.progress_dialog.dialog is not None
+            assert widget.progress_dialog.dialog.isVisible()
+            assert widget.message_box is None
 
-        assert progress_dialog.cancel_button is not None
-        progress_dialog.cancel_button.click()
-
-    async with qtrio.enter_emissions_channel(
-        signals=[progress_dialog.shown],
-    ) as emissions:
-        with pytest.raises(qtrio.UserCancelledError):
-            async with trio.open_nursery() as nursery:
-                nursery.start_soon(user)
-
-                await qtrio.examples.download.get_dialog(
-                    url=url,
-                    destination=destination,
-                    fps=0.1,
-                    progress_dialog=progress_dialog,
-                    message_box=message_box,
-                    http_application=http_application,
-                )
+            assert widget.progress_dialog.cancel_button is not None
+            widget.progress_dialog.cancel_button.click()
 
 
 async def test_get(

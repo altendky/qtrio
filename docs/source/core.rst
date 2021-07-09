@@ -7,7 +7,6 @@ Running
 .. autofunction:: qtrio.run
 .. autoclass:: qtrio.Runner
 .. autoclass:: qtrio.Outcomes
-.. autoclass:: qtrio.Reenter
 
 Emissions
 ---------

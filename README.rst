@@ -126,21 +126,16 @@ really containing the activity.
     # qtrio/examples/readme/qtrio.py.
 
     async def main(
-        input_dialog: typing.Optional[qtrio.dialogs.TextInputDialog] = None,
-        output_dialog: typing.Optional[qtrio.dialogs.MessageBox] = None,
+        *,
+        task_status: trio_typing.TaskStatus[Dialogs] = trio.TASK_STATUS_IGNORED,
     ) -> None:
-        if input_dialog is None:  # pragma: nocover
-            input_dialog = create_input()
-
-        if output_dialog is None:  # pragma: nocover
-            output_dialog = create_output()
+        dialogs = Dialogs()
+        task_status.started(dialogs)
 
         with contextlib.suppress(qtrio.UserCancelledError):
-            name = await input_dialog.wait()
-
-            output_dialog.text = f"Hi {name}, welcome to the team!"
-
-            await output_dialog.wait()
+            name = await dialogs.input.wait()
+            dialogs.output.text = f"Hi {name}, welcome to the team!"
+            await dialogs.output.wait()
 
 
 .. _chat: https://gitter.im/python-trio/general

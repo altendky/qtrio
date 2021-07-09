@@ -1,7 +1,7 @@
 import typing
 
 import pytestqt.qtbot
-from qtpy import QtCore
+from qts import QtCore
 import pytest
 
 import qtrio._qt
