@@ -49,7 +49,7 @@ Things to do for releasing:
 * push to your personal repository
 
 * create pull request to `altendky/qtrio <https://github.com/altendky/qtrio/pulls>`_'s
-  "master" branch
+  "main" branch
 
 * verify that all checks succeeded
 
