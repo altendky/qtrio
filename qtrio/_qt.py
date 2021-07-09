@@ -47,9 +47,7 @@ class Signal:
         ...
 
     @typing.overload
-    def __get__(
-        self, instance: object, owner: object
-    ) -> "QtCore.SignalInstance":
+    def __get__(self, instance: object, owner: object) -> "QtCore.SignalInstance":
         ...
 
     def __get__(

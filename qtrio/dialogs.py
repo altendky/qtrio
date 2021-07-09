@@ -393,9 +393,7 @@ class FileDialog:
         #       return.
         self.dialog = typing.cast(
             QtWidgets.QFileDialog,
-            QtWidgets.QFileDialog(
-                parent=self.parent, options=options, **extras
-            ),
+            QtWidgets.QFileDialog(parent=self.parent, options=options, **extras),
         )
 
         if self.default_file is not None:

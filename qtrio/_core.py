@@ -544,7 +544,8 @@ def maybe_build_application() -> "QtGui.QGuiApplication":
         maybe_application = QtWidgets.QApplication.instance()
     elif qts.is_pyside_5_wrapper:
         maybe_application = typing.cast(
-            typing.Optional["QtCore.QCoreApplication"], QtWidgets.QApplication.instance()
+            typing.Optional["QtCore.QCoreApplication"],
+            QtWidgets.QApplication.instance(),
         )
     else:  # pragma: no cover
         raise qtrio.InternalError(
