@@ -45,7 +45,7 @@ nitpick_ignore = [
     ("py:class", "typing.AbstractAsyncContextManager"),
     (
         "py:class",
-        "Union[<class 'PySide2.QtWidgets.QMessageBox.StandardButton'>, PySide2.QtWidgets.QMessageBox.StandardButtons, int]",
+        "Union[<class 'PySide2.QtWidgets.QMessageBox.StandardButton'>, PySide2.QtWidgets.QMessageBox.StandardButtons]",
     ),
 ]
 
