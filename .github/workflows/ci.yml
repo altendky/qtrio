@@ -99,6 +99,11 @@ jobs:
         python: ['3.6', '3.7', '3.8', '3.9']
         arch: ['x86', 'x64']
         qt_library: ['PySide2', 'PyQt5', 'PySide6', 'PyQt6']
+        exclude:
+          - arch: x86
+            qt_library: PySide6
+          - arch: x86
+            qt_library: PyQt6
     steps:
       - name: Checkout
         uses: actions/checkout@v2
