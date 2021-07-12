@@ -11,7 +11,6 @@ if typing.TYPE_CHECKING:
 import qtrio._python
 
 
-# TODO: maybe use a Protocol?
 class SignalProtocol(typing_extensions.Protocol):
     signal: typing.ClassVar["QtCore.Signal"]
 
