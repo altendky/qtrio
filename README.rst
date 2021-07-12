@@ -35,7 +35,7 @@ Note:
 The QTrio project's goal is to bring the friendly concurrency of Trio using Python's
 ``async`` and ``await`` syntax together with the GUI features of Qt to enable more
 correct code and a more pleasant developer experience.  QTrio is `permissively licensed
-<https://github.com/altendky/qtrio/blob/master/LICENSE>`__ to avoid introducing
+<https://github.com/altendky/qtrio/blob/main/LICENSE>`__ to avoid introducing
 restrictions beyond those of the underlying Python Qt library you choose.  Both PySide2
 and PyQt5 are supported.
 
@@ -177,11 +177,11 @@ really containing the activity.
    :alt: Repository
 
 .. _tests: https://github.com/altendky/qtrio/actions?query=branch%3Amaster
-.. |tests badge| image:: https://img.shields.io/github/workflow/status/altendky/qtrio/CI/master?color=seagreen&logo=GitHub-Actions&logoColor=whitesmoke
+.. |tests badge| image:: https://img.shields.io/github/workflow/status/altendky/qtrio/CI/main?color=seagreen&logo=GitHub-Actions&logoColor=whitesmoke
    :target: `tests`_
    :alt: Tests
 
 .. _coverage: https://codecov.io/gh/altendky/qtrio
-.. |coverage badge| image:: https://img.shields.io/codecov/c/github/altendky/qtrio/master?color=seagreen&logo=Codecov&logoColor=whitesmoke
+.. |coverage badge| image:: https://img.shields.io/codecov/c/github/altendky/qtrio/main?color=seagreen&logo=Codecov&logoColor=whitesmoke
    :target: `coverage`_
    :alt: Test coverage
