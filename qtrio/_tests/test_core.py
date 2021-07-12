@@ -347,7 +347,7 @@ def test_out_of_hints_raises_for_requested(testdir):
             pass
 
         with pytest.raises(qtrio.EventTypeRegistrationFailedError):
-            qtrio.register_requested_event_type(QtCore.QEvent.User)
+            qtrio.register_requested_event_type(QtCore.QEvent.Type.User)
     """
     testdir.makepyfile(test_file)
 
@@ -385,9 +385,9 @@ def test_requesting_available_event_type_succeeds(testdir):
 
 
     def test():
-        qtrio.register_requested_event_type(QtCore.QEvent.User)
+        qtrio.register_requested_event_type(QtCore.QEvent.Type.User)
 
-        assert qtrio.registered_event_type() == QtCore.QEvent.User
+        assert qtrio.registered_event_type() == QtCore.QEvent.Type.User
     """
     testdir.makepyfile(test_file)
 
@@ -1108,6 +1108,8 @@ def test_execute_manually(testdir):
     """Executing manually works."""
 
     test_file = r"""
+    import qts.util
+
     import qtrio
 
 
@@ -1123,7 +1125,7 @@ def test_execute_manually(testdir):
 
         assert not ran
 
-        runner.application.exec_()
+        qts.util.exec(runner.application)
 
         assert ran
     """

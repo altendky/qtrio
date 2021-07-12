@@ -18,15 +18,14 @@ def test_main(qtbot: pytestqt.qtbot.QtBot) -> None:
         output_dialog=output_dialog,
     )
 
-    main_object.setup()
-
-    qtbot.wait_for_window_shown(input_dialog)
+    with qtbot.wait_exposed(widget=input_dialog):
+        main_object.setup()
 
     [line_edit] = input_dialog.findChildren(QtWidgets.QLineEdit)
     line_edit.setText(text_to_enter)
-    input_dialog.accept()
 
-    qtbot.wait_for_window_shown(output_dialog)
+    with qtbot.wait_exposed(widget=output_dialog):
+        input_dialog.accept()
 
     output_text = output_dialog.text()
 
@@ -49,9 +48,8 @@ def test_main_cancelled(qtbot: pytestqt.qtbot.QtBot) -> None:
         output_dialog=output_dialog,
     )
 
-    main_object.setup()
-
-    qtbot.wait_for_window_shown(input_dialog)
+    with qtbot.wait_exposed(widget=input_dialog):
+        main_object.setup()
 
     [line_edit] = input_dialog.findChildren(QtWidgets.QLineEdit)
     line_edit.setText(text_to_enter)

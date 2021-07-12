@@ -39,7 +39,7 @@ async def test_get_integer_gets_value(qtbot: pytestqt.qtbot.QtBot) -> None:
             task_status.started()
 
         qtbot.keyClicks(dialog.edit_widget, str(test_value))
-        qtbot.mouseClick(dialog.accept_button, QtCore.Qt.LeftButton)
+        qtbot.mouseClick(dialog.accept_button, QtCore.Qt.MouseButton.LeftButton)
 
     test_value = 928
 
@@ -61,7 +61,7 @@ async def test_get_integer_raises_cancel_when_canceled(
             task_status.started()
 
         qtbot.keyClicks(dialog.edit_widget, "abc")
-        qtbot.mouseClick(dialog.reject_button, QtCore.Qt.LeftButton)
+        qtbot.mouseClick(dialog.reject_button, QtCore.Qt.MouseButton.LeftButton)
 
     async with trio.open_nursery() as nursery:
         await nursery.start(user)
@@ -80,7 +80,7 @@ async def test_get_integer_raises_for_invalid_input(
             task_status.started()
 
         qtbot.keyClicks(dialog.edit_widget, "abc")
-        qtbot.mouseClick(dialog.accept_button, QtCore.Qt.LeftButton)
+        qtbot.mouseClick(dialog.accept_button, QtCore.Qt.MouseButton.LeftButton)
 
     async with trio.open_nursery() as nursery:
         await nursery.start(user)
@@ -217,7 +217,7 @@ async def test_information_message_box(qtbot: pytestqt.qtbot.QtBot) -> None:
     dialog = qtrio.dialogs.create_message_box(
         title="Information",
         text=text,
-        icon=QtWidgets.QMessageBox.Information,
+        icon=QtWidgets.QMessageBox.Icon.Information,
     )
 
     async def user(task_status):
@@ -243,8 +243,11 @@ async def test_information_message_box_cancel(qtbot: pytestqt.qtbot.QtBot) -> No
     dialog = qtrio.dialogs.create_message_box(
         title="",
         text="",
-        icon=QtWidgets.QMessageBox.Information,
-        buttons=QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel,
+        icon=QtWidgets.QMessageBox.Icon.Information,
+        buttons=(
+            QtWidgets.QMessageBox.StandardButton.Ok
+            | QtWidgets.QMessageBox.StandardButton.Cancel
+        ),
     )
 
     async def user(task_status):

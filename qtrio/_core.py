@@ -14,7 +14,7 @@ import typing_extensions
 import async_generator
 import attr
 import outcome
-
+import qts.util
 import trio
 import trio.abc
 
@@ -607,7 +607,7 @@ class Runner:
         )
 
         if execute_application:
-            return_code = self.application.exec_()
+            return_code = qts.util.exec(self.application)
 
             self.outcomes = attr.evolve(
                 self.outcomes,
