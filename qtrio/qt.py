@@ -9,6 +9,13 @@ class ReenterEvent(QtCore.QEvent):
     """A proper ``ReenterEvent`` for reentering into the Qt host loop."""
 
     def __init__(self, fn: typing.Callable[[], object]):
+        if qtrio._core._reenter_event_type is None:
+            message = (
+                "The reenter event type must be registered before creating a reenter"
+                " event."
+            )
+            raise qtrio.InternalError(message)
+
         super().__init__(qtrio._core._reenter_event_type)
         self.fn = fn
 

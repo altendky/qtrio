@@ -1,7 +1,7 @@
 import math
 import os
 import pathlib
-import sys
+import typing
 
 import pytestqt.qtbot
 from qts import QtCore
@@ -29,6 +29,18 @@ import qtrio._qt
 )
 def builder_fixture(request):
     yield request.param
+
+
+@pytest.fixture(
+    name="optional_parent",
+    params=[False, True],
+    ids=["No parent", "Widget parent"],
+)
+def optional_parent_fixture(request, qapp):
+    if request.param:
+        return QtWidgets.QWidget()
+
+    return None
 
 
 async def test_get_integer_gets_value(qtbot: pytestqt.qtbot.QtBot) -> None:
@@ -322,16 +334,23 @@ async def test_text_input_dialog_cancel(qtbot: pytestqt.qtbot.QtBot) -> None:
                 await dialog.wait()
 
 
-async def test_progress_dialog_dot_dot_dot(qtbot: pytestqt.qtbot.QtBot) -> None:
-    dialog = qtrio.dialogs.create_progress_dialog()
+async def test_progress_dialog_dot_dot_dot(
+    qtbot: pytestqt.qtbot.QtBot, optional_parent: typing.Optional[QtWidgets.QWidget]
+) -> None:
+    dialog = qtrio.dialogs.create_progress_dialog(parent=optional_parent)
 
     with qtrio._qt.connection(signal=dialog.shown, slot=qtbot.addWidget):
         async with dialog.manage():
             pass
 
 
-async def test_progress_dialog_cancel_raises(qtbot: pytestqt.qtbot.QtBot) -> None:
-    dialog = qtrio.dialogs.create_progress_dialog(cancel_button_text="cancel here")
+async def test_progress_dialog_cancel_raises(
+    qtbot: pytestqt.qtbot.QtBot, optional_parent: typing.Optional[QtWidgets.QWidget]
+) -> None:
+    dialog = qtrio.dialogs.create_progress_dialog(
+        cancel_button_text="cancel here",
+        parent=optional_parent,
+    )
 
     with qtrio._qt.connection(signal=dialog.shown, slot=qtbot.addWidget):
         with pytest.raises(qtrio.UserCancelledError):
@@ -342,8 +361,12 @@ async def test_progress_dialog_cancel_raises(qtbot: pytestqt.qtbot.QtBot) -> Non
 
 async def test_progress_dialog_cancel_cancels_context(
     qtbot: pytestqt.qtbot.QtBot,
+    optional_parent: typing.Optional[QtWidgets.QWidget],
 ) -> None:
-    dialog = qtrio.dialogs.create_progress_dialog(cancel_button_text="cancel here")
+    dialog = qtrio.dialogs.create_progress_dialog(
+        cancel_button_text="cancel here",
+        parent=optional_parent,
+    )
 
     cancelled = False
 
