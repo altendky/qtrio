@@ -5,6 +5,7 @@ import typing
 import outcome
 import pytest
 from qts import QtCore
+from qts import QtWidgets
 import qtrio
 import qtrio._core
 import trio
@@ -625,6 +626,28 @@ def test_failed_hosted_trio_exception_on_stdout(testdir):
     )
 
 
+def test_qobject_destroyed_signal_equality(qapp):
+    """Verify that the underlying signal objects can be compared by equality.
+
+    https://bugreports.qt.io/browse/PYSIDE-1431
+    """
+    q_object = QtCore.QObject()
+
+    assert q_object.destroyed == q_object.destroyed
+
+
+def test_qpushbutton_clicked_signal_equality(qapp):
+    """Verify that the underlying signal objects can be compared by equality even when
+    the signal is inherited.
+
+    https://bugreports.qt.io/browse/PYSIDE-1431
+    """
+    QtWidgets.QPushButton.clicked = QtCore.Signal()
+    button = QtWidgets.QPushButton()
+
+    assert button.clicked == button.clicked
+
+
 def test_emissions_equal():
     """:class:`Emission` objects created from the same :class:`QtCore.Signal` instance
     and args are equal even if the attributes are different instances.
@@ -638,6 +661,18 @@ def test_emissions_equal():
     assert qtrio._core.Emission(
         signal=instance.signal, args=(13,)
     ) == qtrio._core.Emission(signal=instance.signal, args=(13,))
+
+
+def test_emissions_for_buttons():
+    """:class:`Emission` objects created from the same :class:`QtWidgets.QPushButton`
+    instance and args are equal even if the attributes are different instances.
+    """
+
+    instance = QtWidgets.QPushButton()
+
+    assert qtrio._core.Emission(
+        signal=instance.clicked, args=(13,)
+    ) == qtrio._core.Emission(signal=instance.clicked, args=(13,))
 
 
 def test_emissions_unequal_by_signal():
