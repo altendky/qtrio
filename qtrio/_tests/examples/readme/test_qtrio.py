@@ -1,13 +1,13 @@
 import trio
 
-import qtrio.examples.readme.qtrio
+import qtrio.examples.readme.qtrio_example
 
 
 async def test_main():
     text_to_enter = "everyone"
 
     async with trio.open_nursery() as nursery:
-        dialogs = await nursery.start(qtrio.examples.readme.qtrio.main)
+        dialogs = await nursery.start(qtrio.examples.readme.qtrio_example.main)
 
         assert dialogs.input.line_edit is not None
         dialogs.input.line_edit.setText(text_to_enter)
@@ -32,7 +32,7 @@ async def test_main_cancelled():
         assert False, "Output dialog was shown"  # pragma: no cover
 
     async with trio.open_nursery() as nursery:
-        dialogs = await nursery.start(async_fn=qtrio.examples.readme.qtrio.main)
+        dialogs = await nursery.start(async_fn=qtrio.examples.readme.qtrio_example.main)
 
         async with qtrio.open_emissions_nursery() as emissions_nursery:
             emissions_nursery.connect_sync(
