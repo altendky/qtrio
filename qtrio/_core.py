@@ -4,23 +4,20 @@ Attributes:
     _reenter_event_type: The event type enumerator for our reenter events.
 """
 import contextlib
-import functools
 import math
 import sys
-import traceback
 import typing
 import typing_extensions
 
 import async_generator
 import attr
 import outcome
-
+import qts
 import trio
 import trio.abc
 
 import qtrio
 import qtrio._qt
-import qtrio._util
 
 
 if typing.TYPE_CHECKING:
@@ -64,7 +61,17 @@ def register_event_type() -> None:
         raise qtrio.EventTypeRegistrationFailedError()
 
     # assign to the global
-    _reenter_event_type = QtCore.QEvent.Type(event_hint)
+    # TODO: https://bugreports.qt.io/browse/PYSIDE-1347
+    if qts.is_pyqt_5_wrapper:
+        _reenter_event_type = QtCore.QEvent.Type(event_hint)
+    elif qts.is_pyside_5_wrapper:
+        _reenter_event_type = typing.cast(
+            typing.Callable[[int], QtCore.QEvent.Type], QtCore.QEvent.Type
+        )(event_hint)
+    else:  # pragma: no cover
+        raise qtrio.InternalError(
+            "You should not be here but you are running neither PyQt5 nor PySide2.",
+        )
 
 
 def register_requested_event_type(
@@ -90,7 +97,18 @@ def register_requested_event_type(
     if _reenter_event_type is not None:
         raise qtrio.EventTypeAlreadyRegisteredError()
 
-    event_hint = QtCore.QEvent.registerEventType(requested_value)
+    # TODO: https://bugreports.qt.io/browse/PYSIDE-1468
+    if qts.is_pyqt_5_wrapper:
+        event_hint = QtCore.QEvent.registerEventType(requested_value)
+    elif qts.is_pyside_5_wrapper:
+        event_hint = typing.cast(
+            typing.Callable[[typing.Union[int, QtCore.QEvent.Type]], int],
+            QtCore.QEvent.registerEventType,
+        )(requested_value)
+    else:  # pragma: no cover
+        raise qtrio.InternalError(
+            "You should not be here but you are running neither PyQt5 nor PySide2.",
+        )
 
     if event_hint == -1:
         raise qtrio.EventTypeRegistrationFailedError()
@@ -100,7 +118,17 @@ def register_requested_event_type(
         )
 
     # assign to the global
-    _reenter_event_type = QtCore.QEvent.Type(event_hint)
+    # TODO: https://bugreports.qt.io/browse/PYSIDE-1347
+    if qts.is_pyqt_5_wrapper:
+        _reenter_event_type = QtCore.QEvent.Type(event_hint)
+    elif qts.is_pyside_5_wrapper:
+        _reenter_event_type = typing.cast(
+            typing.Callable[[int], QtCore.QEvent.Type], QtCore.QEvent.Type
+        )(event_hint)
+    else:  # pragma: no cover
+        raise qtrio.InternalError(
+            "You should not be here but you are running neither PyQt5 nor PySide2.",
+        )
 
 
 async def wait_signal(signal: "QtCore.SignalInstance") -> typing.Tuple[object, ...]:
@@ -509,7 +537,21 @@ def maybe_build_application() -> "QtGui.QGuiApplication":
     """
     from qts import QtWidgets  # noqa: F811
 
-    maybe_application = QtWidgets.QApplication.instance()
+    application: QtCore.QCoreApplication
+
+    # TODO: https://bugreports.qt.io/browse/PYSIDE-1467
+    if qts.is_pyqt_5_wrapper:
+        maybe_application = QtWidgets.QApplication.instance()
+    elif qts.is_pyside_5_wrapper:
+        maybe_application = typing.cast(
+            typing.Optional["QtCore.QCoreApplication"],
+            QtWidgets.QApplication.instance(),
+        )
+    else:  # pragma: no cover
+        raise qtrio.InternalError(
+            "You should not be here but you are running neither PyQt5 nor PySide2.",
+        )
+
     if maybe_application is None:
         application = QtWidgets.QApplication(sys.argv[1:])
     else:
@@ -634,8 +676,8 @@ class Runner:
         async_fn: typing.Callable[..., typing.Awaitable[object]],
         args: typing.Tuple[object, ...],
     ) -> object:
-        """Will be run as the main async function by the Trio guest.  It creates a
-        cancellation scope to be cancelled when
+        """Will be run as the main async function by the Trio guest.  If it is a GUI
+        application then it creates a cancellation scope to be cancelled when
         :meth:`QtGui.QGuiApplication.lastWindowClosed` is emitted.  Within this scope
         the application's ``async_fn`` will be run and passed ``args``.
 
@@ -647,11 +689,16 @@ class Runner:
         Returns:
             The result returned by `async_fn`.
         """
+        from qts import QtGui
+
         result: object = None
 
         with trio.CancelScope() as self.cancel_scope:
             with contextlib.ExitStack() as exit_stack:
-                if self.application.quitOnLastWindowClosed():
+                if (
+                    isinstance(self.application, QtGui.QGuiApplication)
+                    and self.application.quitOnLastWindowClosed()
+                ):
                     exit_stack.enter_context(
                         qtrio._qt.connection(
                             signal=self.application.lastWindowClosed,
