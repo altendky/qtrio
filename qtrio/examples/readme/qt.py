@@ -1,6 +1,5 @@
 import typing
 
-from qts import QtCore
 from qts import QtWidgets
 
 
@@ -24,9 +23,12 @@ def create_output() -> QtWidgets.QMessageBox:
 class Main:
     def __init__(
         self,
+        application: QtWidgets.QApplication,
         input_dialog: typing.Optional[QtWidgets.QInputDialog] = None,
         output_dialog: typing.Optional[QtWidgets.QMessageBox] = None,
     ):
+        self.application = application
+
         if input_dialog is None:  # pragma: no cover
             input_dialog = create_input()
 
@@ -51,16 +53,16 @@ class Main:
         self.output_dialog.show()
 
     def input_rejected(self) -> None:
-        QtCore.QCoreApplication.instance().quit()
+        self.application.quit()
 
     def output_finished(self) -> None:
-        QtCore.QCoreApplication.instance().quit()
+        self.application.quit()
 
 
 def main() -> None:  # pragma: no cover
     application = QtWidgets.QApplication([])
     application.setQuitOnLastWindowClosed(False)
-    main_object = Main()
+    main_object = Main(application=application)
     main_object.setup()
     application.exec_()
 

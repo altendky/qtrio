@@ -79,13 +79,16 @@ kind of explodes when you shift into a classic Qt GUI setup.
     class Main:
         def __init__(
             self,
+            application: QtWidgets.QApplication,
             input_dialog: typing.Optional[QtWidgets.QInputDialog] = None,
             output_dialog: typing.Optional[QtWidgets.QMessageBox] = None,
         ):
-            if input_dialog is None:  # pragma: nocover
+            self.application = application
+
+            if input_dialog is None:  # pragma: no cover
                 input_dialog = create_input()
 
-            if output_dialog is None:  # pragma: nocover
+            if output_dialog is None:  # pragma: no cover
                 output_dialog = create_output()
 
             self.input_dialog = input_dialog
@@ -106,10 +109,10 @@ kind of explodes when you shift into a classic Qt GUI setup.
             self.output_dialog.show()
 
         def input_rejected(self) -> None:
-            QtCore.QCoreApplication.instance().quit()
+            self.application.quit()
 
         def output_finished(self) -> None:
-            QtCore.QCoreApplication.instance().quit()
+            self.application.quit()
 
 The third example, below, shows how using ``async`` and ``await`` allows us to
 return to the more concise and clear description of the sequenced activity.

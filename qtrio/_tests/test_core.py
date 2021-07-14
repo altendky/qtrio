@@ -54,6 +54,26 @@ def test_reenter_event_triggers_in_main_thread(qapp):
 timeout = 40
 
 
+def test_reenter_event_raises_if_type_not_registered(testdir):
+    test_file = r"""
+    import pytest
+
+    import qtrio
+    import qtrio.qt
+
+    def test():
+        with pytest.raises(
+            qtrio.InternalError,
+            match="reenter event type must be registered",
+        ):
+            qtrio.qt.ReenterEvent(fn=lambda: None)
+    """
+    testdir.makepyfile(test_file)
+
+    result = testdir.runpytest_subprocess(timeout=timeout)
+    result.assert_outcomes(passed=1)
+
+
 def test_run_returns_value(testdir):
     """:func:`qtrio.run()` returns the result of the passed async function."""
 
