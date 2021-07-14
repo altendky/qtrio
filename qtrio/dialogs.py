@@ -5,7 +5,7 @@ import typing
 
 import async_generator
 import attr
-from qtpy import QtWidgets
+from qts import QtWidgets
 import trio
 import trio_typing
 
@@ -106,7 +106,7 @@ def _dialog_button_box_buttons_by_role(
 ) -> typing.Mapping[QtWidgets.QDialogButtonBox.ButtonRole, QtWidgets.QAbstractButton]:
     """Create a mapping from button roles to their corresponding buttons."""
 
-    hits = dialog.findChildren(QtWidgets.QDialogButtonBox)
+    hits = list(dialog.findChildren(QtWidgets.QDialogButtonBox))
 
     if len(hits) == 0:
         return {}
@@ -128,9 +128,9 @@ class IntegerDialog:
     """The actual dialog widget instance."""
     edit_widget: typing.Optional[QtWidgets.QLineEdit] = None
     """The line edit that the user will enter the input into."""
-    accept_button: typing.Optional[QtWidgets.QPushButton] = None
+    accept_button: typing.Optional[QtWidgets.QAbstractButton] = None
     """The entry confirmation button."""
-    reject_button: typing.Optional[QtWidgets.QPushButton] = None
+    reject_button: typing.Optional[QtWidgets.QAbstractButton] = None
     """The input cancellation button."""
 
     result: typing.Optional[int] = None
@@ -222,9 +222,9 @@ class TextInputDialog:
 
     dialog: typing.Optional[QtWidgets.QInputDialog] = None
     """The actual dialog widget instance."""
-    accept_button: typing.Optional[QtWidgets.QPushButton] = None
+    accept_button: typing.Optional[QtWidgets.QAbstractButton] = None
     """The entry confirmation button."""
-    reject_button: typing.Optional[QtWidgets.QPushButton] = None
+    reject_button: typing.Optional[QtWidgets.QAbstractButton] = None
     """The input cancellation button."""
     line_edit: typing.Optional[QtWidgets.QLineEdit] = None
     """The line edit that the user will enter the input into."""
@@ -340,9 +340,9 @@ class FileDialog:
 
     dialog: typing.Optional[QtWidgets.QFileDialog] = None
     """The actual dialog widget instance."""
-    accept_button: typing.Optional[QtWidgets.QPushButton] = None
+    accept_button: typing.Optional[QtWidgets.QAbstractButton] = None
     """The confirmation button."""
-    reject_button: typing.Optional[QtWidgets.QPushButton] = None
+    reject_button: typing.Optional[QtWidgets.QAbstractButton] = None
     """The cancellation button."""
     file_name_line_edit: typing.Optional[QtWidgets.QLineEdit] = None
     """The file name line edit widget."""
@@ -389,8 +389,11 @@ class FileDialog:
             # https://github.com/altendky/qtrio/issues/28
             options |= QtWidgets.QFileDialog.DontUseNativeDialog
 
-        self.dialog = QtWidgets.QFileDialog(
-            parent=self.parent, options=options, **extras
+        # TODO: huh, so ``options`` is entirely undocumented...  and hints an ``Any``
+        #       return.
+        self.dialog = typing.cast(
+            QtWidgets.QFileDialog,
+            QtWidgets.QFileDialog(parent=self.parent, options=options, **extras),
         )
 
         if self.default_file is not None:
@@ -491,6 +494,12 @@ def create_file_open_dialog(
     )
 
 
+message_box_standard_button_union = typing.Union[
+    QtWidgets.QMessageBox.StandardButton,
+    QtWidgets.QMessageBox.StandardButtons,
+]
+
+
 @check_dialog_protocol
 @attr.s(auto_attribs=True)
 class MessageBox:
@@ -504,14 +513,14 @@ class MessageBox:
     """The message text shown inside the dialog."""
     icon: QtWidgets.QMessageBox.Icon
     """The icon shown inside the dialog."""
-    buttons: QtWidgets.QMessageBox.StandardButtons
+    buttons: message_box_standard_button_union
     """The buttons to be shown in the dialog."""
     parent: typing.Optional[QtWidgets.QWidget] = None
     """The parent widget for the dialog."""
 
     dialog: typing.Optional[QtWidgets.QMessageBox] = None
     """The actual dialog widget instance."""
-    accept_button: typing.Optional[QtWidgets.QPushButton] = None
+    accept_button: typing.Optional[QtWidgets.QAbstractButton] = None
     """The button to accept the dialog."""
 
     result: typing.Optional[trio.Path] = None
@@ -528,7 +537,11 @@ class MessageBox:
         self.result = None
 
         self.dialog = QtWidgets.QMessageBox(
-            self.icon, self.title, self.text, self.buttons, self.parent
+            self.icon,
+            self.title,
+            self.text,
+            self.buttons,
+            self.parent,
         )
 
         # TODO: adjust so we can use a context manager?
@@ -572,7 +585,7 @@ def create_message_box(
     title: str = "",
     text: str = "",
     icon: QtWidgets.QMessageBox.Icon = QtWidgets.QMessageBox.Information,
-    buttons: QtWidgets.QMessageBox.StandardButtons = QtWidgets.QMessageBox.Ok,
+    buttons: message_box_standard_button_union = QtWidgets.QMessageBox.Ok,
     parent: typing.Optional[QtWidgets.QWidget] = None,
 ) -> MessageBox:
     """Create a message box.
@@ -621,14 +634,13 @@ class ProgressDialog:
     def setup(self) -> None:
         """See :meth:`qtrio.dialogs.BasicDialogProtocol.setup`."""
 
-        self.final_value = None
-
         self.dialog = QtWidgets.QProgressDialog()
         self.dialog.setWindowTitle(self.title)
         self.dialog.setLabelText(self.text)
         self.dialog.setMinimum(self.minimum)
         self.dialog.setMaximum(self.maximum)
-        self.dialog.setParent(self.parent)
+        if self.parent is not None:
+            self.dialog.setParent(self.parent)
 
         # TODO: adjust so we can use a context manager?
         self.dialog.finished.connect(self.finished)

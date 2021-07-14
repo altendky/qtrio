@@ -43,7 +43,7 @@ python -m pip freeze
 
 if [ "$CHECK_DOCS" = "1" ]; then
     git fetch --deepen=100
-    git fetch --depth=100 origin master
+    git fetch --depth=100 origin main
     # https://github.com/twisted/towncrier/pull/271
     towncrier build --yes --name QTrio  # catch errors in newsfragments
     cd docs
@@ -53,7 +53,10 @@ if [ "$CHECK_DOCS" = "1" ]; then
 elif [ "$CHECK_FORMATTING" = "1" ]; then
     source check.sh
 elif [ "$CHECK_TYPE_HINTS" = "1" ]; then
-    mypy --package qtrio
+    if [[ "${INSTALL_EXTRAS,,}" == *"pyside2"* ]]; then
+        python -m pip install --upgrade pyside2
+    fi
+    mypy --package qtrio $(qts mypy args)
 elif [ "$CHECK_MANIFEST" = "1" ]; then
     check-manifest
 else

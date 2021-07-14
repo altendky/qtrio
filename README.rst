@@ -35,7 +35,7 @@ Note:
 The QTrio project's goal is to bring the friendly concurrency of Trio using Python's
 ``async`` and ``await`` syntax together with the GUI features of Qt to enable more
 correct code and a more pleasant developer experience.  QTrio is `permissively licensed
-<https://github.com/altendky/qtrio/blob/master/LICENSE>`__ to avoid introducing
+<https://github.com/altendky/qtrio/blob/main/LICENSE>`__ to avoid introducing
 restrictions beyond those of the underlying Python Qt library you choose.  Both PySide2
 and PyQt5 are supported.
 
@@ -79,13 +79,16 @@ kind of explodes when you shift into a classic Qt GUI setup.
     class Main:
         def __init__(
             self,
+            application: QtWidgets.QApplication,
             input_dialog: typing.Optional[QtWidgets.QInputDialog] = None,
             output_dialog: typing.Optional[QtWidgets.QMessageBox] = None,
         ):
-            if input_dialog is None:  # pragma: nocover
+            self.application = application
+
+            if input_dialog is None:  # pragma: no cover
                 input_dialog = create_input()
 
-            if output_dialog is None:  # pragma: nocover
+            if output_dialog is None:  # pragma: no cover
                 output_dialog = create_output()
 
             self.input_dialog = input_dialog
@@ -106,10 +109,10 @@ kind of explodes when you shift into a classic Qt GUI setup.
             self.output_dialog.show()
 
         def input_rejected(self) -> None:
-            QtCore.QCoreApplication.instance().quit()
+            self.application.quit()
 
         def output_finished(self) -> None:
-            QtCore.QCoreApplication.instance().quit()
+            self.application.quit()
 
 The third example, below, shows how using ``async`` and ``await`` allows us to
 return to the more concise and clear description of the sequenced activity.
@@ -120,7 +123,7 @@ really containing the activity.
 
     # A complete runnable source file with imports and helpers is available in
     # either the documentation readme examples or in the repository under
-    # qtrio/examples/readme/qtrio.py.
+    # qtrio/examples/readme/qtrio_example.py.
 
     async def main(
         *,
@@ -174,11 +177,11 @@ really containing the activity.
    :alt: Repository
 
 .. _tests: https://github.com/altendky/qtrio/actions?query=branch%3Amaster
-.. |tests badge| image:: https://img.shields.io/github/workflow/status/altendky/qtrio/CI/master?color=seagreen&logo=GitHub-Actions&logoColor=whitesmoke
+.. |tests badge| image:: https://img.shields.io/github/workflow/status/altendky/qtrio/CI/main?color=seagreen&logo=GitHub-Actions&logoColor=whitesmoke
    :target: `tests`_
    :alt: Tests
 
 .. _coverage: https://codecov.io/gh/altendky/qtrio
-.. |coverage badge| image:: https://img.shields.io/codecov/c/github/altendky/qtrio/master?color=seagreen&logo=Codecov&logoColor=whitesmoke
+.. |coverage badge| image:: https://img.shields.io/codecov/c/github/altendky/qtrio/main?color=seagreen&logo=Codecov&logoColor=whitesmoke
    :target: `coverage`_
    :alt: Test coverage

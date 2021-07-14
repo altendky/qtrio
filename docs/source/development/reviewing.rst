@@ -41,4 +41,4 @@ Automatic checks
 * Code is formatted per `Black <https://black.readthedocs.io/en/stable/>`_
 * Code passes `flake8 <https://flake8.pycqa.org/en/latest/>`_ checks
 * Docs build successfully including newsfragment, if present
-* Branch is up to date with master
+* Branch is up to date with main

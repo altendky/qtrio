@@ -3,10 +3,16 @@
 import contextlib
 import typing
 
-from qtpy import QtCore
+import typing_extensions
+
+if typing.TYPE_CHECKING:
+    from qts import QtCore
 
 import qtrio._python
-import qtrio._util
+
+
+class SignalProtocol(typing_extensions.Protocol):
+    signal: typing.ClassVar["QtCore.Signal"]
 
 
 class Signal:
@@ -24,13 +30,28 @@ class Signal:
 
     _attribute_name: typing.ClassVar[str] = ""
 
-    def __init__(self, *args: object, **kwargs: object) -> None:
+    def __init__(self, *types: type, name: typing.Optional[str] = None) -> None:
+        from qts import QtCore
+
         class _SignalQObject(QtCore.QObject):
-            signal = QtCore.Signal(*args, **kwargs)
+            if name is None:
+                signal = QtCore.Signal(*types)
+            else:
+                signal = QtCore.Signal(*types, name=name)
 
-        self.object_cls = _SignalQObject
+        self.object_cls: typing.Type[SignalProtocol] = _SignalQObject
 
-    def __get__(self, instance: object, owner: object) -> qtrio._util.SignalInstance:
+    @typing.overload
+    def __get__(self, instance: None, owner: object) -> "Signal":
+        ...
+
+    @typing.overload
+    def __get__(self, instance: object, owner: object) -> "QtCore.SignalInstance":
+        ...
+
+    def __get__(
+        self, instance: object, owner: object
+    ) -> typing.Union["Signal", "QtCore.SignalInstance"]:
         if instance is None:
             return self
 
@@ -38,7 +59,7 @@ class Signal:
 
         return o.signal
 
-    def object(self, instance: object) -> QtCore.QObject:
+    def object(self, instance: object) -> "QtCore.QObject":
         """Get the :class:`QtCore.QObject` that hosts the real signal.  This can be
         called such as ``type(instance).signal_name.object(instance)``.  Yes this is
         non-obvious but you have to do something special to get around the
@@ -51,13 +72,15 @@ class Signal:
         Returns:
             The signal-hosting :class:`QtCore.QObject`.
         """
-        d = getattr(instance, self._attribute_name, None)
+        d: typing.Optional[
+            typing.Dict[typing.Type[SignalProtocol], QtCore.QObject]
+        ] = getattr(instance, self._attribute_name, None)
 
         if d is None:
             d = {}
             setattr(instance, self._attribute_name, d)
 
-        o = d.get(self.object_cls)
+        o: typing.Optional[QtCore.QObject] = d.get(self.object_cls)
         if o is None:
             o = self.object_cls()
             d[self.object_cls] = o
@@ -70,9 +93,13 @@ Signal._attribute_name = qtrio._python.identifier_path(Signal)
 
 @contextlib.contextmanager
 def connection(
-    signal: qtrio._util.SignalInstance, slot: typing.Callable[..., object]
+    signal: "QtCore.SignalInstance", slot: typing.Callable[..., object]
 ) -> typing.Generator[
-    typing.Union[QtCore.QMetaObject.Connection, typing.Callable[..., object]],
+    typing.Union[
+        "QtCore.QMetaObject.Connection",
+        typing.Callable[..., object],
+        "QtCore.SignalInstance",  # TODO: https://bugreports.qt.io/browse/PYSIDE-1334
+    ],
     None,
     None,
 ]:
@@ -88,9 +115,9 @@ def connection(
     # class.  https://bugreports.qt.io/browse/PYSIDE-1422
     this_connection = signal.connect(slot)
 
-    import qtpy
+    import qts
 
-    if qtpy.PYSIDE2:
+    if qts.is_pyside_5_wrapper or qts.is_pyside_6_wrapper:
         # PySide2 presently returns a bool rather than a QMetaObject.Connection
         # https://bugreports.qt.io/browse/PYSIDE-1334
         this_connection = slot
@@ -100,7 +127,7 @@ def connection(
     finally:
         expected_exception: typing.Type[Exception]
 
-        if qtpy.PYSIDE2:
+        if qts.is_pyside_5_wrapper or qts.is_pyside_6_wrapper:
             expected_exception = RuntimeError
         else:
             expected_exception = TypeError
