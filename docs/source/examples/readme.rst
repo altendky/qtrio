@@ -16,4 +16,4 @@ Qt
 QTrio
 -----
 
-.. literalinclude:: ../../../qtrio/examples/readme/qtrio.py
+.. literalinclude:: ../../../qtrio/examples/readme/qtrio_example.py

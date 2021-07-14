@@ -120,7 +120,7 @@ really containing the activity.
 
     # A complete runnable source file with imports and helpers is available in
     # either the documentation readme examples or in the repository under
-    # qtrio/examples/readme/qtrio.py.
+    # qtrio/examples/readme/qtrio_example.py.
 
     async def main(
         *,
