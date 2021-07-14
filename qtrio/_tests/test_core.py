@@ -662,7 +662,6 @@ def test_qpushbutton_clicked_signal_equality(qapp):
 
     https://bugreports.qt.io/browse/PYSIDE-1431
     """
-    QtWidgets.QPushButton.clicked = QtCore.Signal()
     button = QtWidgets.QPushButton()
 
     assert button.clicked == button.clicked

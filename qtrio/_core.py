@@ -63,16 +63,12 @@ def register_event_type() -> None:
 
     # assign to the global
     # TODO: https://bugreports.qt.io/browse/PYSIDE-1347
-    if qts.is_pyqt_5_wrapper:
-        _reenter_event_type = QtCore.QEvent.Type(event_hint)
-    elif qts.is_pyside_5_wrapper:
+    if qts.is_pyside_5_wrapper:
         _reenter_event_type = typing.cast(
             typing.Callable[[int], QtCore.QEvent.Type], QtCore.QEvent.Type
         )(event_hint)
-    else:  # pragma: no cover
-        raise qtrio.InternalError(
-            "You should not be here but you are running neither PyQt5 nor PySide2.",
-        )
+    else:
+        _reenter_event_type = QtCore.QEvent.Type(event_hint)
 
 
 def register_requested_event_type(
@@ -99,17 +95,13 @@ def register_requested_event_type(
         raise qtrio.EventTypeAlreadyRegisteredError()
 
     # TODO: https://bugreports.qt.io/browse/PYSIDE-1468
-    if qts.is_pyqt_5_wrapper:
-        event_hint = QtCore.QEvent.registerEventType(requested_value)
-    elif qts.is_pyside_5_wrapper:
+    if qts.is_pyside_5_wrapper:
         event_hint = typing.cast(
             typing.Callable[[typing.Union[int, QtCore.QEvent.Type]], int],
             QtCore.QEvent.registerEventType,
         )(requested_value)
-    else:  # pragma: no cover
-        raise qtrio.InternalError(
-            "You should not be here but you are running neither PyQt5 nor PySide2.",
-        )
+    else:
+        event_hint = QtCore.QEvent.registerEventType(requested_value)
 
     if event_hint == -1:
         raise qtrio.EventTypeRegistrationFailedError()
@@ -120,16 +112,12 @@ def register_requested_event_type(
 
     # assign to the global
     # TODO: https://bugreports.qt.io/browse/PYSIDE-1347
-    if qts.is_pyqt_5_wrapper:
-        _reenter_event_type = QtCore.QEvent.Type(event_hint)
-    elif qts.is_pyside_5_wrapper:
+    if qts.is_pyside_5_wrapper:
         _reenter_event_type = typing.cast(
             typing.Callable[[int], QtCore.QEvent.Type], QtCore.QEvent.Type
         )(event_hint)
-    else:  # pragma: no cover
-        raise qtrio.InternalError(
-            "You should not be here but you are running neither PyQt5 nor PySide2.",
-        )
+    else:
+        _reenter_event_type = QtCore.QEvent.Type(event_hint)
 
 
 async def wait_signal(signal: "QtCore.SignalInstance") -> typing.Tuple[object, ...]:
@@ -541,17 +529,13 @@ def maybe_build_application() -> "QtGui.QGuiApplication":
     application: QtCore.QCoreApplication
 
     # TODO: https://bugreports.qt.io/browse/PYSIDE-1467
-    if qts.is_pyqt_5_wrapper:
-        maybe_application = QtWidgets.QApplication.instance()
-    elif qts.is_pyside_5_wrapper:
+    if qts.is_pyside_5_wrapper:
         maybe_application = typing.cast(
             typing.Optional["QtCore.QCoreApplication"],
             QtWidgets.QApplication.instance(),
         )
-    else:  # pragma: no cover
-        raise qtrio.InternalError(
-            "You should not be here but you are running neither PyQt5 nor PySide2.",
-        )
+    else:
+        maybe_application = QtWidgets.QApplication.instance()
 
     if maybe_application is None:
         application = QtWidgets.QApplication(sys.argv[1:])
