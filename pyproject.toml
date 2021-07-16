@@ -1,3 +1,13 @@
+[tool.black]
+target-version =  ['py36', 'py37', 'py38']
+include = '''
+^/(
+    setup.py
+    | (qtrio|docs)/.*\.pyi?
+)$
+'''
+exclude = ''
+
 [build-system]
 requires = [
     "setuptools >= 47.3.1",

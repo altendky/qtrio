@@ -11,6 +11,10 @@ from ._exceptions import (
     EventTypeAlreadyRegisteredError,
     ReturnCodeError,
     RunnerTimedOutError,
+    UserCancelledError,
+    InvalidInputError,
+    InternalError,
+    DialogNotActiveError,
 )
 
 from ._core import (
@@ -27,4 +31,4 @@ from ._core import (
     register_requested_event_type,
 )
 
-from ._pytest import host
+from ._qt import Signal

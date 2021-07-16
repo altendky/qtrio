@@ -15,7 +15,7 @@ You can run ``pytest``, ``black``, and ``sphinx`` directly from your own install
 
    python -m venv testvenv
    testvenv/bin/pip install --upgrade pip setuptools wheel
-   testvenv/bin/pip install --editable .[pyside2,checks,docs,tests]
+   testvenv/bin/pip install --editable .[pyside2,p_checks,p_docs,p_tests]
    testvenv/bin/pytest --pyargs qtrio
 
 The CI test script, ``ci.sh``, in the project root will run ``pytest`` with ``coverage``
@@ -34,7 +34,7 @@ Automatic code reformatting is handled by ``black``.
    python -m venv testvenv
    testvenv/bin/pip install --upgrade pip setuptools wheel
    testvenv/bin/pip install black
-   testvenv/bin/black setup.py docs/ qtrio/
+   testvenv/bin/black .
 
 Linting is handled by ``flake8``.
 
@@ -51,7 +51,7 @@ The documentation can be built with ``sphinx``.
 
    python -m venv testvenv
    testvenv/bin/pip install --upgrade pip setuptools wheel
-   testvenv/bin/pip install --editable .[pyside2,docs]
+   testvenv/bin/pip install --editable .[pyside2,p_docs]
    source testenv/bin/activate
    cd docs/
    make html --always-make

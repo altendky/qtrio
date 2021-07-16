@@ -3,12 +3,12 @@ name: CI
 on:
   push:
     branches:
-      - master
+      - main
     tags:
       - v*
   pull_request:
     branches:
-      - "*"
+      - "**"
   schedule:
     # Daily at 05:47
     - cron: '47 5 * * *'
@@ -32,7 +32,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Setup python
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v2
         with:
           python-version: '${{ matrix.python }}'
       - name: Build
@@ -60,17 +60,28 @@ jobs:
           - python: '3.8'
             check_docs: '1'
             name: 'Check docs'
+            qt_library: 'PySide2'
           - python: '3.8'
             check_formatting: '1'
             name: 'Check formatting'
+            qt_library: 'PySide2'
           - python: '3.8'
             check_type_hints: '1'
-            name: 'Check type hints'
+            name: 'Check type hints (PySide2)'
+            qt_library: 'PySide2'
+          - python: '3.8'
+            check_type_hints: '1'
+            name: 'Check type hints (PyQt5)'
+            qt_library: 'PyQt5'
+          - python: '3.8'
+            check_manifest: '1'
+            name: 'Check manifest'
+            qt_library: 'PySide2'
     steps:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Setup python
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v2
         with:
           python-version: '${{ matrix.python }}'
       - name: Run tests
@@ -79,11 +90,12 @@ jobs:
           CHECK_DOCS: '${{ matrix.check_docs }}'
           CHECK_FORMATTING: '${{ matrix.check_formatting }}'
           CHECK_TYPE_HINTS: '${{ matrix.check_type_hints }}'
+          CHECK_MANIFEST: '${{ matrix.check_manifest }}'
           # Should match 'name:' up above
           JOB_NAME: '${{ matrix.name }}'
           # TODO: needs some Qt library but I'm not clear the implications of
           #       choosing one over the other
-          INSTALL_EXTRAS: '[pyside2,checks,docs]'
+          INSTALL_EXTRAS: '[${{ matrix.qt_library }},p_checks,p_docs]'
 
   Windows:
     name: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_library }})'
@@ -92,16 +104,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.6', '3.7', '3.8']
+        python: ['3.6', '3.7', '3.8', '3.9']
         arch: ['x86', 'x64']
         qt_library: ['PyQt5', 'PySide2']
     steps:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Setup python
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v2
         with:
-          python-version: '${{ matrix.python }}'
+          python-version: '${{ matrix.python }}.0-alpha - ${{ matrix.python }}.X'
           architecture: '${{ matrix.arch }}'
       - name: Run tests
         run: ./ci.sh
@@ -109,27 +121,23 @@ jobs:
         env:
           # Should match 'name:' up above
           JOB_NAME: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_library }})'
-          INSTALL_EXTRAS: '[${{ matrix.qt_library }},tests]'
+          INSTALL_EXTRAS: '[${{ matrix.qt_library }},p_tests]'
           # TODO: https://github.com/pytest-dev/pytest/issues/7623
           PYTHONIOENCODING: 'utf-8'
 
-  Ubuntu:
-    name: 'Ubuntu (${{ matrix.python }}, ${{ matrix.qt_library }})'
+  Linux:
+    name: 'Linux (${{ matrix.python }}, ${{ matrix.qt_library }})'
     timeout-minutes: 10
     runs-on: 'ubuntu-latest'
     container: 'docker://python:${{ matrix.python }}-buster'
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.6', '3.7', '3.8']
+        python: ['3.6', '3.7', '3.8', '3.9']
         qt_library: ['PyQt5', 'PySide2']
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Setup python
-        uses: actions/setup-python@v1
-        with:
-          python-version: '${{ matrix.python }}'
       - name: Install Qt5 dependencies
         run: |
           apt-get update --yes
@@ -138,12 +146,13 @@ jobs:
         run: |
           apt-get update --yes
           apt-get install --yes libgl1-mesa-dev xvfb x11-utils libdbus-1-3 libxkbcommon-x11-0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-randr0 libxcb-render-util0 libxcb-xinerama0 libxcb-xfixes0
+      - uses: altendky/QTBUG-88688-libxcb-util@v2
       - name: Run tests
         run: ./ci.sh
         env:
           # Should match 'name:' up above
-          JOB_NAME: 'Ubuntu (${{ matrix.python }}, ${{ matrix.qt_library }})'
-          INSTALL_EXTRAS: '[${{ matrix.qt_library }},tests]'
+          JOB_NAME: 'Linux (${{ matrix.python }}, ${{ matrix.qt_library }})'
+          INSTALL_EXTRAS: '[${{ matrix.qt_library }},p_tests]'
 
   macOS:
     name: 'macOS (${{ matrix.python }}, ${{matrix.qt_library}})'
@@ -152,21 +161,21 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.6', '3.7', '3.8']
+        python: ['3.6', '3.7', '3.8', '3.9']
         qt_library: ['PyQt5', 'PySide2']
     steps:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Setup python
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v2
         with:
-          python-version: '${{ matrix.python }}'
+          python-version: '${{ matrix.python }}.0-alpha - ${{ matrix.python }}.X'
       - name: Run tests
         run: ./ci.sh
         env:
           # Should match 'name:' up above
           JOB_NAME: 'macOS (${{ matrix.python }}, ${{matrix.qt_library}})'
-          INSTALL_EXTRAS: '[${{ matrix.qt_library }},tests]'
+          INSTALL_EXTRAS: '[${{ matrix.qt_library }},p_tests]'
 
   all:
     name: All
@@ -175,7 +184,7 @@ jobs:
       - Builds
       - Checks
       - Windows
-      - Ubuntu
+      - Linux
       - macOS
     steps:
       - name: This
