@@ -38,5 +38,5 @@ showcontent = true
 
 [[tool.towncrier.type]]
 directory = "misc"
-name = "Miscellaneous internal changes"
+name = "For contributors"
 showcontent = true
