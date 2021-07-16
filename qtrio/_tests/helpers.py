@@ -1,5 +1,6 @@
 import pytest
-from qtpy import QtWidgets
+from qts import QtWidgets
+import trio
 
 
 @pytest.fixture(name="qtrio_preshow_workaround", scope="session", autouse=True)
@@ -25,3 +26,12 @@ def qtrio_testdir_fixture(testdir):
     testdir.makefile(".ini", pytest=text)
 
     return testdir
+
+
+@pytest.fixture(
+    name="optional_hold_event",
+    params=[lambda: None, trio.Event],
+    ids=["no hold", "hold"],
+)
+def optional_hold_event_fixture(request):
+    return request.param()

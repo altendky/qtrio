@@ -14,6 +14,7 @@ from ._exceptions import (
     UserCancelledError,
     InvalidInputError,
     InternalError,
+    DialogNotActiveError,
 )
 
 from ._core import (
@@ -28,7 +29,6 @@ from ._core import (
     registered_event_type,
     register_event_type,
     register_requested_event_type,
-    Reenter,
 )
 
 from ._qt import Signal

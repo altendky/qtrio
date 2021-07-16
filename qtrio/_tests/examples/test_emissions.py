@@ -1,47 +1,50 @@
+import functools
 import typing
 
-import qtrio
-from qtpy import QtCore
+import pytestqt.qtbot
 import trio
 import trio.testing
 
+import qtrio
 import qtrio.examples.emissions
 
 
-async def test_main(qtbot):
-    window = qtrio.examples.emissions.Window.build()
-    qtbot.addWidget(window.widget)
+async def test_main(
+    qtbot: pytestqt.qtbot.QtBot,
+    optional_hold_event: typing.Optional[trio.Event],
+) -> None:
+    async with trio.open_nursery() as nursery:
+        start = functools.partial(
+            qtrio.examples.emissions.start_widget,
+            hold_event=optional_hold_event,
+        )
+        widget: qtrio.examples.emissions.Widget = await nursery.start(start)
+        qtbot.addWidget(widget.widget)
 
-    results: typing.List[str] = []
+        if optional_hold_event is not None:
+            optional_hold_event.set()
+        else:
+            await trio.testing.wait_all_tasks_blocked(cushion=0.1)
 
-    async def user():
-        await emissions.channel.receive()
+        await widget.serving_event.wait()
 
         buttons = [
-            window.increment,
-            window.increment,
-            window.increment,
-            window.decrement,
-            window.decrement,
-            window.decrement,
-            window.decrement,
+            widget.increment,
+            widget.increment,
+            widget.increment,
+            widget.decrement,
+            widget.decrement,
+            widget.decrement,
+            widget.decrement,
         ]
+
+        results: typing.List[str] = []
+
         for button in buttons:
-            # TODO: Doesn't work reliably on macOS in GitHub Actions.  Seems to
-            #       sometimes just miss the click entirely.
-            # qtbot.mouseClick(button, QtCore.Qt.LeftButton)
             button.click()
             await trio.testing.wait_all_tasks_blocked(cushion=0.01)
-            results.append(window.label.text())
+            results.append(widget.label.text())
 
-        window.widget.close()
-
-    async with trio.open_nursery() as nursery:
-        async with qtrio.enter_emissions_channel(
-            signals=[window.widget.shown],
-        ) as emissions:
-            nursery.start_soon(user)
-
-            await qtrio.examples.emissions.main(window=window)
+        widget.widget.close()
 
     assert results == ["1", "2", "3", "2", "1", "0", "-1"]

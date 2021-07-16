@@ -1,9 +1,10 @@
-from qtpy import QtWidgets
+import pytestqt.qtbot
+from qts import QtWidgets
 
 import qtrio.examples.readme.qt
 
 
-def test_main(qtbot):
+def test_main(qtbot: pytestqt.qtbot.QtBot, qapp: QtWidgets.QApplication) -> None:
     input_dialog = qtrio.examples.readme.qt.create_input()
     output_dialog = qtrio.examples.readme.qt.create_output()
 
@@ -13,6 +14,7 @@ def test_main(qtbot):
     text_to_enter = "everyone"
 
     main_object = qtrio.examples.readme.qt.Main(
+        application=qapp,
         input_dialog=input_dialog,
         output_dialog=output_dialog,
     )
@@ -34,7 +36,9 @@ def test_main(qtbot):
     assert text_to_enter in output_text
 
 
-def test_main_cancelled(qtbot):
+def test_main_cancelled(
+    qtbot: pytestqt.qtbot.QtBot, qapp: QtWidgets.QApplication
+) -> None:
     input_dialog = qtrio.examples.readme.qt.create_input()
     output_dialog = qtrio.examples.readme.qt.create_output()
 
@@ -44,6 +48,7 @@ def test_main_cancelled(qtbot):
     text_to_enter = "everyone"
 
     main_object = qtrio.examples.readme.qt.Main(
+        application=qapp,
         input_dialog=input_dialog,
         output_dialog=output_dialog,
     )

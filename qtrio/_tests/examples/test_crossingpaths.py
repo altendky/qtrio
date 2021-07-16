@@ -1,55 +1,49 @@
+import functools
 import typing
 
-import qtrio
-from qtpy import QtCore
-from qtpy import QtWidgets
+import pytestqt.qtbot
 import trio
 
+import qtrio
 import qtrio.examples.crossingpaths
 
 
-async def test_main(qtbot):
-    class SignaledLabel(QtWidgets.QLabel):
-        text_changed = QtCore.Signal(str)
-
-        def setText(self, *args, **kwargs):
-            super().setText(*args, **kwargs)
-            self.text_changed.emit(self.text())
-
-    label = SignaledLabel()
-    qtbot.addWidget(label)
-
-    results: typing.List[str] = []
-
-    async def user():
-        async for emission in emissions.channel:
-            [text] = emission.args
-            results.append(text)
+async def test_main(
+    qtbot: pytestqt.qtbot.QtBot, optional_hold_event: typing.Optional[trio.Event]
+) -> None:
+    message = "test world"
 
     async with trio.open_nursery() as nursery:
-        async with qtrio.enter_emissions_channel(
-            signals=[label.text_changed],
-        ) as emissions:
-            nursery.start_soon(user)
+        start = functools.partial(
+            qtrio.examples.crossingpaths.start_widget,
+            message=message,
+            change_delay=0.01,
+            close_delay=0.01,
+            hold_event=optional_hold_event,
+        )
+        widget: qtrio.examples.crossingpaths.Widget = await nursery.start(start)
+        qtbot.addWidget(widget)
 
-            await qtrio.examples.crossingpaths.main(
-                label=label,
-                message="test world",
-                change_delay=0.01,
-                close_delay=0.01,
-            )
+        async with qtrio.enter_emissions_channel(
+            signals=[widget.text_changed],
+        ) as emissions:
+            if optional_hold_event is not None:
+                optional_hold_event.set()
+
+            async with emissions.send_channel:
+                await widget.done_event.wait()
+
+            results = [emission.args async for emission in emissions.channel]
 
     assert results == [
-        "test world",
-        "",
-        "t",
-        "te",
-        "tes",
-        "test",
-        "test ",
-        "test w",
-        "test wo",
-        "test wor",
-        "test worl",
-        "test world",
+        ("t",),
+        ("te",),
+        ("tes",),
+        ("test",),
+        ("test ",),
+        ("test w",),
+        ("test wo",),
+        ("test wor",),
+        ("test worl",),
+        ("test world",),
     ]

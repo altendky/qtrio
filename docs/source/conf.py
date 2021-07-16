@@ -18,6 +18,7 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
+import pathlib
 import sys
 
 import sphinx.locale
@@ -34,12 +35,6 @@ nitpick_ignore = [
     ("py:obj", "bytes-like"),
     # https://github.com/sphinx-doc/sphinx/issues/8127
     ("py:class", ".."),
-    # https://github.com/sphinx-doc/sphinx/issues/7493
-    ("py:class", "qtrio._core.Emissions"),
-    ("py:class", "qtrio._core.EmissionsNursery"),
-    ("py:class", "qtrio._core.Outcomes"),
-    ("py:class", "qtrio._core.Reenter"),
-    ("py:class", "qtrio._qt.Signal"),
     # https://github.com/Czaki/sphinx-qt-documentation/issues/10
     ("py:class", "<class 'PySide2.QtCore.QEvent.Type'>"),
     ("py:class", "<class 'PySide2.QtWidgets.QFileDialog.FileMode'>"),
@@ -48,6 +43,10 @@ nitpick_ignore = [
     ("py:class", "<class 'PySide2.QtWidgets.QMessageBox.Icon'>"),
     # https://github.com/sphinx-doc/sphinx/issues/8136
     ("py:class", "typing.AbstractAsyncContextManager"),
+    (
+        "py:class",
+        "Union[<class 'PySide2.QtWidgets.QMessageBox.StandardButton'>, PySide2.QtWidgets.QMessageBox.StandardButtons]",
+    ),
 ]
 
 # -- General configuration ------------------------------------------------
@@ -124,9 +123,20 @@ author = "The QTrio authors"
 # built documents.
 #
 # The short X.Y version.
-import qtrio
+def get_version():
+    here = pathlib.Path(__file__).parent
+    root = here.parent.parent
 
-version = qtrio.__version__
+    version_globals = {}
+    exec(
+        root.joinpath("qtrio", "_version.py").read_text(encoding="utf-8"),
+        version_globals,
+    )
+
+    return version_globals["__version__"]
+
+
+version = get_version()
 # The full version, including alpha/beta/rc tags.
 release = version
 
