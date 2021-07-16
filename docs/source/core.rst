@@ -7,7 +7,6 @@ Running
 .. autofunction:: qtrio.run
 .. autoclass:: qtrio.Runner
 .. autoclass:: qtrio.Outcomes
-.. autoclass:: qtrio.Reenter
 
 Emissions
 ---------
@@ -27,6 +26,11 @@ their errors on the floor they will be run inside a nursery.
 
 .. autofunction:: qtrio.open_emissions_nursery
 .. autoclass:: qtrio.EmissionsNursery
+
+Helpers
+-------
+
+.. autoclass:: qtrio.Signal
 
 Reentry Events
 --------------

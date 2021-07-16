@@ -9,19 +9,13 @@
 .. toctree::
    :maxdepth: 2
 
-   tutorial.rst
+   getting_started.rst
    core.rst
    testing.rst
+   dialogs.rst
    exceptions.rst
    examples/examples.rst
    development/index.rst
    history.rst
 
-====================
- Indices and tables
-====================
-
 * :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-* :ref:`glossary`

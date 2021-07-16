@@ -1,53 +1,63 @@
-timeout = 40
+import functools
+import typing
+
+import pytestqt.qtbot
+import trio
+import trio.testing
+
+import qtrio
+import qtrio.examples.buildingrespect
 
 
-def test_main(testdir):
-    conftest_file = r"""
-    import qtrio._tests.helpers
+async def test_main(
+    qtbot: pytestqt.qtbot.QtBot,
+    optional_hold_event: typing.Optional[trio.Event],
+) -> None:
+    message = "test world"
 
-    qtrio_preshow_workaround_fixture = qtrio._tests.helpers.qtrio_preshow_workaround_fixture
-    """
-    testdir.makeconftest(conftest_file)
+    async with trio.open_nursery() as nursery:
+        start = functools.partial(
+            qtrio.examples.buildingrespect.start_widget,
+            message=message,
+            hold_event=optional_hold_event,
+        )
+        widget: qtrio.examples.buildingrespect.Widget = await nursery.start(start)
+        qtbot.addWidget(widget.widget)
 
-    test_file = r"""
-    import qtrio
-    from qtpy import QtCore
-    from qtpy import QtWidgets
-    import trio
-    import trio.testing
+        async with qtrio.enter_emissions_channel(
+            signals=[widget.text_changed],
+        ) as emissions:
+            if optional_hold_event is not None:
+                optional_hold_event.set()
 
-    import qtrio.examples.buildingrespect
+            await trio.testing.wait_all_tasks_blocked(cushion=0.01)
 
+            # lazily click the button and collect results in the memory channel rather
+            # than starting concurrent tasks.
 
-    class SignaledButton(QtWidgets.QPushButton):
-        shown = QtCore.Signal()
+            # close the send channel so the receive channel knows when it is done
+            async with emissions.send_channel:
+                for _ in message:
+                    widget.button.click()
 
-        def showEvent(self, event):
-            super().showEvent(event)
-            if event.isAccepted():
-                self.shown.emit()
+                    # give Qt etc a chance to handle the clicks before closing the channel
+                    await trio.testing.wait_all_tasks_blocked(cushion=0.01)
 
+            results: typing.List[typing.Tuple[object]] = [
+                emission.args async for emission in emissions.channel
+            ]
 
-    @qtrio.host
-    async def test_example(request, qtbot):
-        button = SignaledButton()
-        qtbot.addWidget(button)
+            widget.button.click()
 
-        async def user():
-            await emissions.channel.receive()
-
-            button.click()
-
-
-        async with trio.open_nursery() as nursery:
-            async with qtrio.enter_emissions_channel(
-                signals=[button.shown],
-            ) as emissions:
-                nursery.start_soon(user)
-
-                await qtrio.examples.buildingrespect.main(button=button)
-    """
-    testdir.makepyfile(test_file)
-
-    result = testdir.runpytest_subprocess("--capture=no", timeout=timeout)
-    result.assert_outcomes(passed=1)
+    assert results == [
+        ("t",),
+        ("te",),
+        ("tes",),
+        ("test",),
+        ("test ",),
+        ("test w",),
+        ("test wo",),
+        ("test wor",),
+        ("test worl",),
+        ("test world",),
+    ]

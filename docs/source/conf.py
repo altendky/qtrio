@@ -18,6 +18,7 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
+import pathlib
 import sys
 
 import sphinx.locale
@@ -32,15 +33,18 @@ nitpicky = True
 nitpick_ignore = [
     # Format is ("sphinx reference type", "string"), e.g.:
     ("py:obj", "bytes-like"),
-    # https://github.com/sphinx-doc/sphinx/issues/7493
-    ("py:class", "qtrio._core.Emissions"),
-    ("py:class", "qtrio._core.EmissionsNursery"),
-    ("py:class", "qtrio._core.Outcomes"),
-    ("py:class", "qtrio._core.Reenter"),
     # https://github.com/Czaki/sphinx-qt-documentation/issues/10
     ("py:class", "<class 'PySide2.QtCore.QEvent.Type'>"),
+    ("py:class", "<class 'PySide2.QtWidgets.QFileDialog.FileMode'>"),
+    ("py:class", "<class 'PySide2.QtWidgets.QFileDialog.AcceptMode'>"),
+    ("py:class", "<class 'PySide2.QtWidgets.QFileDialog.Option'>"),
+    ("py:class", "<class 'PySide2.QtWidgets.QMessageBox.Icon'>"),
     # https://github.com/sphinx-doc/sphinx/issues/8136
     ("py:class", "typing.AbstractAsyncContextManager"),
+    (
+        "py:class",
+        "Union[<class 'PySide2.QtWidgets.QMessageBox.StandardButton'>, PySide2.QtWidgets.QMessageBox.StandardButtons]",
+    ),
 ]
 
 # -- General configuration ------------------------------------------------
@@ -57,6 +61,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.coverage",
     "sphinx.ext.napoleon",
+    "sphinx.ext.viewcode",
     "sphinx_autodoc_typehints",
     "sphinx_qt_documentation",
     "sphinxcontrib_trio",
@@ -67,6 +72,7 @@ intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
     "PyQt5": ("https://www.riverbankcomputing.com/static/Docs/PyQt5", None),
     "pytest": ("https://docs.pytest.org/en/stable", None),
+    "pytest-trio": ("https://pytest-trio.readthedocs.io/en/stable", None),
     "trio": ("https://trio.readthedocs.io/en/stable", None),
 }
 
@@ -115,9 +121,20 @@ author = "The QTrio authors"
 # built documents.
 #
 # The short X.Y version.
-import qtrio
+def get_version():
+    here = pathlib.Path(__file__).parent
+    root = here.parent.parent
 
-version = qtrio.__version__
+    version_globals = {}
+    exec(
+        root.joinpath("qtrio", "_version.py").read_text(encoding="utf-8"),
+        version_globals,
+    )
+
+    return version_globals["__version__"]
+
+
+version = get_version()
 # The full version, including alpha/beta/rc tags.
 release = version
 
