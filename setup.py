@@ -9,7 +9,8 @@ exec((here / "qtrio" / "_version.py").read_text(encoding="utf-8"))
 
 LONG_DESC = (here / "README.rst").read_text(encoding="utf-8")
 
-towncrier = "towncrier > 19.9.0rc1"
+# >= 21.3.0 for https://github.com/twisted/towncrier/pull/170
+towncrier = "towncrier >= 21.3.0"
 
 setup(
     name="qtrio",
