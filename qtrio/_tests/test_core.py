@@ -94,7 +94,7 @@ def test_reenter_event_writes_to_stderr_for_exception(capsys, testdir):
     result.stderr.re_match_lines(
         lines2=[
             r"^TypeError: 'int' object is not callable$",
-            r"^qtrio._exceptions.InternalError: Exception while handling a reenter event$",
+            r"^qtrio\._exceptions\.InternalError: Exception while handling a reenter event$",
         ],
     )
 
