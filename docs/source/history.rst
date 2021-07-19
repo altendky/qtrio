@@ -5,13 +5,13 @@ Release history
 
 .. towncrier release notes start
 
-Qtrio 0.4.2 (2021-02-04)
+QTrio 0.4.2 (2021-02-04)
 ------------------------
 
 No significant changes.  Released for documentation improvements.
 
 
-Qtrio 0.4.1 (2021-01-06)
+QTrio 0.4.1 (2021-01-06)
 ------------------------
 
 Features
@@ -20,7 +20,7 @@ Features
 - Constrained all dependencies for better long term compatibility and reduced pip resolution time. (`#211 <https://github.com/altendky/qtrio/issues/211>`__)
 
 
-Qtrio 0.4.0 (2021-01-04)
+QTrio 0.4.0 (2021-01-04)
 ------------------------
 
 Features
@@ -47,7 +47,7 @@ Improved documentation
 - Added :ref:`download example <download_example>`. (`#23 <https://github.com/altendky/qtrio/issues/23>`__)
 
 
-Qtrio 0.3.0 (2020-10-16)
+QTrio 0.3.0 (2020-10-16)
 ------------------------
 
 Headline features
