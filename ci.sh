@@ -2,11 +2,6 @@
 
 set -ex -o pipefail
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-set -o allexport
-source ${DIR}/.env
-set +o allexport
-
 # Log some general info about the environment
 env | sort
 
@@ -36,11 +31,11 @@ function curl-harder() {
 
 python -c "import sys, struct, ssl; print('#' * 70); print('executable:', sys.executable); print('python:', sys.version); print('version_info:', sys.version_info); print('bits:', struct.calcsize('P') * 8); print('openssl:', ssl.OPENSSL_VERSION, ssl.OPENSSL_VERSION_INFO); print('#' * 70)"
 
-python -m pip install -U pip setuptools wheel
+python -m pip install -U pip setuptools wheel pep517
 python -m pip --version
 
-python setup.py sdist --formats=zip
-INSTALL_ARTIFACT=$(ls dist/*.zip)
+python -m pep517.build --source --out-dir dist/ .
+INSTALL_ARTIFACT=$(ls dist/*.tar.gz)
 try-harder python -m pip install ${INSTALL_ARTIFACT}${INSTALL_EXTRAS}
 
 python -m pip list
@@ -48,10 +43,8 @@ python -m pip freeze
 
 if [ "$CHECK_DOCS" = "1" ]; then
     git fetch --deepen=100
-    git fetch --depth=100 origin master
-    towncrier check
-    # https://github.com/twisted/towncrier/pull/271
-    towncrier build --yes --name QTrio  # catch errors in newsfragments
+    git fetch --depth=100 origin main
+    towncrier build --yes  # catch errors in newsfragments
     cd docs
     # -n (nit-picky): warn on missing references
     # -W: turn warnings into errors
@@ -59,7 +52,12 @@ if [ "$CHECK_DOCS" = "1" ]; then
 elif [ "$CHECK_FORMATTING" = "1" ]; then
     source check.sh
 elif [ "$CHECK_TYPE_HINTS" = "1" ]; then
-    mypy --package ${PACKAGE_NAME}
+    if [[ "${INSTALL_EXTRAS,,}" == *"pyside2"* ]]; then
+        python -m pip install --upgrade pyside2
+    fi
+    mypy --package qtrio $(qts mypy args)
+elif [ "$CHECK_MANIFEST" = "1" ]; then
+    check-manifest
 else
     # Actual tests
 
@@ -69,14 +67,14 @@ else
     mkdir empty || true
     cd empty
 
-    INSTALLDIR=$(python -c "import os, ${PACKAGE_NAME}; print(os.path.dirname(${PACKAGE_NAME}.__file__))")
+    INSTALLDIR=$(python -c "import os, qtrio; print(os.path.dirname(qtrio.__file__))")
     cp ../setup.cfg $INSTALLDIR
     # We have to copy .coveragerc into this directory, rather than passing
     # --cov-config=../.coveragerc to pytest, because codecov.sh will run
     # 'coverage xml' to generate the report that it uses, and that will only
     # apply the ignore patterns in the current directory's .coveragerc.
     cp ../.coveragerc .
-    if pytest -W error -ra --junitxml=../test-results.xml ${INSTALLDIR} --cov="$INSTALLDIR" --verbose; then
+    if pytest -W error -ra --junitxml=../test-results.xml --cov="$INSTALLDIR" --verbose --pyargs qtrio; then
         PASSED=true
     else
         PASSED=false

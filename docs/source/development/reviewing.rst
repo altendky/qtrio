@@ -23,6 +23,7 @@ Manual checks
      to the docstrings.
 
 * The change is described for the user
+   * If this is a change relevant to users, there should be a newsfragment file as follows
    * Newsfragment file name has the proper issue or PR number and change type
    * The contents describe the change well for users
    * Proper `Sphinx references <https://www.sphinx-doc.org/en/3.x/usage/restructuredtext/basics.html>`_
@@ -39,6 +40,5 @@ Automatic checks
 * All code and tests lines are fully covered when running tests
 * Code is formatted per `Black <https://black.readthedocs.io/en/stable/>`_
 * Code passes `flake8 <https://flake8.pycqa.org/en/latest/>`_ checks
-* Docs build successfully including newsfragment
-* Branch is up to date with master
-* A newsfragment file is present
+* Docs build successfully including newsfragment, if present
+* Branch is up to date with main

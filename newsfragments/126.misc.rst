@@ -1,1 +1,0 @@
-Make less use of subprocessing with :fixture:`testdir`.

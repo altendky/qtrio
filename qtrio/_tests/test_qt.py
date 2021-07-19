@@ -1,14 +1,32 @@
-from qtpy import QtCore
+import typing
+
+import pytestqt.qtbot
+from qts import QtCore
 import pytest
 
 import qtrio._qt
 
 
-def test_signal_emits(qtbot):
+@pytest.fixture(
+    name="optional_name_argument",
+    params=[False, True],
+    ids=["No name", "Some name"],
+)
+def optional_name_argument_fixture(request):
+    if request.param:
+        return {"name": "A Name"}
+
+    return {}
+
+
+def test_signal_emits(
+    qtbot: pytestqt.qtbot.QtBot,
+    optional_name_argument: typing.Dict[str, str],
+) -> None:
     """qtrio._core.Signal emits."""
 
     class NotQObject:
-        signal = qtrio._qt.Signal()
+        signal = qtrio.Signal(**optional_name_argument)
 
     instance = NotQObject()
 
@@ -16,11 +34,14 @@ def test_signal_emits(qtbot):
         instance.signal.emit()
 
 
-def test_signal_emits_value(qtbot):
+def test_signal_emits_value(
+    qtbot: pytestqt.qtbot.QtBot,
+    optional_name_argument: typing.Dict[str, str],
+) -> None:
     """qtrio._core.Signal emits a value."""
 
     class NotQObject:
-        signal = qtrio._qt.Signal(int)
+        signal = qtrio.Signal(int, **optional_name_argument)
 
     result = None
 
@@ -37,27 +58,27 @@ def test_signal_emits_value(qtbot):
     assert result == 13
 
 
-def test_accessing_signal_on_class_results_in_our_signal():
+def test_accessing_signal_on_class_results_in_our_signal(optional_name_argument):
     """qtrio._core.Signal instance accessible via class attribute."""
 
     class NotQObject:
-        signal = qtrio._qt.Signal(int)
+        signal = qtrio.Signal(int, **optional_name_argument)
 
-    assert isinstance(NotQObject.signal, qtrio._qt.Signal)
+    assert isinstance(NotQObject.signal, qtrio.Signal)
 
 
-def test_our_signal_object_method_returns_qobject():
+def test_our_signal_object_method_returns_qobject(optional_name_argument):
     """qtrio._core.Signal instance provides access to signal-hosting QObject."""
 
     class NotQObject:
-        signal = qtrio._qt.Signal(int)
+        signal = qtrio.Signal(int, **optional_name_argument)
 
     instance = NotQObject()
 
     assert isinstance(NotQObject.signal.object(instance=instance), QtCore.QObject)
 
 
-def test_connection_connects(qtbot):
+def test_connection_connects(qtbot: pytestqt.qtbot.QtBot) -> None:
     """qtrio._core.connection connects signal inside managed context."""
 
     class MyQObject(QtCore.QObject):
@@ -78,7 +99,7 @@ def test_connection_connects(qtbot):
     assert results == [2]
 
 
-def test_connection_disconnects(qtbot):
+def test_connection_disconnects(qtbot: pytestqt.qtbot.QtBot) -> None:
     """qtrio._core.connection disconnects signal when exiting managed context."""
 
     class MyQObject(QtCore.QObject):
@@ -99,7 +120,7 @@ def test_connection_disconnects(qtbot):
     assert results == [1]
 
 
-def test_connection_yield_can_be_disconnected(qtbot):
+def test_connection_yield_can_be_disconnected(qtbot: pytestqt.qtbot.QtBot) -> None:
     """qtrio._core.connection result can be used to disconnect the signal early."""
 
     class MyQObject(QtCore.QObject):
