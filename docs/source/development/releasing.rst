@@ -32,7 +32,7 @@ Things to do for releasing:
 ..
    https://github.com/twisted/towncrier/pull/271
 
-      - ``towncrier build --yes --name QTrio``
+      - ``towncrier build --yes``
 
       - review history change
 
