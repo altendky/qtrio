@@ -1,5 +1,3 @@
-import sys
-import traceback
 import typing
 
 from qts import QtCore
