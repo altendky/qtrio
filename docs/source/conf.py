@@ -33,8 +33,6 @@ nitpicky = True
 nitpick_ignore = [
     # Format is ("sphinx reference type", "string"), e.g.:
     ("py:obj", "bytes-like"),
-    # https://github.com/sphinx-doc/sphinx/issues/8127
-    ("py:class", ".."),
     # https://github.com/Czaki/sphinx-qt-documentation/issues/10
     ("py:class", "<class 'PySide2.QtCore.QEvent.Type'>"),
     ("py:class", "<class 'PySide2.QtWidgets.QFileDialog.FileMode'>"),
