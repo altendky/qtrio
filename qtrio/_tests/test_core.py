@@ -73,6 +73,32 @@ def test_reenter_event_raises_if_type_not_registered(testdir):
     result.assert_outcomes(passed=1)
 
 
+def test_reenter_event_writes_to_stderr_for_exception(capsys, testdir):
+    test_file = r"""
+    from qts import QtCore
+
+    import qtrio
+    import qtrio.qt
+
+
+    qapp = QtCore.QCoreApplication([])
+    qtrio.register_event_type()
+    reenter = qtrio.qt.Reenter()
+    event = qtrio.qt.ReenterEvent(fn=32)
+    qapp.postEvent(reenter, event)
+    qapp.processEvents()
+    """
+    test_path = testdir.makepyfile(test_file)
+
+    result = testdir.runpython(test_path)
+    result.stderr.re_match_lines(
+        lines2=[
+            r"^TypeError: 'int' object is not callable$",
+            r"^qtrio\._exceptions\.InternalError: Exception while handling a reenter event$",
+        ],
+    )
+
+
 def test_run_returns_value(testdir):
     """:func:`qtrio.run()` returns the result of the passed async function."""
 

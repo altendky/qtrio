@@ -26,6 +26,9 @@ class Reenter(QtCore.QObject):
     def event(self, event: QtCore.QEvent) -> bool:
         """Qt calls this when the object receives an event."""
 
-        reenter_event = typing.cast(Reenter, event)
-        reenter_event.fn()
-        return False
+        try:
+            reenter_event = typing.cast(Reenter, event)
+            reenter_event.fn()
+            return True
+        except Exception as e:
+            raise qtrio.InternalError("Exception while handling a reenter event") from e
