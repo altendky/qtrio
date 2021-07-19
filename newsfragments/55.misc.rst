@@ -1,2 +1,0 @@
-Preshow a :class:`QtWidgets.QPushButton` to consume the delay showing the first one
-outside of other tests.

@@ -1,51 +1,36 @@
 import pytest
 
-import qtrio._pytest
+
+timeout = 40
 
 
-@pytest.mark.parametrize(
-    argnames=["decorator_format"],
-    argvalues=[["qtrio.host"], ["qtrio.host()"], ["qtrio.host(timeout={timeout})"]],
-)
-def test_overrunning_test_times_out(preshow_testdir, decorator_format):
-    """The overrunning test is timed out."""
-
-    timeout = 3
-
-    decorator_string = decorator_format.format(timeout=timeout)
-
-    test_file = rf"""
-    import qtrio
-    import trio
-
-    @{decorator_string}
-    async def test(request):
-        await trio.sleep({4 * timeout})
-    """
-    preshow_testdir.makepyfile(test_file)
-
-    result = preshow_testdir.runpytest_subprocess(timeout=4 * timeout)
-    result.assert_outcomes(failed=1)
-    result.stdout.re_match_lines(
-        lines2=[r"E\s+qtrio\._exceptions\.RunnerTimedOutError"]
-    )
-
-
-# TODO: test that the timeout case doesn't leave trio active...  like
-#       it was doing five minutes ago.
-
-
-def test_hosted_assertion_failure_fails(preshow_testdir):
+def test_assertion_failure_fails(testdir):
     """QTrio hosted test which fails an assertion fails the test."""
 
     test_file = r"""
-    import qtrio
+    import trio
 
-    @qtrio.host
-    async def test(request):
+    async def test():
+        await trio.sleep(0)
         assert False
     """
-    preshow_testdir.makepyfile(test_file)
+    testdir.makepyfile(test_file)
 
-    result = preshow_testdir.runpytest_subprocess(timeout=10)
+    result = testdir.runpytest_subprocess(timeout=timeout)
     result.assert_outcomes(failed=1)
+
+
+def test_assertion_pass_passes(testdir):
+    """QTrio hosted test which passes an assertion passes the test."""
+
+    test_file = r"""
+    import trio
+
+    async def test():
+        await trio.sleep(0)
+        assert True
+    """
+    testdir.makepyfile(test_file)
+
+    result = testdir.runpytest_subprocess(timeout=timeout)
+    result.assert_outcomes(passed=1)

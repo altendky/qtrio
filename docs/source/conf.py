@@ -18,7 +18,11 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
+import pathlib
 import sys
+
+import sphinx.locale
+import sphinx.util
 
 # So autodoc can import our package
 sys.path.insert(0, os.path.abspath("../.."))
@@ -29,12 +33,17 @@ nitpicky = True
 nitpick_ignore = [
     # Format is ("sphinx reference type", "string"), e.g.:
     ("py:obj", "bytes-like"),
-    # TODO: https://github.com/sphinx-doc/sphinx/issues/8015
-    ("py:class", "typing.Callable[..., typing.Awaitable[object]]"),
-    ("py:class", "typing.Callable[..., object]"),
+    # https://github.com/Czaki/sphinx-qt-documentation/issues/10
+    ("py:class", "<class 'PySide2.QtCore.QEvent.Type'>"),
+    ("py:class", "<class 'PySide2.QtWidgets.QFileDialog.FileMode'>"),
+    ("py:class", "<class 'PySide2.QtWidgets.QFileDialog.AcceptMode'>"),
+    ("py:class", "<class 'PySide2.QtWidgets.QFileDialog.Option'>"),
+    ("py:class", "<class 'PySide2.QtWidgets.QMessageBox.Icon'>"),
+    # https://github.com/sphinx-doc/sphinx/issues/8136
+    ("py:class", "typing.AbstractAsyncContextManager"),
     (
         "py:class",
-        "typing.Callable[[typing.Callable[..., typing.Awaitable[object]]], typing.Callable[..., object]]",
+        "Union[<class 'PySide2.QtWidgets.QMessageBox.StandardButton'>, PySide2.QtWidgets.QMessageBox.StandardButtons]",
     ),
 ]
 
@@ -52,6 +61,7 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.coverage",
     "sphinx.ext.napoleon",
+    "sphinx.ext.viewcode",
     "sphinx_autodoc_typehints",
     "sphinx_qt_documentation",
     "sphinxcontrib_trio",
@@ -62,12 +72,32 @@ intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
     "PyQt5": ("https://www.riverbankcomputing.com/static/Docs/PyQt5", None),
     "pytest": ("https://docs.pytest.org/en/stable", None),
+    "pytest-trio": ("https://pytest-trio.readthedocs.io/en/stable", None),
     "trio": ("https://trio.readthedocs.io/en/stable", None),
 }
 
 qt_documentation = "Qt5"
 
-autodoc_member_order = "bysource"
+autodoc_default_options = {
+    "member-order": "bysource",
+    "members": True,
+    "show-inheritance": True,
+    "undoc-members": True,
+}
+
+logger = sphinx.util.logging.getLogger(__name__)
+
+set_type_checking_flag = True
+typehints_fully_qualified = False
+always_document_param_types = False
+typehints_document_rtype = True
+
+
+def warn_undocumented_members(app, what, name, obj, options, lines):
+    if len(lines) == 0:
+        logger.warning(sphinx.locale.__(f"{what} {name} is undocumented"))
+        lines.append(f".. Warning:: {what} ``{name}`` undocumented")
+
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = []
@@ -91,9 +121,20 @@ author = "The QTrio authors"
 # built documents.
 #
 # The short X.Y version.
-import qtrio
+def get_version():
+    here = pathlib.Path(__file__).parent
+    root = here.parent.parent
 
-version = qtrio.__version__
+    version_globals = {}
+    exec(
+        root.joinpath("qtrio", "_version.py").read_text(encoding="utf-8"),
+        version_globals,
+    )
+
+    return version_globals["__version__"]
+
+
+version = get_version()
 # The full version, including alpha/beta/rc tags.
 release = version
 
@@ -223,3 +264,13 @@ texinfo_documents = [
         "Miscellaneous",
     ),
 ]
+
+
+def setup(app: "sphinx.application.Sphinx") -> None:
+    app.add_crossref_type(
+        "fixture",
+        "fixture",
+        objname="built-in fixture",
+        indextemplate="pair: %s; fixture",
+    )
+    app.connect("autodoc-process-docstring", warn_undocumented_members)

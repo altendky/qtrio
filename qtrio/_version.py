@@ -1,3 +1,6 @@
-# This file is imported from __init__.py and exec'd from setup.py
+# This file is:
+#   imported from __init__.py
+#   exec'd from docs/source/conf.py
+#   attr:'ed from setup.cfg
 
-__version__ = "0.1.0+dev"
+__version__ = "0.4.2+dev"
