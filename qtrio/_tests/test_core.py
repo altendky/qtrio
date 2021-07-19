@@ -75,11 +75,11 @@ def test_reenter_event_raises_if_type_not_registered(testdir):
 
 def test_reenter_event_writes_to_stderr_for_exception(capsys, testdir):
     test_file = r"""
-    import pytest
-
     from qts import QtCore
+
     import qtrio
     import qtrio.qt
+
 
     qapp = QtCore.QCoreApplication([])
     qtrio.register_event_type()
