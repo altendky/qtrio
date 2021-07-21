@@ -195,7 +195,7 @@ class Emission:
             # TODO: qts should expose this, preferably as some helper function.
             import PyQt5.QtCore
 
-            version = tuple(int(s) for s in PyQt5.QtCore.__version__.split("."))
+            version = tuple(int(s) for s in PyQt5.QtCore.__version__.split("."))  # type: ignore[attr-defined]
 
             if version < (5, 15, 1):
                 # https://www.riverbankcomputing.com/pipermail/pyqt/2020-July/043064.html
