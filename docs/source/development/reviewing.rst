@@ -1,3 +1,5 @@
+.. include:: use_latest_docs.rst
+
 Reviewing
 =========
 
