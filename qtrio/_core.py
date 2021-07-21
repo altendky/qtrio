@@ -191,28 +191,25 @@ class Emission:
         Returns:
             Whether the passed signal was the source of this emission.
         """
+        if qts.is_pyqt_5_wrapper:
+            # TODO: qts should expose this, preferably as some helper function.
+            import PyQt5.QtCore
+            version = tuple(int(s) for s in PyQt5.QtCore.__version__.split("."))
 
-        version = tuple(int(s) for s in QtCore.__version__.split("."))
-
-        if qtpy.PYQT5:
-            if version >= (5, 15, 1):
+            if version < (5, 15, 1):
                 # https://www.riverbankcomputing.com/pipermail/pyqt/2020-July/043064.html
-                # bool() to accomodate SignalInstance being typed Any right now...
-                return bool(self.signal == signal)
-            else:
                 # TODO: `repr()` here seems really bad.
                 return self.signal.signal == signal.signal and repr(
                     self.signal
                 ) == repr(signal)
-        elif qtpy.PYSIDE2:
-            # Note that this is broken in 5.15.2 but we presently ban that version and
-            # have not identified a workaround for it.  If we can make one then 5.15.2
-            # could be reallowed and version conditionals used here similar to above.
 
-            # bool() to accomodate SignalInstance being typed Any right now...
-            return bool(self.signal == signal)
+        # Note that for PySide this is broken in 5.15.2 and 6 but we presently ban
+        # those versions and have not identified a workaround for them.  If we can make
+        # one then the could be reallowed and version conditionals used here similar to
+        # above.
 
-        raise qtrio.QTrioException()  # pragma: no cover
+        # bool() to accomodate SignalInstance being typed Any right now...
+        return bool(self.signal == signal)
 
     def __eq__(self, other: object) -> bool:
         if type(other) != type(self):
