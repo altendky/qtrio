@@ -191,11 +191,11 @@ class Emission:
         Returns:
             Whether the passed signal was the source of this emission.
         """
+        from qts import QtCore
+
         if qts.is_pyqt_5_wrapper:
             # TODO: qts should expose this, preferably as some helper function.
-            import PyQt5.QtCore
-
-            version = tuple(int(s) for s in PyQt5.QtCore.__version__.split("."))  # type: ignore[attr-defined]
+            version = tuple(int(s) for s in QtCore.PYQT_VERSION_STR.split("."))
 
             if version < (5, 15, 1):
                 # https://www.riverbankcomputing.com/pipermail/pyqt/2020-July/043064.html
