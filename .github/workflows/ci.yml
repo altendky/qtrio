@@ -3,12 +3,12 @@ name: CI
 on:
   push:
     branches:
-      - master
+      - main
     tags:
       - v*
   pull_request:
     branches:
-      - "*"
+      - "**"
   schedule:
     # Daily at 05:47
     - cron: '47 5 * * *'
@@ -39,10 +39,11 @@ jobs:
         run: |-
           python -m venv venv
           venv/bin/python -m pip install --quiet --upgrade pip setuptools wheel
-          venv/bin/python -m pip install --quiet --upgrade pep517
+          venv/bin/python -m pip install --quiet --upgrade pep517 twine
           venv/bin/python -m pip list
           venv/bin/python -m pip freeze
           venv/bin/python -m pep517.build ${{ matrix.pep517_option }} --out-dir dist/ .
+          venv/bin/python -m twine check --strict dist/*
       - name: Publish
         uses: actions/upload-artifact@v2
         with:
@@ -60,12 +61,23 @@ jobs:
           - python: '3.8'
             check_docs: '1'
             name: 'Check docs'
+            qt_library: 'PySide2'
           - python: '3.8'
             check_formatting: '1'
             name: 'Check formatting'
+            qt_library: 'PySide2'
           - python: '3.8'
             check_type_hints: '1'
-            name: 'Check type hints'
+            name: 'Check type hints (PySide2)'
+            qt_library: 'PySide2'
+          - python: '3.8'
+            check_type_hints: '1'
+            name: 'Check type hints (PyQt5)'
+            qt_library: 'PyQt5'
+          - python: '3.8'
+            check_manifest: '1'
+            name: 'Check manifest'
+            qt_library: 'PySide2'
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -79,11 +91,12 @@ jobs:
           CHECK_DOCS: '${{ matrix.check_docs }}'
           CHECK_FORMATTING: '${{ matrix.check_formatting }}'
           CHECK_TYPE_HINTS: '${{ matrix.check_type_hints }}'
+          CHECK_MANIFEST: '${{ matrix.check_manifest }}'
           # Should match 'name:' up above
           JOB_NAME: '${{ matrix.name }}'
           # TODO: needs some Qt library but I'm not clear the implications of
           #       choosing one over the other
-          INSTALL_EXTRAS: '[pyside2,p_checks,p_docs]'
+          INSTALL_EXTRAS: '[${{ matrix.qt_library }},p_checks,p_docs]'
 
   Windows:
     name: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_library.name }}, ${{ matrix.qt_library.version_name }})'

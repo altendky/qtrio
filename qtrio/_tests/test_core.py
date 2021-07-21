@@ -4,7 +4,7 @@ import typing
 
 import outcome
 import pytest
-from qtpy import QtCore
+from qts import QtCore
 import qtrio
 import qtrio._core
 import trio
@@ -27,13 +27,15 @@ def test_reenter_event_triggers_in_main_thread(qapp):
     """Reenter events posted in another thread result in the function being run in the
     main thread.
     """
+    import qtrio.qt
+
     result = []
 
-    reenter = qtrio._core.Reenter()
+    reenter = qtrio.qt.Reenter()
 
     def post():
         qtrio.register_event_type()
-        event = qtrio._core.ReenterEvent(fn=handler)
+        event = qtrio.qt.ReenterEvent(fn=handler)
         qapp.postEvent(reenter, event)
 
     def handler():
@@ -49,6 +51,52 @@ def test_reenter_event_triggers_in_main_thread(qapp):
 
 
 timeout = 40
+
+
+def test_reenter_event_raises_if_type_not_registered(testdir):
+    test_file = r"""
+    import pytest
+
+    import qtrio
+    import qtrio.qt
+
+    def test():
+        with pytest.raises(
+            qtrio.InternalError,
+            match="reenter event type must be registered",
+        ):
+            qtrio.qt.ReenterEvent(fn=lambda: None)
+    """
+    testdir.makepyfile(test_file)
+
+    result = testdir.runpytest_subprocess(timeout=timeout)
+    result.assert_outcomes(passed=1)
+
+
+def test_reenter_event_writes_to_stderr_for_exception(capsys, testdir):
+    test_file = r"""
+    from qts import QtCore
+
+    import qtrio
+    import qtrio.qt
+
+
+    qapp = QtCore.QCoreApplication([])
+    qtrio.register_event_type()
+    reenter = qtrio.qt.Reenter()
+    event = qtrio.qt.ReenterEvent(fn=32)
+    qapp.postEvent(reenter, event)
+    qapp.processEvents()
+    """
+    test_path = testdir.makepyfile(test_file)
+
+    result = testdir.runpython(test_path)
+    result.stderr.re_match_lines(
+        lines2=[
+            r"^TypeError: 'int' object is not callable$",
+            r"^qtrio\._exceptions\.InternalError: Exception while handling a reenter event$",
+        ],
+    )
 
 
 def test_run_returns_value(testdir):
@@ -103,7 +151,7 @@ def test_qt_last_window_closed_does_not_quit_qt_or_cancel_trio(testdir):
 
     test_file = r"""
     import outcome
-    from qtpy import QtCore
+    from qts import QtCore
     import trio
 
     import qtrio
@@ -143,8 +191,8 @@ def test_qt_quit_cancels_trio_with_custom_application(testdir):
 
     test_file = r"""
     import outcome
-    from qtpy import QtCore
-    from qtpy import QtWidgets
+    from qts import QtCore
+    from qts import QtWidgets
     import trio
 
     import qtrio
@@ -163,7 +211,7 @@ def test_qt_quit_cancels_trio_with_custom_application(testdir):
         runner = qtrio.Runner(application=QtWidgets.QApplication([]))
         outcomes = runner.run(async_fn=main)
 
-        assert outcomes.trio.value == None
+        assert outcomes.trio.unwrap() == None
     """
     testdir.makepyfile(test_file)
 
@@ -236,7 +284,7 @@ def test_runner_runs_in_main_thread(testdir):
         runner = qtrio.Runner()
         outcomes = runner.run(main)
 
-        assert outcomes.trio.value == threading.get_ident()
+        assert outcomes.trio.unwrap() == threading.get_ident()
     """
     testdir.makepyfile(test_file)
 
@@ -310,7 +358,7 @@ def test_out_of_hints_raises(testdir):
     """
     test_file = r"""
     import pytest
-    from qtpy import QtCore
+    from qts import QtCore
     import qtrio
 
 
@@ -335,7 +383,7 @@ def test_out_of_hints_raises_for_requested(testdir):
     """
     test_file = r"""
     import pytest
-    from qtpy import QtCore
+    from qts import QtCore
     import qtrio
 
 
@@ -359,7 +407,7 @@ def test_out_of_hints_raises_when_requesting_already_used_type(testdir):
     """
     test_file = r"""
     import pytest
-    from qtpy import QtCore
+    from qts import QtCore
     import qtrio
 
 
@@ -378,7 +426,7 @@ def test_out_of_hints_raises_when_requesting_already_used_type(testdir):
 def test_requesting_available_event_type_succeeds(testdir):
     """Requesting an available event type succeeds."""
     test_file = r"""
-    from qtpy import QtCore
+    from qts import QtCore
     import qtrio
 
 
@@ -601,7 +649,7 @@ def test_failed_hosted_trio_exception_on_stdout(testdir):
     """Except is printed when main Trio function raises."""
 
     test_file = r"""
-    from qtpy import QtCore
+    from qts import QtCore
     import qtrio
 
 
@@ -863,8 +911,8 @@ async def test_enter_emissions_channel_closes_both_channels():
 
 def emissions_nursery_connect_maybe_async(
     is_async: bool,
-    nursery: trio.Nursery,
-    signal: qtrio._util.SignalInstance,
+    nursery: qtrio.EmissionsNursery,
+    signal: "QtCore.SignalInstance",
     slot: typing.Callable[..., object],
 ) -> None:
     if is_async:
@@ -1043,7 +1091,7 @@ async def test_emissions_nursery_wraps(is_async):
     class LocalUniqueException(Exception):
         pass
 
-    result: qtrio.Outcomes
+    result: outcome.Outcome
 
     event = trio.Event()
     signal_host = SignalHost()
@@ -1136,7 +1184,7 @@ def test_not_quitting_application_does_not(testdir):
     """Not quitting the application doesn't quit."""
 
     test_file = r"""
-    from qtpy import QtCore
+    from qts import QtCore
     import qtrio
 
 

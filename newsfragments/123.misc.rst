@@ -1,0 +1,1 @@
+Use `-m towncrier` in the Read the Docs build.

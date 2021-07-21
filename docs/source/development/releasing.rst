@@ -32,7 +32,7 @@ Things to do for releasing:
 ..
    https://github.com/twisted/towncrier/pull/271
 
-      - ``towncrier build --yes --name QTrio``
+      - ``towncrier build --yes``
 
       - review history change
 
@@ -49,7 +49,7 @@ Things to do for releasing:
 * push to your personal repository
 
 * create pull request to `altendky/qtrio <https://github.com/altendky/qtrio/pulls>`_'s
-  "master" branch
+  "main" branch
 
 * verify that all checks succeeded
 
