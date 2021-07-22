@@ -21,7 +21,10 @@ You can run ``pytest``, ``black``, and ``sphinx`` directly from your own install
    testvenv/bin/pytest --pyargs qtrio
 
 The CI test script, ``ci.sh``, in the project root will run ``pytest`` with ``coverage``
-(and fail to upload the coverage results, which is ok).
+(and fail to upload the coverage results, which is ok).  Note that the ``ci.sh`` script
+builds the package into ``dist/`` and then installs whatever is in that directory.  As
+such you will generally want to delete the contents of ``dist/`` prior to running
+``ci.sh``.
 
 .. code-block:: bash
 
