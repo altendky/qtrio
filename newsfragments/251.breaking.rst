@@ -1,2 +1,0 @@
-`qts <https://github.com/python-qt-tools/qts>`_ has replaced `QtPy <https://github.com/spyder-ide/qtpy>`_ as the Qt wrapper compatibility layer.
-This allows progress on support for Qt 6 and more complete type hints.

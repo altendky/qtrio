@@ -1,1 +1,0 @@
-CI checks with mypy using both PySide2 and PyQt5.
