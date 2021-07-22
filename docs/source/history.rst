@@ -5,6 +5,23 @@ Release history
 
 .. towncrier release notes start
 
+QTrio 0.5.0 (2021-07-22)
+------------------------
+
+Breaking changes
+~~~~~~~~~~~~~~~~
+
+- `qts <https://github.com/python-qt-tools/qts>`_ has replaced `QtPy <https://github.com/spyder-ide/qtpy>`_ as the Qt wrapper compatibility layer.
+  This allows progress on support for Qt 6 and more complete type hints. (`#251 <https://github.com/altendky/qtrio/issues/251>`__)
+
+
+For contributors
+~~~~~~~~~~~~~~~~
+
+- CI checks with mypy using both PySide2 and PyQt5. (`#83 <https://github.com/altendky/qtrio/issues/83>`__)
+- Use `-m towncrier` in the Read the Docs build. (`#123 <https://github.com/altendky/qtrio/issues/123>`__)
+
+
 QTrio 0.4.2 (2021-02-04)
 ------------------------
 
