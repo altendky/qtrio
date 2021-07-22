@@ -48,7 +48,9 @@ Things to do for releasing:
 
    + commit such as ``Bump version and run towncrier for vX.Y.Z release``
 
-* push to your personal repository
+* push to the primary repository
+
+  + a tag will be created on the branch and the tag should be in the primary repository
 
 * create pull request to `altendky/qtrio <https://github.com/altendky/qtrio/pulls>`_'s
   "main" branch
