@@ -9,6 +9,7 @@
 .. toctree::
    :maxdepth: 2
 
+   index.rst
    getting_started.rst
    core.rst
    testing.rst
