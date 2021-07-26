@@ -738,4 +738,7 @@ class Runner:
         self._done = True
 
     def _about_to_quit(self):
-        warnings.warn(message="The Qt application quit early.  See https://qtrio.readthedocs.io/en/stable/lifetimes.html", category=qtrio.ApplicationQuitWarning)
+        warnings.warn(
+            message="The Qt application quit early.  See https://qtrio.readthedocs.io/en/stable/lifetimes.html",
+            category=qtrio.ApplicationQuitWarning,
+        )
