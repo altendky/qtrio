@@ -94,5 +94,6 @@ class QTrioWarning(UserWarning):
 
 class ApplicationQuitWarning(QTrioWarning):
     """Emitted when the Qt application quits but QTrio is expecting to manage the
-    application lifetime.
+    application lifetime.  See the documentation on
+    :ref:`the application lifetime <lifetime>` for more information.
     """
