@@ -8,6 +8,7 @@ import math
 import sys
 import typing
 import typing_extensions
+import warnings
 
 import async_generator
 import attr
@@ -648,6 +649,9 @@ class Runner:
             instruments=self.instruments,
         )
 
+        if self.quit_application:
+            self.application.aboutToQuit.connect(self._about_to_quit)
+
         if execute_application:
             return_code = self.application.exec_()
 
@@ -728,6 +732,10 @@ class Runner:
             self.done_callback(self.outcomes)
 
         if self.quit_application:
+            self.application.aboutToQuit.disconnect(self._about_to_quit)
             self.application.quit()
 
         self._done = True
+
+    def _about_to_quit(self):
+        warnings.warn(message="The Qt application quit early.  See https://qtrio.readthedocs.io/en/stable/lifetimes.html", category=qtrio.ApplicationQuitWarning)

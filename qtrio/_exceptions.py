@@ -86,3 +86,11 @@ class DialogNotActiveError(QTrioException):
     """Raised when attempting to interact with a dialog while it is not actually
     available.
     """
+
+
+class QTrioWarning(UserWarning):
+    pass
+
+
+class ApplicationQuitWarning(QTrioWarning):
+    pass
