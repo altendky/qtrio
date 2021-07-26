@@ -89,8 +89,10 @@ class DialogNotActiveError(QTrioException):
 
 
 class QTrioWarning(UserWarning):
-    pass
+    """Base warning for all QTrio warnings."""
 
 
 class ApplicationQuitWarning(QTrioWarning):
-    pass
+    """Emitted when the Qt application quits but QTrio is expecting to manage the
+    application lifetime.
+    """
