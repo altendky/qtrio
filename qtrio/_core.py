@@ -569,6 +569,13 @@ def create_reenter() -> "qtrio.qt.Reenter":
     return qtrio.qt.Reenter()
 
 
+def _early_quit_warning() -> None:
+    warnings.warn(
+        message="The Qt application quit early.  See https://qtrio.readthedocs.io/en/stable/lifetimes.html",
+        category=qtrio.ApplicationQuitWarning,
+    )
+
+
 @attr.s(auto_attribs=True, slots=True)
 class Runner:
     """This class helps run Trio in guest mode on a Qt host application."""
@@ -650,7 +657,7 @@ class Runner:
         )
 
         if self.quit_application:
-            self.application.aboutToQuit.connect(self._about_to_quit)
+            self.application.aboutToQuit.connect(_early_quit_warning)
 
         if execute_application:
             return_code = self.application.exec_()
@@ -732,13 +739,7 @@ class Runner:
             self.done_callback(self.outcomes)
 
         if self.quit_application:
-            self.application.aboutToQuit.disconnect(self._about_to_quit)
+            self.application.aboutToQuit.disconnect(_early_quit_warning)
             self.application.quit()
 
         self._done = True
-
-    def _about_to_quit(self) -> None:
-        warnings.warn(
-            message="The Qt application quit early.  See https://qtrio.readthedocs.io/en/stable/lifetimes.html",
-            category=qtrio.ApplicationQuitWarning,
-        )
