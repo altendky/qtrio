@@ -22,7 +22,7 @@ async def test_main(
             hold_event=optional_hold_event,
         )
         widget: qtrio.examples.crossingpaths.Widget = await nursery.start(start)
-        qtbot.addWidget(widget)
+        qtbot.addWidget(widget.label)
 
         async with qtrio.enter_emissions_channel(
             signals=[widget.text_changed],

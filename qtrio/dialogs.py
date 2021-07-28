@@ -154,8 +154,12 @@ class IntegerDialog:
         self.dialog.show()
 
         buttons = _dialog_button_box_buttons_by_role(dialog=self.dialog)
-        self.accept_button = buttons.get(QtWidgets.QDialogButtonBox.AcceptRole)
-        self.reject_button = buttons.get(QtWidgets.QDialogButtonBox.RejectRole)
+        self.accept_button = buttons.get(
+            QtWidgets.QDialogButtonBox.ButtonRole.AcceptRole,
+        )
+        self.reject_button = buttons.get(
+            QtWidgets.QDialogButtonBox.ButtonRole.RejectRole,
+        )
 
         [self.edit_widget] = self.dialog.findChildren(QtWidgets.QLineEdit)
 
@@ -182,7 +186,7 @@ class IntegerDialog:
 
             await finished_event.wait()
 
-            if self.dialog.result() != QtWidgets.QDialog.Accepted:
+            if self.dialog.result() != QtWidgets.QDialog.DialogCode.Accepted:
                 raise qtrio.UserCancelledError()
 
             try:
@@ -255,8 +259,8 @@ class TextInputDialog:
         self.dialog.show()
 
         buttons = _dialog_button_box_buttons_by_role(dialog=self.dialog)
-        self.accept_button = buttons[QtWidgets.QDialogButtonBox.AcceptRole]
-        self.reject_button = buttons[QtWidgets.QDialogButtonBox.RejectRole]
+        self.accept_button = buttons[QtWidgets.QDialogButtonBox.ButtonRole.AcceptRole]
+        self.reject_button = buttons[QtWidgets.QDialogButtonBox.ButtonRole.RejectRole]
 
         [self.line_edit] = self.dialog.findChildren(QtWidgets.QLineEdit)
 
@@ -287,7 +291,7 @@ class TextInputDialog:
 
             dialog_result = self.dialog.result()
 
-            if dialog_result == QtWidgets.QDialog.Rejected:
+            if dialog_result == QtWidgets.QDialog.DialogCode.Rejected:
                 raise qtrio.UserCancelledError()
 
             # TODO: `: str` is a workaround for
@@ -333,7 +337,7 @@ class FileDialog:
     """The directory to be initially presented in the dialog."""
     default_file: typing.Optional[trio.Path] = None
     """The file to be initially selected in the dialog."""
-    options: QtWidgets.QFileDialog.Option = QtWidgets.QFileDialog.Option()
+    options: QtWidgets.QFileDialog.Option = QtWidgets.QFileDialog.Option(0)
     """Miscellaneous options.  See the Qt documentation."""
     parent: typing.Optional[QtWidgets.QWidget] = None
     """The parent widget for the dialog."""
@@ -408,8 +412,12 @@ class FileDialog:
         self.dialog.show()
 
         buttons = _dialog_button_box_buttons_by_role(dialog=self.dialog)
-        self.accept_button = buttons.get(QtWidgets.QDialogButtonBox.AcceptRole)
-        self.reject_button = buttons.get(QtWidgets.QDialogButtonBox.RejectRole)
+        self.accept_button = buttons.get(
+            QtWidgets.QDialogButtonBox.ButtonRole.AcceptRole,
+        )
+        self.reject_button = buttons.get(
+            QtWidgets.QDialogButtonBox.ButtonRole.RejectRole,
+        )
         [self.file_name_line_edit] = self.dialog.findChildren(QtWidgets.QLineEdit)
 
         self.shown.emit(self.dialog)
@@ -437,7 +445,7 @@ class FileDialog:
             shown_event.set()
 
             await finished_event.wait()
-            if self.dialog.result() != QtWidgets.QDialog.Accepted:
+            if self.dialog.result() != QtWidgets.QDialog.DialogCode.Accepted:
                 raise qtrio.UserCancelledError()
 
             [path_string] = self.dialog.selectedFiles()
@@ -450,7 +458,7 @@ def create_file_save_dialog(
     parent: typing.Optional[QtWidgets.QWidget] = None,
     default_directory: typing.Optional[trio.Path] = None,
     default_file: typing.Optional[trio.Path] = None,
-    options: QtWidgets.QFileDialog.Option = QtWidgets.QFileDialog.Option(),
+    options: QtWidgets.QFileDialog.Option = QtWidgets.QFileDialog.Option(0),
 ) -> FileDialog:
     """Create a file save dialog.
 
@@ -465,8 +473,8 @@ def create_file_save_dialog(
         default_directory=default_directory,
         default_file=default_file,
         options=options,
-        file_mode=QtWidgets.QFileDialog.AnyFile,
-        accept_mode=QtWidgets.QFileDialog.AcceptSave,
+        file_mode=QtWidgets.QFileDialog.FileMode.AnyFile,
+        accept_mode=QtWidgets.QFileDialog.AcceptMode.AcceptSave,
     )
 
 
@@ -474,7 +482,7 @@ def create_file_open_dialog(
     parent: typing.Optional[QtWidgets.QWidget] = None,
     default_directory: typing.Optional[trio.Path] = None,
     default_file: typing.Optional[trio.Path] = None,
-    options: QtWidgets.QFileDialog.Option = QtWidgets.QFileDialog.Option(),
+    options: QtWidgets.QFileDialog.Option = QtWidgets.QFileDialog.Option(0),
 ) -> FileDialog:
     """Create a file open dialog.
 
@@ -489,14 +497,13 @@ def create_file_open_dialog(
         default_directory=default_directory,
         default_file=default_file,
         options=options,
-        file_mode=QtWidgets.QFileDialog.AnyFile,
-        accept_mode=QtWidgets.QFileDialog.AcceptOpen,
+        file_mode=QtWidgets.QFileDialog.FileMode.AnyFile,
+        accept_mode=QtWidgets.QFileDialog.AcceptMode.AcceptOpen,
     )
 
 
 message_box_standard_button_union = typing.Union[
     QtWidgets.QMessageBox.StandardButton,
-    QtWidgets.QMessageBox.StandardButtons,
 ]
 
 
@@ -550,7 +557,7 @@ class MessageBox:
         self.dialog.show()
 
         buttons = _dialog_button_box_buttons_by_role(dialog=self.dialog)
-        self.accept_button = buttons[QtWidgets.QDialogButtonBox.AcceptRole]
+        self.accept_button = buttons[QtWidgets.QDialogButtonBox.ButtonRole.AcceptRole]
 
         self.shown.emit(self.dialog)
 
@@ -577,15 +584,15 @@ class MessageBox:
 
             result = self.dialog.result()
 
-            if result == QtWidgets.QDialog.Rejected:
+            if result == QtWidgets.QDialog.DialogCode.Rejected:
                 raise qtrio.UserCancelledError()
 
 
 def create_message_box(
     title: str = "",
     text: str = "",
-    icon: QtWidgets.QMessageBox.Icon = QtWidgets.QMessageBox.Information,
-    buttons: message_box_standard_button_union = QtWidgets.QMessageBox.Ok,
+    icon: QtWidgets.QMessageBox.Icon = QtWidgets.QMessageBox.Icon.Information,
+    buttons: message_box_standard_button_union = QtWidgets.QMessageBox.StandardButton.Ok,
     parent: typing.Optional[QtWidgets.QWidget] = None,
 ) -> MessageBox:
     """Create a message box.

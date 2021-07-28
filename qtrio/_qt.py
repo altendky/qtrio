@@ -113,7 +113,11 @@ def connection(
     # if you get segfault or sigsegv here, especially from pyside2<5.15.2, make
     # sure the slot isn't on a non-hashable (frozen will make it hashable) attrs
     # class.  https://bugreports.qt.io/browse/PYSIDE-1422
-    this_connection = signal.connect(slot)
+    try:
+        this_connection = signal.connect(slot)
+    except TypeError as e:
+        print(e)
+        raise
 
     import qts
 
