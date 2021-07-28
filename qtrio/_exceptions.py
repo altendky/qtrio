@@ -86,3 +86,14 @@ class DialogNotActiveError(QTrioException):
     """Raised when attempting to interact with a dialog while it is not actually
     available.
     """
+
+
+class QTrioWarning(UserWarning):
+    """Base warning for all QTrio warnings."""
+
+
+class ApplicationQuitWarning(QTrioWarning):
+    """Emitted when the Qt application quits but QTrio is expecting to manage the
+    application lifetime.  See the documentation on
+    :ref:`the application lifetime <lifetime>` for more information.
+    """

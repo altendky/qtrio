@@ -131,7 +131,7 @@ def test_run_passes_args(testdir):
 
     def test():
         result = []
-        
+
         async def main(arg1, arg2):
             result.append(arg1)
             result.append(arg2)
@@ -1220,3 +1220,33 @@ def test_not_quitting_application_does_not(testdir):
 
     result = testdir.runpytest_subprocess(timeout=timeout)
     result.assert_outcomes(passed=1)
+
+
+def test_warning_on_early_application_quit(testdir):
+    """Emit a warning if the runner is supposed to handle quitting the application
+    but the application is terminated early.
+    """
+
+    test_file = r"""
+    import qtrio
+    from qts import QtWidgets
+    import trio
+
+
+    async def quit():
+        QtWidgets.QApplication.quit()
+
+
+    async def main():
+        async with trio.open_nursery() as nursery:
+            nursery.start_soon(quit)
+            await trio.sleep(9999)
+
+
+    qtrio.run(main)
+    """
+
+    test_path = testdir.makepyfile(test_file)
+
+    result = testdir.runpython(script=test_path)
+    result.stderr.re_match_lines(lines2=[r".* ApplicationQuitWarning: .*"])

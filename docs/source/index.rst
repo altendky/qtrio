@@ -11,6 +11,7 @@
 
    getting_started.rst
    core.rst
+   lifetimes.rst
    testing.rst
    dialogs.rst
    exceptions.rst

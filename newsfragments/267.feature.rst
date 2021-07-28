@@ -1,0 +1,1 @@
+Emit :class:`qtrio.ApplicationQuitWarning` when the Qt application quits but QTrio is expecting to manage :ref:`the application lifetime <lifetime>`.
