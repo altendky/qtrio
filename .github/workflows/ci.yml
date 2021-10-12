@@ -22,10 +22,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - python: '3.8'
+          - python: '3.9'
             name: 'Build source'
             pep517_option: '--source'
-          - python: '3.8'
+          - python: '3.9'
             name: 'Build binary'
             pep517_option: '--binary'
     steps:
@@ -58,23 +58,23 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - python: '3.8'
+          - python: '3.9'
             check_docs: '1'
             name: 'Check docs'
             qt_library: 'PySide2'
-          - python: '3.8'
+          - python: '3.9'
             check_formatting: '1'
             name: 'Check formatting'
             qt_library: 'PySide2'
-          - python: '3.8'
+          - python: '3.9'
             check_type_hints: '1'
             name: 'Check type hints (PySide2)'
             qt_library: 'PySide2'
-          - python: '3.8'
+          - python: '3.9'
             check_type_hints: '1'
             name: 'Check type hints (PyQt5)'
             qt_library: 'PyQt5'
-          - python: '3.8'
+          - python: '3.9'
             check_manifest: '1'
             name: 'Check manifest'
             qt_library: 'PySide2'
@@ -105,7 +105,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.6', '3.7', '3.8', '3.9']
+        python: ['3.6', '3.7', '3.8', '3.9', '3.10']
         arch: ['x86', 'x64']
         qt_library: ['PyQt5', 'PySide2']
     steps:
@@ -134,7 +134,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.6', '3.7', '3.8', '3.9']
+        python: ['3.6', '3.7', '3.8', '3.9', '3.10']
         qt_library: ['PyQt5', 'PySide2']
     steps:
       - name: Checkout
@@ -162,7 +162,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.6', '3.7', '3.8', '3.9']
+        python: ['3.6', '3.7', '3.8', '3.9', '3.10']
         qt_library: ['PyQt5', 'PySide2']
     steps:
       - name: Checkout
