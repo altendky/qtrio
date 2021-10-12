@@ -139,6 +139,9 @@ jobs:
       matrix:
         python: ['3.6', '3.7', '3.8', '3.9', '3.10']
         qt_library: ['PyQt5', 'PySide2']
+        exclude:
+          - qt_library: 'PySide2'
+            python: '3.10'
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -167,6 +170,9 @@ jobs:
       matrix:
         python: ['3.6', '3.7', '3.8', '3.9', '3.10']
         qt_library: ['PyQt5', 'PySide2']
+        exclude:
+          - qt_library: 'PySide2'
+            python: '3.10'
     steps:
       - name: Checkout
         uses: actions/checkout@v2
