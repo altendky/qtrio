@@ -21,7 +21,7 @@ import qtrio
 import qtrio._qt
 
 
-if typing.TYPE_CHECKING:
+if typing.TYPE_CHECKING or "sphinx_autodoc_typehints" in sys.modules:
     from qts import QtCore
     from qts import QtGui
     from qts import QtWidgets
