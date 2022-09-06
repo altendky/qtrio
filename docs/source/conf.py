@@ -45,6 +45,9 @@ nitpick_ignore = [
         "py:class",
         "Union[<class 'PySide2.QtWidgets.QMessageBox.StandardButton'>, PySide2.QtWidgets.QMessageBox.StandardButtons]",
     ),
+    # just ignored while updating
+    ("py:class", "qtrio.qt.Reenter"),
+    ("py:obj", "typing.Union[<class 'PySide2.QtWidgets.QMessageBox.StandardButton'>, ~PySide2.QtWidgets.QMessageBox.StandardButtons]"),
 ]
 
 # -- General configuration ------------------------------------------------
@@ -158,7 +161,7 @@ if "+dev" in version and os.environ.get("READTHEDOCS") is not None:
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = 'en'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
