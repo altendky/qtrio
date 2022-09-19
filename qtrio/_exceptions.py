@@ -1,8 +1,9 @@
 """A central location to define QTrio specific exceptions and avoid introducing
 inter-module dependency issues."""
+import sys
 import typing
 
-if typing.TYPE_CHECKING:
+if typing.TYPE_CHECKING or "sphinx_autodoc_typehints" in sys.modules:
     from qts import QtCore
 
 

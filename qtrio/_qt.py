@@ -1,11 +1,12 @@
 """This module provides general Qt related utilities that are not Trio specific."""
 
 import contextlib
+import sys
 import typing
 
 import typing_extensions
 
-if typing.TYPE_CHECKING:
+if typing.TYPE_CHECKING or "sphinx_autodoc_typehints" in sys.modules:
     from qts import QtCore
 
 import qtrio._python

@@ -206,7 +206,7 @@ async def test_main(
         widget.get_dialog.message_box.accept_button.click()
 
     async with await destination.open("rb") as written_file:
-        written = await written_file.read()  # type: ignore[attr-defined]
+        written = await written_file.read()
 
     assert written == data
 
@@ -244,7 +244,7 @@ async def test_get_dialog(
         widget.message_box.accept_button.click()
 
     async with await destination.open("rb") as written_file:
-        written = await written_file.read()  # type: ignore[attr-defined]
+        written = await written_file.read()
 
     assert written == data
 
@@ -304,7 +304,7 @@ async def test_get(
         progresses.append(progress)
 
     async with await destination.open("rb") as written_file:
-        written = await written_file.read()  # type: ignore[attr-defined]
+        written = await written_file.read()
 
     assert written == data
     assert all(progress.total == content_length for progress in progresses)
