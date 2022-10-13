@@ -5,6 +5,22 @@ Release history
 
 .. towncrier release notes start
 
+QTrio 0.5.1 (2022-10-13)
+------------------------
+
+Features
+~~~~~~~~
+
+- Emit :class:`qtrio.ApplicationQuitWarning` when the Qt application quits but QTrio is expecting to manage :ref:`the application lifetime <lifetime>`. (`#267 <https://github.com/altendky/qtrio/issues/267>`__)
+- Updated several dependencies, most notably ``trio-typing``.
+
+
+Improved documentation
+~~~~~~~~~~~~~~~~~~~~~~
+
+- Add documentation around :ref:`the application lifetime <lifetime>`. (`#267 <https://github.com/altendky/qtrio/issues/267>`__)
+
+
 QTrio 0.5.0 (2021-07-22)
 ------------------------
 

@@ -3,4 +3,4 @@
 #   exec'd from docs/source/conf.py
 #   attr:'ed from setup.cfg
 
-__version__ = "0.5.0+dev"
+__version__ = "0.5.1"
