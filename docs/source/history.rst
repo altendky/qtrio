@@ -114,7 +114,7 @@ Features
   :func:`qtrio.register_requested_event_type`, and :func:`qtrio.registered_event_type`. (`#16 <https://github.com/altendky/qtrio/issues/16>`__)
 - Enable running the CLI via ``python -m qtrio``. (`#99 <https://github.com/altendky/qtrio/issues/99>`__)
 - Accept a ``clock`` parameter.  Supported by :func:`qtrio.run` and :class:`qtrio.Runner`. (`#121 <https://github.com/altendky/qtrio/issues/121>`__)
-- Run and test timeouts report a :class:`trio.MultiError` to make context of the active tasks at the time of cancellation available. (`#135 <https://github.com/altendky/qtrio/issues/135>`__)
+- Run and test timeouts report a ``trio.MultiError`` to make context of the active tasks at the time of cancellation available. (`#135 <https://github.com/altendky/qtrio/issues/135>`__)
 
 
 Bugfixes
