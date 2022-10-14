@@ -192,6 +192,23 @@ class Emission:
         Returns:
             Whether the passed signal was the source of this emission.
         """
+        from qts import QtCore
+
+        if qts.is_pyqt_5_wrapper:
+            # TODO: qts should expose this, preferably as some helper function.
+            version = tuple(int(s) for s in QtCore.PYQT_VERSION_STR.split("."))
+
+            if version < (5, 15, 1):
+                # https://www.riverbankcomputing.com/pipermail/pyqt/2020-July/043064.html
+                # TODO: `repr()` here seems really bad.
+                return self.signal.signal == signal.signal and repr(
+                    self.signal
+                ) == repr(signal)
+
+        # Note that for PySide this is broken in 5.15.2 and 6 but we presently ban
+        # those versions and have not identified a workaround for them.  If we can make
+        # one then the could be reallowed and version conditionals used here similar to
+        # above.
 
         # bool() to accomodate SignalInstance being typed Any right now...
         return bool(self.signal == signal)
