@@ -91,6 +91,9 @@ def test_reenter_event_writes_to_stderr_for_exception(capsys, testdir):
     test_path = testdir.makepyfile(test_file)
 
     result = testdir.runpython(test_path)
+    # TODO: diagnostics to be removed
+    print(repr(result.stderr.str()))
+    print(result.stderr.str())
     result.stderr.re_match_lines(
         lines2=[
             r"^TypeError: 'int' object is not callable$",
