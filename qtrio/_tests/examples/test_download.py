@@ -7,32 +7,11 @@ import typing
 
 import hyperlink
 import pytest
+import quart_trio
 import trio
 
 import qtrio.dialogs
 import qtrio.examples.download
-
-
-minimum_python_version_for_quart_trio = (3, 7)
-if sys.version_info < minimum_python_version_for_quart_trio:
-    minimum_python_version_string = ".".join(
-        str(v) for v in minimum_python_version_for_quart_trio
-    )
-    python_version_string = ".".join(str(v) for v in sys.version_info)
-
-    reason = (
-        f"quart-trio is not available for Python <{minimum_python_version_string}."
-        f"  Running in Python {python_version_string}."
-    )
-
-    # quart-trio is expected to not be available but this is the public interface that
-    # pytest provides for skipping and also terminating the import of the test module.
-    pytest.importorskip(modname="quart_trio", reason=reason)
-    raise Exception("this should never run")  # pragma: no cover
-
-
-# By the time we get here, we know that quart-trio is supposed to be available.
-import quart_trio
 
 
 T = typing.TypeVar("T")
