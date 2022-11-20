@@ -1,3 +1,5 @@
+import os
+import sys
 import threading
 import time
 import typing
@@ -73,6 +75,15 @@ def test_reenter_event_raises_if_type_not_registered(testdir):
     result.assert_outcomes(passed=1)
 
 
+# TODO: debug further
+@pytest.mark.xfail(
+    condition=(
+        sys.platform == "win32"
+        and sys.version_info >= (3, 11)
+        and os.environ.get("CI") == "true"
+    ),
+    reason="the stderr fails to be captured in PyCharm and GitHub Actions",
+)
 def test_reenter_event_writes_to_stderr_for_exception(capsys, testdir):
     test_file = r"""
     from qts import QtCore
