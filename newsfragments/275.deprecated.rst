@@ -1,1 +1,0 @@
-Removed testing of and support for EOL CPython 3.6.

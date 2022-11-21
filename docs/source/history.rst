@@ -5,6 +5,28 @@ Release history
 
 .. towncrier release notes start
 
+QTrio 0.6.0 (2022-11-21)
+------------------------
+
+Headline features
+~~~~~~~~~~~~~~~~~
+
+- Added support for CPython 3.10 and 3.11.
+  Note that PySide2 only supports up to 3.10 and there are unresolved issues with that combination so it is excluded from testing. (`#275 <https://github.com/altendky/qtrio/issues/275>`__)
+
+
+Features
+~~~~~~~~
+
+- Updated several dependencies. (`#275 <https://github.com/altendky/qtrio/issues/275>`__)
+
+
+Deprecations and removals
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Removed testing of and support for EOL CPython 3.6. (`#275 <https://github.com/altendky/qtrio/issues/275>`__)
+
+
 QTrio 0.5.1 (2022-10-13)
 ------------------------
 
