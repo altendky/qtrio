@@ -1,2 +1,0 @@
-Added support for CPython 3.10 and 3.11.
-Note that PySide2 only supports up to 3.10 and there are unresolved issues with that combination so it is excluded from testing.
