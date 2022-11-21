@@ -30,7 +30,7 @@ def test_signal_emits(
 
     instance = NotQObject()
 
-    with qtbot.wait_signal(instance.signal, 100):
+    with qtbot.wait_signal(instance.signal, timeout=100):
         instance.signal.emit()
 
 
@@ -52,7 +52,7 @@ def test_signal_emits_value(
     instance = NotQObject()
     instance.signal.connect(collect_result)
 
-    with qtbot.wait_signal(instance.signal, 100):
+    with qtbot.wait_signal(instance.signal, timeout=100):
         instance.signal.emit(13)
 
     assert result == 13
