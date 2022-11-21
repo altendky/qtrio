@@ -200,6 +200,7 @@ jobs:
   all:
     name: All
     runs-on: ubuntu-latest
+    if: always()
     needs:
       - Builds
       - Checks
@@ -207,7 +208,7 @@ jobs:
       - Linux
       - macOS
     steps:
-      - name: This
-        shell: python
-        run: |
-          import this
+      - name: Require all successes
+        uses: re-actors/alls-green@v1.2.2
+        with:
+          jobs: ${{ toJSON(needs) }}
