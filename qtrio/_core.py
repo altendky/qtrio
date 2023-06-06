@@ -652,7 +652,7 @@ class Runner:
             args,
             run_sync_soon_threadsafe=self.run_sync_soon_threadsafe,
             done_callback=self.trio_done,
-            clock=self.clock,  # type: ignore[arg-type]
+            clock=self.clock,
             instruments=self.instruments,
         )
 
