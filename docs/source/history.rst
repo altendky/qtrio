@@ -5,6 +5,15 @@ Release history
 
 .. towncrier release notes start
 
+QTrio 0.7.0 (2023-06-07)
+------------------------
+
+For contributors
+~~~~~~~~~~~~~~~~
+
+- Updated to support trio-typing 0.8.0. (`#283 <https://github.com/altendky/qtrio/issues/283>`__)
+
+
 QTrio 0.6.0 (2022-11-21)
 ------------------------
 
