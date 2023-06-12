@@ -200,10 +200,6 @@ class Emission:
         if type(other) != type(self):
             return False
 
-        # TODO: workaround for https://github.com/python/mypy/issues/4445
-        if not isinstance(other, type(self)):  # pragma: no cover
-            return False
-
         return self.is_from(signal=other.signal) and self.args == other.args
 
 
