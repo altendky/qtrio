@@ -236,7 +236,6 @@ class Emissions:
     """A memory receive channel to be fed by signal emissions."""
     send_channel: trio.MemorySendChannel
     """A memory send channel collecting signal emissions."""
-
     async def aclose(self) -> None:
         """Asynchronously close the send channel when signal emissions are no longer of
         interest.
