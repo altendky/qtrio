@@ -15,6 +15,8 @@ from ._exceptions import (
     InvalidInputError,
     InternalError,
     DialogNotActiveError,
+    QTrioWarning,
+    ApplicationQuitWarning,
 )
 
 from ._core import (

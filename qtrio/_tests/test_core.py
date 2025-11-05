@@ -1,3 +1,5 @@
+import os
+import sys
 import threading
 import time
 import typing
@@ -73,6 +75,15 @@ def test_reenter_event_raises_if_type_not_registered(testdir):
     result.assert_outcomes(passed=1)
 
 
+# TODO: debug further
+@pytest.mark.xfail(
+    condition=(
+        sys.platform == "win32"
+        and sys.version_info >= (3, 11)
+        and os.environ.get("CI") == "true"
+    ),
+    reason="the stderr fails to be captured in PyCharm and GitHub Actions",
+)
 def test_reenter_event_writes_to_stderr_for_exception(capsys, testdir):
     test_file = r"""
     from qts import QtCore
@@ -91,6 +102,9 @@ def test_reenter_event_writes_to_stderr_for_exception(capsys, testdir):
     test_path = testdir.makepyfile(test_file)
 
     result = testdir.runpython(test_path)
+    # TODO: diagnostics to be removed
+    print(repr(result.stderr.str()))
+    print(result.stderr.str())
     result.stderr.re_match_lines(
         lines2=[
             r"^TypeError: 'int' object is not callable$",
@@ -131,7 +145,7 @@ def test_run_passes_args(testdir):
 
     def test():
         result = []
-        
+
         async def main(arg1, arg2):
             result.append(arg1)
             result.append(arg2)
@@ -1220,3 +1234,33 @@ def test_not_quitting_application_does_not(testdir):
 
     result = testdir.runpytest_subprocess(timeout=timeout)
     result.assert_outcomes(passed=1)
+
+
+def test_warning_on_early_application_quit(testdir):
+    """Emit a warning if the runner is supposed to handle quitting the application
+    but the application is terminated early.
+    """
+
+    test_file = r"""
+    import qtrio
+    from qts import QtWidgets
+    import trio
+
+
+    async def quit():
+        QtWidgets.QApplication.quit()
+
+
+    async def main():
+        async with trio.open_nursery() as nursery:
+            nursery.start_soon(quit)
+            await trio.sleep(9999)
+
+
+    qtrio.run(main)
+    """
+
+    test_path = testdir.makepyfile(test_file)
+
+    result = testdir.runpython(script=test_path)
+    result.stderr.re_match_lines(lines2=[r".* ApplicationQuitWarning: .*"])

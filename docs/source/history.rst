@@ -5,6 +5,53 @@ Release history
 
 .. towncrier release notes start
 
+QTrio 0.7.0 (2023-06-07)
+------------------------
+
+For contributors
+~~~~~~~~~~~~~~~~
+
+- Updated to support trio-typing 0.8.0. (`#283 <https://github.com/altendky/qtrio/issues/283>`__)
+
+
+QTrio 0.6.0 (2022-11-21)
+------------------------
+
+Headline features
+~~~~~~~~~~~~~~~~~
+
+- Added support for CPython 3.10 and 3.11.
+  Note that PySide2 only supports up to 3.10 and there are unresolved issues with that combination so it is excluded from testing. (`#275 <https://github.com/altendky/qtrio/issues/275>`__)
+
+
+Features
+~~~~~~~~
+
+- Updated several dependencies. (`#275 <https://github.com/altendky/qtrio/issues/275>`__)
+
+
+Deprecations and removals
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+- Removed testing of and support for EOL CPython 3.6. (`#275 <https://github.com/altendky/qtrio/issues/275>`__)
+
+
+QTrio 0.5.1 (2022-10-13)
+------------------------
+
+Features
+~~~~~~~~
+
+- Emit :class:`qtrio.ApplicationQuitWarning` when the Qt application quits but QTrio is expecting to manage :ref:`the application lifetime <lifetime>`. (`#267 <https://github.com/altendky/qtrio/issues/267>`__)
+- Updated several dependencies, most notably ``trio-typing``.
+
+
+Improved documentation
+~~~~~~~~~~~~~~~~~~~~~~
+
+- Add documentation around :ref:`the application lifetime <lifetime>`. (`#267 <https://github.com/altendky/qtrio/issues/267>`__)
+
+
 QTrio 0.5.0 (2021-07-22)
 ------------------------
 
@@ -98,7 +145,7 @@ Features
   :func:`qtrio.register_requested_event_type`, and :func:`qtrio.registered_event_type`. (`#16 <https://github.com/altendky/qtrio/issues/16>`__)
 - Enable running the CLI via ``python -m qtrio``. (`#99 <https://github.com/altendky/qtrio/issues/99>`__)
 - Accept a ``clock`` parameter.  Supported by :func:`qtrio.run` and :class:`qtrio.Runner`. (`#121 <https://github.com/altendky/qtrio/issues/121>`__)
-- Run and test timeouts report a :class:`trio.MultiError` to make context of the active tasks at the time of cancellation available. (`#135 <https://github.com/altendky/qtrio/issues/135>`__)
+- Run and test timeouts report a ``trio.MultiError`` to make context of the active tasks at the time of cancellation available. (`#135 <https://github.com/altendky/qtrio/issues/135>`__)
 
 
 Bugfixes

@@ -1,8 +1,9 @@
 """A central location to define QTrio specific exceptions and avoid introducing
 inter-module dependency issues."""
+import sys
 import typing
 
-if typing.TYPE_CHECKING:
+if typing.TYPE_CHECKING or "sphinx_autodoc_typehints" in sys.modules:
     from qts import QtCore
 
 
@@ -85,4 +86,15 @@ class InvalidInputError(QTrioException):
 class DialogNotActiveError(QTrioException):
     """Raised when attempting to interact with a dialog while it is not actually
     available.
+    """
+
+
+class QTrioWarning(UserWarning):
+    """Base warning for all QTrio warnings."""
+
+
+class ApplicationQuitWarning(QTrioWarning):
+    """Emitted when the Qt application quits but QTrio is expecting to manage the
+    application lifetime.  See the documentation on
+    :ref:`the application lifetime <lifetime>` for more information.
     """

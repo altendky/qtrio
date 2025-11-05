@@ -1,5 +1,8 @@
+Exceptions and Warnings
+=======================
+
 Exceptions
-==========
+----------
 
 .. autoclass:: qtrio.QTrioException
 .. autoclass:: qtrio.NoOutcomesError
@@ -11,3 +14,10 @@ Exceptions
 .. autoclass:: qtrio.InternalError
 .. autoclass:: qtrio.UserCancelledError
 .. autoclass:: qtrio.InvalidInputError
+
+
+Warnings
+--------
+
+.. autoclass:: qtrio.QTrioWarning
+.. autoclass:: qtrio.ApplicationQuitWarning
