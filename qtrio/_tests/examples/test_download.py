@@ -9,6 +9,7 @@ import hyperlink
 import pytest
 import quart_trio
 import trio
+import trio.testing
 
 import qtrio.dialogs
 import qtrio.examples.download
@@ -238,7 +239,8 @@ async def test_get_dialog_canceled(
 
     destination = temporary_directory.joinpath("file")
 
-    with pytest.raises(qtrio.UserCancelledError):
+    # TODO: error: Module has no attribute "RaisesGroup"  [attr-defined]
+    with trio.testing.RaisesGroup(qtrio.UserCancelledError):  # type: ignore[attr-defined]
         async with trio.open_nursery() as nursery:
             start = functools.partial(
                 qtrio.examples.download.start_get_dialog,

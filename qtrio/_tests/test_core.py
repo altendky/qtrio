@@ -1056,7 +1056,8 @@ async def test_emissions_nursery_receives_exceptions(is_async):
     def slot():
         raise LocalUniqueException()
 
-    with pytest.raises(LocalUniqueException):
+    # TODO: error: Module has no attribute "RaisesGroup"  [attr-defined]
+    with trio.testing.RaisesGroup(LocalUniqueException):  # type: ignore[attr-defined]
         async with qtrio.open_emissions_nursery() as emissions_nursery:
             signal_host = SignalHost()
 

@@ -6,13 +6,17 @@ formats:
   - epub
 
 build:
-  image: latest
+  os: ubuntu-lts-latest
+  tools:
+    python: "3.10"
 
 python:
-  version: 3.8
   install:
     - method: pip
       path: .
       extra_requirements:
-        - pyside2
-        - p_docs
+        - pyqt5
+        - p-docs
+
+sphinx:
+  configuration: docs/source/conf.py

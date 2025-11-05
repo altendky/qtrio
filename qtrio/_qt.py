@@ -1,4 +1,5 @@
 """This module provides general Qt related utilities that are not Trio specific."""
+from __future__ import annotations
 
 import contextlib
 import sys
@@ -52,7 +53,7 @@ class Signal:
 
     def __get__(
         self, instance: object, owner: object
-    ) -> typing.Union["Signal", "QtCore.SignalInstance"]:
+    ) -> Signal | QtCore.SignalInstance:
         if instance is None:
             return self
 
@@ -96,11 +97,11 @@ Signal._attribute_name = qtrio._python.identifier_path(Signal)
 def connection(
     signal: "QtCore.SignalInstance", slot: typing.Callable[..., object]
 ) -> typing.Generator[
-    typing.Union[
-        "QtCore.QMetaObject.Connection",
-        typing.Callable[..., object],
-        "QtCore.SignalInstance",  # TODO: https://bugreports.qt.io/browse/PYSIDE-1334
-    ],
+    (
+        "QtCore.QMetaObject.Connection"
+        | typing.Callable[..., object]
+        | "QtCore.SignalInstance"  # TODO: https://bugreports.qt.io/browse/PYSIDE-1334
+    ),
     None,
     None,
 ]:

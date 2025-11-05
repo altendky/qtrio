@@ -6,7 +6,7 @@ import typing
 
 # TODO: could support some more things
 #       https://docs.python.org/3/library/stdtypes.html#definition.__qualname__
-def identifier_path(it: typing.Union[typing.Type[object], typing.Callable]) -> str:
+def identifier_path(it: typing.Type[object] | typing.Callable) -> str:
     """Generate an identifier based on an object's module and qualified name.  This can
     be useful such as for adding attributes to existing objects while minimizing odds
     of collisions and maximizing traceability of the related party.

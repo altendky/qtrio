@@ -48,8 +48,8 @@ class Downloader:
 
     async def serve(
         self,
-        url: typing.Optional[typing.Union[str, hyperlink.URL]] = None,
-        destination: typing.Optional[typing.Union[str, os.PathLike]] = None,
+        url: typing.Optional[str | hyperlink.URL] = None,
+        destination: typing.Optional[str | os.PathLike] = None,
         fps: float = default_fps,
         http_application: typing.Optional[typing.Callable[..., typing.Any]] = None,
         *,

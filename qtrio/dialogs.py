@@ -494,10 +494,9 @@ def create_file_open_dialog(
     )
 
 
-message_box_standard_button_union = typing.Union[
-    QtWidgets.QMessageBox.StandardButton,
-    QtWidgets.QMessageBox.StandardButtons,
-]
+message_box_standard_button_union: typing.TypeAlias = (
+    QtWidgets.QMessageBox.StandardButton | QtWidgets.QMessageBox.StandardButtons
+)
 
 
 @check_dialog_protocol
