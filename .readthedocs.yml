@@ -15,7 +15,7 @@ python:
     - method: pip
       path: .
       extra_requirements:
-        - pyside2
+        - pyqt5
         - p-docs
 
 sphinx:
