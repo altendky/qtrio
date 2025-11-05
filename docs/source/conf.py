@@ -51,6 +51,7 @@ nitpick_ignore = [
         "py:obj",
         "typing.Union[<class 'PySide2.QtWidgets.QMessageBox.StandardButton'>, ~PySide2.QtWidgets.QMessageBox.StandardButtons]",
     ),
+    ("py:class", "PyQt5.QtCore.pyqtBoundSignal"),
 ]
 
 # -- General configuration ------------------------------------------------
