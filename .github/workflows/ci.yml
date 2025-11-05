@@ -29,9 +29,11 @@ jobs:
           - python: '3.10'
             name: 'Build source'
             pep517_option: '--source'
+            artifact-name: 'sdist'
           - python: '3.10'
             name: 'Build binary'
             pep517_option: '--binary'
+            artifact-name: 'wheel'
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -51,7 +53,7 @@ jobs:
       - name: Publish
         uses: actions/upload-artifact@v5
         with:
-          name: dist
+          name: ${{ matrix.artifact-name }}
           path: dist/
 
   Checks:
