@@ -101,11 +101,6 @@ jobs:
           # TODO: needs some Qt library but I'm not clear the implications of
           #       choosing one over the other
           INSTALL_EXTRAS: '[${{ matrix.qt_library }},p_checks,p_docs]'
-      - uses: codecov/codecov-action@v5
-        if: always()
-        with:
-          name: ${{ matrix.name }}
-          fail_ci_if_error: true
 
   Windows:
     name: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_library }})'
@@ -134,11 +129,15 @@ jobs:
         run: ./ci.sh
         shell: bash
         env:
-          # Should match 'name:' up above
-          JOB_NAME: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_library }})'
           INSTALL_EXTRAS: '[${{ matrix.qt_library }},p_tests]'
           # TODO: https://github.com/pytest-dev/pytest/issues/7623
           PYTHONIOENCODING: 'utf-8'
+      - uses: codecov/codecov-action@v5
+        if: always()
+        with:
+          # Should match 'name:' up above
+          name: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_library }})'
+          fail_ci_if_error: true
 
   Linux:
     name: 'Linux (${{ matrix.python }}, ${{ matrix.qt_library }})'
@@ -169,9 +168,13 @@ jobs:
       - name: Run tests
         run: ./ci.sh
         env:
-          # Should match 'name:' up above
-          JOB_NAME: 'Linux (${{ matrix.python }}, ${{ matrix.qt_library }})'
           INSTALL_EXTRAS: '[${{ matrix.qt_library }},p_tests]'
+      - uses: codecov/codecov-action@v5
+        if: always()
+        with:
+          # Should match 'name:' up above
+          name: 'Linux (${{ matrix.python }}, ${{ matrix.qt_library }})'
+          fail_ci_if_error: true
 
   macOS:
     name: 'macOS (${{ matrix.python }}, ${{matrix.qt_library}})'
@@ -197,9 +200,13 @@ jobs:
       - name: Run tests
         run: ./ci.sh
         env:
-          # Should match 'name:' up above
-          JOB_NAME: 'macOS (${{ matrix.python }}, ${{matrix.qt_library}})'
           INSTALL_EXTRAS: '[${{ matrix.qt_library }},p_tests]'
+      - uses: codecov/codecov-action@v5
+        if: always()
+        with:
+          # Should match 'name:' up above
+          name: 'macOS (${{ matrix.python }}, ${{matrix.qt_library}})'
+          fail_ci_if_error: true
 
   all:
     name: All
