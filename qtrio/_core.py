@@ -290,7 +290,7 @@ async def open_emissions_channel(
 @async_generator.asynccontextmanager
 async def enter_emissions_channel(
     signals: typing.Collection["QtCore.SignalInstance"],
-    max_buffer_size: typing.Union[int, float] = math.inf,
+    max_buffer_size: float = math.inf,
 ) -> typing.AsyncGenerator[Emissions, None]:
     """Create a memory channel fed by the emissions of the signals and enter both the
     send and receive channels' context managers.
