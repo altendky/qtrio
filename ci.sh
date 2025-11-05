@@ -84,8 +84,6 @@ else
 #    export COVERAGE_RCFILE
 #    coverage combine
     cd ..  # coverage needs to be in the folder containing src/trio
-    COVERAGE_RCFILE=$(readlink --canonicalize-existing .coveragerc)
-    export COVERAGE_RCFILE
     cp empty/.coverage .
     coverage report -m
     coverage xml
