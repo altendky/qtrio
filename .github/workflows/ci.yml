@@ -49,7 +49,7 @@ jobs:
           venv/bin/python -m pep517.build ${{ matrix.pep517_option }} --out-dir dist/ .
           venv/bin/python -m twine check --strict dist/*
       - name: Publish
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v5
         with:
           name: dist
           path: dist/
