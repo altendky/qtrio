@@ -98,11 +98,14 @@ jobs:
           CHECK_FORMATTING: '${{ matrix.check_formatting }}'
           CHECK_TYPE_HINTS: '${{ matrix.check_type_hints }}'
           CHECK_MANIFEST: '${{ matrix.check_manifest }}'
-          # Should match 'name:' up above
-          JOB_NAME: '${{ matrix.name }}'
           # TODO: needs some Qt library but I'm not clear the implications of
           #       choosing one over the other
           INSTALL_EXTRAS: '[${{ matrix.qt_library }},p_checks,p_docs]'
+      - uses: codecov/codecov-action@v5
+        if: always()
+        with:
+          name: ${{ matrix.name }}
+          fail_ci_if_error: true
 
   Windows:
     name: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_library }})'
