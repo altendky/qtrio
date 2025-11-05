@@ -75,9 +75,7 @@ def register_event_type() -> None:
         )
 
 
-def register_requested_event_type(
-    requested_value: int | QtCore.QEvent.Type
-) -> None:
+def register_requested_event_type(requested_value: int | QtCore.QEvent.Type) -> None:
     """Register the requested Qt event type for use by Trio to reenter into the Qt event
     loop.
 
