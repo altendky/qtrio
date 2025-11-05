@@ -34,8 +34,8 @@ class RequestedEventTypeUnavailableError(EventTypeRegistrationError):
 
     def __init__(
         self,
-        requested_type: typing.Union[int, "QtCore.QEvent.Type"],
-        returned_type: typing.Union[int, "QtCore.QEvent.Type"],
+        requested_type: int | "QtCore.QEvent.Type",
+        returned_type: int | "QtCore.QEvent.Type",
     ) -> None:
         super().__init__(
             f"Failed acquire the requested type ({requested_type}), got back"

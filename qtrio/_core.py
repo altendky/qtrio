@@ -76,7 +76,7 @@ def register_event_type() -> None:
 
 
 def register_requested_event_type(
-    requested_value: typing.Union[int, "QtCore.QEvent.Type"]
+    requested_value: int | QtCore.QEvent.Type
 ) -> None:
     """Register the requested Qt event type for use by Trio to reenter into the Qt event
     loop.
@@ -103,7 +103,7 @@ def register_requested_event_type(
         event_hint = QtCore.QEvent.registerEventType(requested_value)
     elif qts.is_pyside_5_wrapper:
         event_hint = typing.cast(
-            typing.Callable[[typing.Union[int, QtCore.QEvent.Type]], int],
+            typing.Callable[[int | QtCore.QEvent.Type], int],
             QtCore.QEvent.registerEventType,
         )(requested_value)
     else:  # pragma: no cover
@@ -247,7 +247,7 @@ class Emissions:
 @async_generator.asynccontextmanager
 async def open_emissions_channel(
     signals: typing.Collection["QtCore.SignalInstance"],
-    max_buffer_size: typing.Union[int, float] = math.inf,
+    max_buffer_size: float = math.inf,
 ) -> typing.AsyncGenerator[Emissions, None]:
     """Create a memory channel fed by the emissions of the signals.  Each signal
     emission will be converted to a :class:`qtrio.Emission` object.  On exit the send
