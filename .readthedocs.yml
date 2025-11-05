@@ -17,3 +17,6 @@ python:
       extra_requirements:
         - pyside2
         - p-docs
+
+sphinx:
+  configuration: docs/source/conf.py
