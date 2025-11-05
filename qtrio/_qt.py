@@ -1,4 +1,5 @@
 """This module provides general Qt related utilities that are not Trio specific."""
+from __future__ import annotations
 
 import contextlib
 import sys

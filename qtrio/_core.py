@@ -3,6 +3,8 @@
 Attributes:
     _reenter_event_type: The event type enumerator for our reenter events.
 """
+from __future__ import annotations
+
 import contextlib
 import math
 import sys
