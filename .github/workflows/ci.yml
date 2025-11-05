@@ -100,7 +100,7 @@ jobs:
           CHECK_MANIFEST: '${{ matrix.check_manifest }}'
           # TODO: needs some Qt library but I'm not clear the implications of
           #       choosing one over the other
-          INSTALL_EXTRAS: '[${{ matrix.qt_library }},p_checks,p_docs]'
+          INSTALL_EXTRAS: '[${{ matrix.qt_library }},p-checks,p-docs]'
 
   Windows:
     name: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_library }})'
@@ -129,7 +129,7 @@ jobs:
         run: ./ci.sh
         shell: bash
         env:
-          INSTALL_EXTRAS: '[${{ matrix.qt_library }},p_tests]'
+          INSTALL_EXTRAS: '[${{ matrix.qt_library }},p-tests]'
           # TODO: https://github.com/pytest-dev/pytest/issues/7623
           PYTHONIOENCODING: 'utf-8'
       - uses: codecov/codecov-action@v5
@@ -168,7 +168,7 @@ jobs:
       - name: Run tests
         run: ./ci.sh
         env:
-          INSTALL_EXTRAS: '[${{ matrix.qt_library }},p_tests]'
+          INSTALL_EXTRAS: '[${{ matrix.qt_library }},p-tests]'
       - uses: codecov/codecov-action@v5
         if: always()
         with:
@@ -200,7 +200,7 @@ jobs:
       - name: Run tests
         run: ./ci.sh
         env:
-          INSTALL_EXTRAS: '[${{ matrix.qt_library }},p_tests]'
+          INSTALL_EXTRAS: '[${{ matrix.qt_library }},p-tests]'
       - uses: codecov/codecov-action@v5
         if: always()
         with:

@@ -1056,7 +1056,7 @@ async def test_emissions_nursery_receives_exceptions(is_async):
     def slot():
         raise LocalUniqueException()
 
-    with pytest.raises(LocalUniqueException):
+    with trio.testing.RaisesGroup(LocalUniqueException):
         async with qtrio.open_emissions_nursery() as emissions_nursery:
             signal_host = SignalHost()
 

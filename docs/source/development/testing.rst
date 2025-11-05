@@ -17,7 +17,7 @@ You can run ``pytest``, ``black``, and ``sphinx`` directly from your own install
 
    python -m venv testvenv
    testvenv/bin/python -m pip install --upgrade pip setuptools wheel
-   testvenv/bin/python -m pip install --editable .[pyside2,p_checks,p_docs,p_tests]
+   testvenv/bin/python -m pip install --editable .[pyside2,p-checks,p-docs,p-tests]
    testvenv/bin/pytest --pyargs qtrio
 
 The CI test script, ``ci.sh``, in the project root will run ``pytest`` with ``coverage``
@@ -56,7 +56,7 @@ The documentation can be built with ``sphinx``.
 
    python -m venv testvenv
    testvenv/bin/python -m pip install --upgrade pip setuptools wheel
-   testvenv/bin/python -m pip install --editable .[pyside2,p_docs]
+   testvenv/bin/python -m pip install --editable .[pyside2,p-docs]
    source testenv/bin/activate
    cd docs/
    make html --always-make
