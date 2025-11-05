@@ -144,7 +144,7 @@ jobs:
     name: 'Linux (${{ matrix.python }}, ${{ matrix.qt_library }})'
     timeout-minutes: 10
     runs-on: 'ubuntu-latest'
-    container: 'docker://python:${{ matrix.python }}-buster'
+    container: 'docker://python:${{ matrix.python }}-bookworm'
     strategy:
       fail-fast: false
       matrix:
