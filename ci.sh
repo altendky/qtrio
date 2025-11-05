@@ -80,7 +80,7 @@ else
         PASSED=false
     fi
 
-    COVERAGE_RCFILE="--rcfile $(readlink --canonicalize-existing ../.coveragerc)"
+    COVERAGE_RCFILE=$(readlink --canonicalize-existing ../.coveragerc)
     export COVERAGE_RCFILE
     coverage combine
     cd ..  # coverage needs to be in the folder containing src/trio
