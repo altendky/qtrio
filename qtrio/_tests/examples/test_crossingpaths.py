@@ -11,7 +11,7 @@ import qtrio.examples.crossingpaths
 async def test_main(
     qtbot: pytestqt.qtbot.QtBot,
     optional_hold_event: typing.Optional[trio.Event],
-    autojump_clock: qtrio.testing.MockClock,
+    autojump_clock: trio.testing.MockClock,
 ) -> None:
     message = "test world"
 
