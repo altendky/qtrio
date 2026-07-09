@@ -36,7 +36,7 @@ def test_reenter_event_triggers_in_main_thread(qapp):
     reenter = qtrio.qt.Reenter()
 
     def post():
-        if qtrio.qt.registered_event_type() is None:
+        if qtrio.registered_event_type() is None:
             qtrio.register_event_type()
         event = qtrio.qt.ReenterEvent(fn=handler)
         qapp.postEvent(reenter, event)
