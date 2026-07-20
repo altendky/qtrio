@@ -27,11 +27,18 @@ def emissions_channel_fixture(request):
     return request.param
 
 
-def test_reenter_event_triggers_in_main_thread(qapp):
+@pytest.mark.parametrize("event_type_registered", [True, False])
+def test_reenter_event_triggers_in_main_thread(
+    qapp, monkeypatch, event_type_registered
+):
     """Reenter events posted in another thread result in the function being run in the
     main thread.
     """
     import qtrio.qt
+
+    monkeypatch.setattr(qtrio._core, "_reenter_event_type", None)
+    if event_type_registered:
+        qtrio.register_event_type()
 
     result = []
 
