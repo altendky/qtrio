@@ -36,7 +36,8 @@ def test_reenter_event_triggers_in_main_thread(qapp):
     reenter = qtrio.qt.Reenter()
 
     def post():
-        qtrio.register_event_type()
+        if qtrio.registered_event_type() is None:
+            qtrio.register_event_type()
         event = qtrio.qt.ReenterEvent(fn=handler)
         qapp.postEvent(reenter, event)
 
@@ -1056,8 +1057,7 @@ async def test_emissions_nursery_receives_exceptions(is_async):
     def slot():
         raise LocalUniqueException()
 
-    # TODO: error: Module has no attribute "RaisesGroup"  [attr-defined]
-    with trio.testing.RaisesGroup(LocalUniqueException):  # type: ignore[attr-defined]
+    with pytest.RaisesGroup(LocalUniqueException):
         async with qtrio.open_emissions_nursery() as emissions_nursery:
             signal_host = SignalHost()
 

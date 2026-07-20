@@ -132,7 +132,7 @@ jobs:
           INSTALL_EXTRAS: '[${{ matrix.qt_library }},p-tests]'
           # TODO: https://github.com/pytest-dev/pytest/issues/7623
           PYTHONIOENCODING: 'utf-8'
-      - uses: codecov/codecov-action@v5
+      - uses: codecov/codecov-action@v7
         if: always()
         with:
           # Should match 'name:' up above
@@ -169,7 +169,7 @@ jobs:
         run: ./ci.sh
         env:
           INSTALL_EXTRAS: '[${{ matrix.qt_library }},p-tests]'
-      - uses: codecov/codecov-action@v5
+      - uses: codecov/codecov-action@v7
         if: always()
         with:
           # Should match 'name:' up above
@@ -201,7 +201,7 @@ jobs:
         run: ./ci.sh
         env:
           INSTALL_EXTRAS: '[${{ matrix.qt_library }},p-tests]'
-      - uses: codecov/codecov-action@v5
+      - uses: codecov/codecov-action@v7
         if: always()
         with:
           # Should match 'name:' up above
