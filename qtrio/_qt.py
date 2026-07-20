@@ -129,8 +129,10 @@ def connection(
     finally:
         expected_exception: typing.Type[Exception]
 
-        if qts.is_pyside_5_wrapper or qts.is_pyside_6_wrapper:
+        if qts.is_pyside_5_wrapper:
             expected_exception = RuntimeError
+        elif qts.is_pyside_6_wrapper:
+            expected_exception = SystemError
         else:
             expected_exception = TypeError
 

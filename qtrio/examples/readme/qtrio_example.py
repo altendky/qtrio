@@ -21,7 +21,7 @@ def create_output() -> qtrio.dialogs.MessageBox:
         title="Hello",
         text="",
         icon=QtWidgets.QMessageBox.Icon.Question,
-        buttons=QtWidgets.QMessageBox.Ok,
+        buttons=QtWidgets.QMessageBox.StandardButton.Ok,
     )
 
 

@@ -26,15 +26,11 @@ class QSignaledWidget(QtWidgets.QWidget):
         super().closeEvent(event)
         if event.isAccepted():
             # TODO: https://bugreports.qt.io/browse/PYSIDE-1318
-            if qts.is_pyqt_5_wrapper:
-                self.closed.emit()
-            elif qts.is_pyside_5_wrapper:
+            if qts.is_pyside_5_wrapper:
                 signal = typing.cast(QtCore.SignalInstance, self.closed)
                 signal.emit()
-            else:  # pragma: no cover
-                raise qtrio.InternalError(
-                    "You should not be here but you are running neither PyQt5 nor PySide2.",
-                )
+            else:
+                self.closed.emit()
         else:  # pragma: no cover
             pass
 
@@ -44,15 +40,11 @@ class QSignaledWidget(QtWidgets.QWidget):
         super().showEvent(event)
         if event.isAccepted():
             # TODO: https://bugreports.qt.io/browse/PYSIDE-1318
-            if qts.is_pyqt_5_wrapper:
-                self.shown.emit()
-            elif qts.is_pyside_5_wrapper:
+            if qts.is_pyside_5_wrapper:
                 signal = typing.cast(QtCore.SignalInstance, self.shown)
                 signal.emit()
-            else:  # pragma: no cover
-                raise qtrio.InternalError(
-                    "You should not be here but you are running neither PyQt5 nor PySide2.",
-                )
+            else:
+                self.shown.emit()
         else:  # pragma: no cover
             pass
 
