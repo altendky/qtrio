@@ -26,7 +26,7 @@ class QSignaledWidget(QtWidgets.QWidget):
         super().closeEvent(event)
         if event.isAccepted():
             # TODO: https://bugreports.qt.io/browse/PYSIDE-1318
-            if qts.is_pyside_5_wrapper:
+            if qts.is_pyside_5_wrapper:  # pragma: no cover
                 signal = typing.cast(QtCore.SignalInstance, self.closed)
                 signal.emit()
             else:
@@ -40,7 +40,7 @@ class QSignaledWidget(QtWidgets.QWidget):
         super().showEvent(event)
         if event.isAccepted():
             # TODO: https://bugreports.qt.io/browse/PYSIDE-1318
-            if qts.is_pyside_5_wrapper:
+            if qts.is_pyside_5_wrapper:  # pragma: no cover
                 signal = typing.cast(QtCore.SignalInstance, self.shown)
                 signal.emit()
             else:

@@ -66,7 +66,7 @@ def register_event_type() -> None:
 
     # assign to the global
     # TODO: https://bugreports.qt.io/browse/PYSIDE-1347
-    if qts.is_pyside_5_wrapper:
+    if qts.is_pyside_5_wrapper:  # pragma: no cover
         _reenter_event_type = typing.cast(
             typing.Callable[[int], QtCore.QEvent.Type], QtCore.QEvent.Type
         )(event_hint)
@@ -96,7 +96,7 @@ def register_requested_event_type(requested_value: int | QtCore.QEvent.Type) -> 
         raise qtrio.EventTypeAlreadyRegisteredError()
 
     # TODO: https://bugreports.qt.io/browse/PYSIDE-1468
-    if qts.is_pyside_5_wrapper:
+    if qts.is_pyside_5_wrapper:  # pragma: no cover
         event_hint = typing.cast(
             typing.Callable[[int | QtCore.QEvent.Type], int],
             QtCore.QEvent.registerEventType,
@@ -113,7 +113,7 @@ def register_requested_event_type(requested_value: int | QtCore.QEvent.Type) -> 
 
     # assign to the global
     # TODO: https://bugreports.qt.io/browse/PYSIDE-1347
-    if qts.is_pyside_5_wrapper:
+    if qts.is_pyside_5_wrapper:  # pragma: no cover
         _reenter_event_type = typing.cast(
             typing.Callable[[int], QtCore.QEvent.Type], QtCore.QEvent.Type
         )(event_hint)
@@ -530,7 +530,7 @@ def maybe_build_application() -> "QtGui.QGuiApplication":
     application: QtCore.QCoreApplication
 
     # TODO: https://bugreports.qt.io/browse/PYSIDE-1467
-    if qts.is_pyside_5_wrapper:
+    if qts.is_pyside_5_wrapper:  # pragma: no cover
         maybe_application = typing.cast(
             typing.Optional["QtCore.QCoreApplication"],
             QtWidgets.QApplication.instance(),
