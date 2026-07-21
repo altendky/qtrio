@@ -36,6 +36,8 @@ def test_reenter_event_triggers_in_main_thread(
     """
     import qtrio.qt
 
+    # TODO: i don't like monkeypatch...  but oh well, let's get rid of it someday and here's some context.
+    #       https://github.com/altendky/qtrio/pull/288/changes#r3619087492
     monkeypatch.setattr(qtrio._core, "_reenter_event_type", None)
     if event_type_registered:
         qtrio.register_event_type()
