@@ -1,6 +1,5 @@
 import os
 import sys
-import threading
 import time
 import typing
 
@@ -27,44 +26,54 @@ def emissions_channel_fixture(request):
     return request.param
 
 
+timeout = 40
+
+
 @pytest.mark.parametrize("event_type_registered", [True, False])
-def test_reenter_event_triggers_in_main_thread(
-    qapp, monkeypatch, event_type_registered
-):
+def test_reenter_event_triggers_in_main_thread(testdir, event_type_registered):
     """Reenter events posted in another thread result in the function being run in the
-    main thread.
+    main thread.  Run in a subprocess so the reenter event type starts out unregistered.
     """
+    if event_type_registered:
+        preregistration = "qtrio.register_event_type()"
+    else:
+        preregistration = ""
+
+    test_file = rf"""
+    import threading
+
+    import qtrio
     import qtrio.qt
 
-    # TODO: i don't like monkeypatch...  but oh well, let's get rid of it someday and here's some context.
-    #       https://github.com/altendky/qtrio/pull/288/changes#r3619087492
-    monkeypatch.setattr(qtrio._core, "_reenter_event_type", None)
-    if event_type_registered:
-        qtrio.register_event_type()
 
-    result = []
+    def test(qapp):
+        {preregistration}
 
-    reenter = qtrio.qt.Reenter()
+        result = []
 
-    def post():
-        if qtrio.registered_event_type() is None:
-            qtrio.register_event_type()
-        event = qtrio.qt.ReenterEvent(fn=handler)
-        qapp.postEvent(reenter, event)
+        reenter = qtrio.qt.Reenter()
 
-    def handler():
-        result.append(threading.get_ident())
+        def post():
+            if qtrio.registered_event_type() is None:
+                qtrio.register_event_type()
+            event = qtrio.qt.ReenterEvent(fn=handler)
+            qapp.postEvent(reenter, event)
 
-    thread = threading.Thread(target=post)
-    thread.start()
-    thread.join()
+        def handler():
+            result.append(threading.get_ident())
 
-    qapp.processEvents()
+        thread = threading.Thread(target=post)
+        thread.start()
+        thread.join()
 
-    assert result == [threading.get_ident()]
+        qapp.processEvents()
 
+        assert result == [threading.get_ident()]
+    """
+    testdir.makepyfile(test_file)
 
-timeout = 40
+    result = testdir.runpytest_subprocess(timeout=timeout)
+    result.assert_outcomes(passed=1)
 
 
 def test_reenter_event_raises_if_type_not_registered(testdir):
