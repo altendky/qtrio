@@ -6,7 +6,9 @@ import typing
 
 import outcome
 import pytest
+import qts
 from qts import QtCore
+from qts import QtWidgets
 import qtrio
 import qtrio._core
 import trio
@@ -25,11 +27,20 @@ def emissions_channel_fixture(request):
     return request.param
 
 
-def test_reenter_event_triggers_in_main_thread(qapp):
+@pytest.mark.parametrize("event_type_registered", [True, False])
+def test_reenter_event_triggers_in_main_thread(
+    qapp, monkeypatch, event_type_registered
+):
     """Reenter events posted in another thread result in the function being run in the
     main thread.
     """
     import qtrio.qt
+
+    # TODO: i don't like monkeypatch...  but oh well, let's get rid of it someday and here's some context.
+    #       https://github.com/altendky/qtrio/pull/288/changes#r3619087492
+    monkeypatch.setattr(qtrio._core, "_reenter_event_type", None)
+    if event_type_registered:
+        qtrio.register_event_type()
 
     result = []
 
@@ -82,6 +93,7 @@ def test_reenter_event_raises_if_type_not_registered(testdir):
         sys.platform == "win32"
         and sys.version_info >= (3, 11)
         and os.environ.get("CI") == "true"
+        and not qts.is_pyside_6_wrapper
     ),
     reason="the stderr fails to be captured in PyCharm and GitHub Actions",
 )
@@ -106,10 +118,18 @@ def test_reenter_event_writes_to_stderr_for_exception(capsys, testdir):
     # TODO: diagnostics to be removed
     print(repr(result.stderr.str()))
     print(result.stderr.str())
+    if qts.is_pyside_6_wrapper:
+        internal_error_line = (
+            r"^qtrio\._exceptions\.InternalError: Error calling Python override of"
+            r" QObject::event\(\): Exception while handling a reenter event$"
+        )
+    else:
+        internal_error_line = r"^qtrio\._exceptions\.InternalError: Exception while handling a reenter event$"
+
     result.stderr.re_match_lines(
         lines2=[
             r"^TypeError: 'int' object is not callable$",
-            r"^qtrio\._exceptions\.InternalError: Exception while handling a reenter event$",
+            internal_error_line,
         ],
     )
 
@@ -408,7 +428,7 @@ def test_out_of_hints_raises_for_requested(testdir):
             pass
 
         with pytest.raises(qtrio.EventTypeRegistrationFailedError):
-            qtrio.register_requested_event_type(QtCore.QEvent.User)
+            qtrio.register_requested_event_type(QtCore.QEvent.Type.User)
     """
     testdir.makepyfile(test_file)
 
@@ -446,9 +466,9 @@ def test_requesting_available_event_type_succeeds(testdir):
 
 
     def test():
-        qtrio.register_requested_event_type(QtCore.QEvent.User)
+        qtrio.register_requested_event_type(QtCore.QEvent.Type.User)
 
-        assert qtrio.registered_event_type() == QtCore.QEvent.User
+        assert qtrio.registered_event_type() == QtCore.QEvent.Type.User
     """
     testdir.makepyfile(test_file)
 
@@ -686,6 +706,20 @@ def test_failed_hosted_trio_exception_on_stdout(testdir):
     )
 
 
+def test_qobject_destroyed_signal_equality(qapp):
+    """Verify that an object's signal instances compare equal."""
+    q_object = QtCore.QObject()
+
+    assert q_object.destroyed == q_object.destroyed
+
+
+def test_qpushbutton_clicked_signal_equality(qapp):
+    """Verify that inherited signal instances compare equal."""
+    button = QtWidgets.QPushButton()
+
+    assert button.clicked == button.clicked
+
+
 def test_emissions_equal():
     """:class:`Emission` objects created from the same :class:`QtCore.Signal` instance
     and args are equal even if the attributes are different instances.
@@ -699,6 +733,15 @@ def test_emissions_equal():
     assert qtrio._core.Emission(
         signal=instance.signal, args=(13,)
     ) == qtrio._core.Emission(signal=instance.signal, args=(13,))
+
+
+def test_emissions_for_buttons():
+    """:class:`Emission` objects for the same button signal are equal."""
+    instance = QtWidgets.QPushButton()
+
+    assert qtrio._core.Emission(
+        signal=instance.clicked, args=(13,)
+    ) == qtrio._core.Emission(signal=instance.clicked, args=(13,))
 
 
 def test_emissions_unequal_by_signal():
@@ -1169,6 +1212,8 @@ def test_execute_manually(testdir):
     """Executing manually works."""
 
     test_file = r"""
+    import qts.util
+
     import qtrio
 
 
@@ -1184,7 +1229,7 @@ def test_execute_manually(testdir):
 
         assert not ran
 
-        runner.application.exec_()
+        qts.util.exec(runner.application)
 
         assert ran
     """

@@ -16,7 +16,7 @@ def create_output() -> QtWidgets.QMessageBox:
         QtWidgets.QMessageBox.Icon.Question,
         "Hello",
         "",
-        QtWidgets.QMessageBox.Ok,
+        QtWidgets.QMessageBox.StandardButton.Ok,
     )
 
 
