@@ -139,6 +139,7 @@ jobs:
       - uses: codecov/codecov-action@v7
         if: always()
         with:
+          token: ${{ secrets.CODECOV_TOKEN }}
           # Should match 'name:' up above
           name: 'Windows (${{ matrix.python }}, ${{ matrix.arch }}, ${{ matrix.qt_library }})'
           fail_ci_if_error: true
@@ -176,6 +177,7 @@ jobs:
       - uses: codecov/codecov-action@v7
         if: always()
         with:
+          token: ${{ secrets.CODECOV_TOKEN }}
           # Should match 'name:' up above
           name: 'Linux (${{ matrix.python }}, ${{ matrix.qt_library }})'
           fail_ci_if_error: true
@@ -209,6 +211,7 @@ jobs:
       - uses: codecov/codecov-action@v7
         if: always()
         with:
+          token: ${{ secrets.CODECOV_TOKEN }}
           # Should match 'name:' up above
           name: 'macOS (${{ matrix.python }}, ${{matrix.qt_library}})'
           fail_ci_if_error: true
