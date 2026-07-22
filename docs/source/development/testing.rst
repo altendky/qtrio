@@ -57,7 +57,7 @@ The documentation can be built with ``sphinx``.
    python -m venv testvenv
    testvenv/bin/python -m pip install --upgrade pip setuptools wheel
    testvenv/bin/python -m pip install --editable .[pyside6,p-docs]
-   source testenv/bin/activate
+   source testvenv/bin/activate
    cd docs/
    make html --always-make
 
