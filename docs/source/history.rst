@@ -11,8 +11,7 @@ QTrio 0.8.0 (2026-07-22)
 Breaking changes
 ~~~~~~~~~~~~~~~~
 
-- QTrio now requires Python 3.10 or newer. Support for Python 3.7, 3.8, and 3.9 has been removed. (`#286 <https://github.com/altendky/qtrio/issues/286>`__)
-
+- QTrio now requires Python 3.10 or newer. Support for Python 3.7, 3.8, and 3.9 has been removed. PySide2 is no longer supported. (`#286 <https://github.com/altendky/qtrio/issues/286>`__)
 
 Features
 ~~~~~~~~

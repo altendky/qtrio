@@ -28,14 +28,13 @@ are available for installing optional dependencies or applying version constrain
 - ``examples`` - For running examples.
 - ``pyqt5`` - For running with PyQt5, primarily to apply any version constraints.
 - ``pyqt6`` - For running with PyQt6, primarily to apply any version constraints.
-- ``pyside2`` - For running with PySide2, primarily to apply any version constraints.
 - ``pyside6`` - For running with PySide6, primarily to apply any version constraints.
 
 A normal installation might look like:
 
 .. code-block:: bash
 
-    $ myenv/bin/pip install qtrio[pyside2]
+    $ myenv/bin/pip install qtrio[pyside6]
 
 Overview
 --------
