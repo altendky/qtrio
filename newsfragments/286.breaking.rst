@@ -1,0 +1,1 @@
+QTrio now requires Python 3.10 or newer. Support for Python 3.7, 3.8, and 3.9 has been removed.
