@@ -5,6 +5,27 @@ Release history
 
 .. towncrier release notes start
 
+QTrio 0.8.0 (2026-07-22)
+------------------------
+
+Breaking changes
+~~~~~~~~~~~~~~~~
+
+- QTrio now requires Python 3.10 or newer. Support for Python 3.7, 3.8, and 3.9 has been removed. (`#286 <https://github.com/altendky/qtrio/issues/286>`__)
+
+
+Features
+~~~~~~~~
+
+- QTrio now supports PyQt6 and PySide6. Thanks to `Niketh Keshavan (@niketh-keshavan) <https://github.com/niketh-keshavan>`__ for implementing this support. (`#288 <https://github.com/altendky/qtrio/issues/288>`__)
+
+
+For contributors
+~~~~~~~~~~~~~~~~
+
+- Updated the test suite for pytest 8.4 and reduced CI timing sensitivity. Thanks to `Niketh Keshavan (@niketh-keshavan) <https://github.com/niketh-keshavan>`__ for these improvements. (`#287 <https://github.com/altendky/qtrio/issues/287>`__)
+
+
 QTrio 0.7.0 (2023-06-07)
 ------------------------
 
