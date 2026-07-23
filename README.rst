@@ -37,7 +37,7 @@ The QTrio project's goal is to bring the friendly concurrency of Trio using Pyth
 correct code and a more pleasant developer experience.  QTrio is `permissively licensed
 <https://github.com/altendky/qtrio/blob/main/LICENSE>`__ to avoid introducing
 restrictions beyond those of the underlying Python Qt library you choose.  PyQt5, PyQt6,
-and PySide6 are supported.
+PySide2, and PySide6 are supported.
 
 By enabling use of ``async`` and ``await`` it is possible in some cases to write
 related code more concisely and clearly than you would get with the signal and slot
