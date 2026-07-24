@@ -163,8 +163,8 @@ class Emission:
     Note:
         Each time you access a signal such as ``a_qobject.some_signal`` you get a
         different signal instance object so the ``signal`` attribute generally will not
-        be the same object.  A signal instance is a ``QtCore.SignalInstance`` in
-        PySide2 or ``QtCore.pyqtBoundSignal`` in PyQt5.
+        be the same object.  A signal instance is a ``QtCore.SignalInstance`` in PySide or
+        ``QtCore.pyqtBoundSignal`` in PyQt.
     """
 
     signal: "QtCore.SignalInstance"

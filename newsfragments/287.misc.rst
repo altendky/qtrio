@@ -1,1 +1,0 @@
-Updated the test suite for pytest 8.4 and reduced CI timing sensitivity. Thanks to `Niketh Keshavan (@niketh-keshavan) <https://github.com/niketh-keshavan>`__ for these improvements.
