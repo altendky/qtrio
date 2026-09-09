@@ -128,9 +128,11 @@ def test_reenter_event_writes_to_stderr_for_exception(capsys, testdir):
     print(repr(result.stderr.str()))
     print(result.stderr.str())
     if qts.is_pyside_6_wrapper:
+        # PySide6 6.11.2 prints the override context before the traceback instead
+        # of including it in the exception message.
         internal_error_line = (
-            r"^qtrio\._exceptions\.InternalError: Error calling Python override of"
-            r" QObject::event\(\): Exception while handling a reenter event$"
+            r"^qtrio\._exceptions\.InternalError: (?:Error calling Python override of"
+            r" QObject::event\(\): )?Exception while handling a reenter event$"
         )
     else:
         internal_error_line = r"^qtrio\._exceptions\.InternalError: Exception while handling a reenter event$"
